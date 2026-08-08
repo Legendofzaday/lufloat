@@ -1,1 +1,19 @@
-*.temp
+# =================
+# IGNORE EVERYTHING
+# =================
+*
+# =============
+# ALLOW FOLDERS
+# =============
+!*/
+# ==========
+# ALLOW CODE
+# ==========
+!.cargo/config.toml
+!*.hip
+!*.rs
+!.gitattributes
+!.gitignore
+!LICENSE
+!README.md
+!Cargo.toml
