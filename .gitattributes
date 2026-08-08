@@ -1,1 +1,3 @@
-temp
+* text=auto eol=lf
+
+*.hip text diff=cpp
