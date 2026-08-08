@@ -1,0 +1,7 @@
+[build]
+
+rustflags = ["-C", "target-cpu=native"]
+
+[env]
+
+CARGO_TARGET_DIR = "/tmp/cargo_target_dir_lufloat"
