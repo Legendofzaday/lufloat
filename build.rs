@@ -11,8 +11,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-env-changed=HIPCC");
     let out_dir = var("OUT_DIR")?;
     let hip_paths = read_dir("kernels")?
-        .map(|res| res.map(|e| e.path()))
-        .filter(|res| match res {
+        .map(|entry_result| entry_result.map(|entry| entry.path()))
+        .filter(|path_result| match path_result {
             Ok(path) => path.is_file() && path.extension() == Some(OsStr::new("hip")),
             Err(_) => true,
         })
