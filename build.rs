@@ -1,53 +1,57 @@
-use std::{env, fs, path, process};
+use std::env::var;
+use std::error::Error;
+use std::ffi::OsStr;
+use std::fs::read_dir;
+use std::path::PathBuf;
+use std::process::Command;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-changed=kernels");
-    let out_dir: String = unsafe { env::var("OUT_DIR").unwrap_unchecked() };
-    let lib_file: String = format!("{}/libkernels.a", out_dir);
-    let mut obj_files: Vec<String> = Vec::new();
-    let mut childs: Vec<process::Child> = Vec::new();
-    let entries: fs::ReadDir = unsafe { fs::read_dir("kernels").unwrap_unchecked() };
-    for entry in entries {
-        let path: path::PathBuf = unsafe { entry.unwrap_unchecked().path() };
+    let out_dir = var("OUT_DIR")?;
+    let hip_paths = read_dir("kernels")?
+        .filter_map(|entry| entry.ok())
+        .map(|entry| entry.path())
+        .filter(|path| path.is_file() && path.extension() == Some(OsStr::new("hip")))
+        .collect::<Vec<PathBuf>>();
+    let mut obj_files = Vec::new();
+    let mut children = Vec::new();
+    for path in hip_paths {
         println!("cargo:rerun-if-changed={}", path.display());
-        let file_stem: &str = unsafe {
-            path.file_stem()
-                .unwrap_unchecked()
-                .to_str()
-                .unwrap_unchecked()
-        };
-        let obj_file: String = format!("{}/{}.o", out_dir, file_stem);
-        let child: process::Child = unsafe {
-            process::Command::new("hipcc")
-                .args([
-                    "-c",
-                    path.to_str().unwrap_unchecked(),
-                    "-o",
-                    &obj_file,
-                    "-O3",
-                    "-fPIC",
-                ])
-                .spawn()
-                .unwrap_unchecked()
-        };
-        childs.push(child);
+        let file_stem = path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .ok_or_else(|| format!("Path has no valid UTF-8 stem: {}", path.display()))?;
+        let obj_file = format!("{}/{}.o", out_dir, file_stem);
+        let path_str = path
+            .to_str()
+            .ok_or_else(|| format!("Path contains invalid UTF-8: {}", path.display()))?;
+        let child = Command::new("hipcc")
+            .args(["-c", path_str, "-o", &obj_file, "-O3", "-fPIC"])
+            .spawn()?;
+        children.push((path_str.to_string(), child));
         obj_files.push(obj_file);
     }
-    for mut child in childs {
-        unsafe { child.wait().unwrap_unchecked() };
+    for (src_path, mut child) in children {
+        let status = child.wait()?;
+        if !status.success() {
+            return Err(format!("hipcc compilation failed for: {}", src_path).into());
+        }
     }
-    let mut ar_cmd = process::Command::new("ar");
-    ar_cmd.arg("rcs").arg(&lib_file);
+    let mut ar_cmd = Command::new("ar");
+    ar_cmd.arg("rcs").arg(format!("{}/libkernels.a", out_dir));
     for obj in &obj_files {
         ar_cmd.arg(obj);
     }
-    unsafe { ar_cmd.status().unwrap_unchecked() };
+    let ar_status = ar_cmd.status()?;
+    if !ar_status.success() {
+        return Err(format!("ar command failed with status: {}", ar_status).into());
+    }
     println!("cargo:rustc-link-search=native={}", out_dir);
     println!("cargo:rustc-link-lib=static=kernels");
-    if path::Path::new("/usr/lib64/libamdhip64.so").exists() {
-        println!("cargo:rustc-link-search=native=/usr/lib64");
-    } else {
-        println!("cargo:rustc-link-search=native=/opt/rocm/lib");
-    }
+    let rocm_lib = var("ROCM_PATH")
+        .map(|path| format!("{}/lib", path))
+        .unwrap_or_else(|_| "/opt/rocm/lib".to_string());
+    println!("cargo:rustc-link-search=native={}", rocm_lib);
     println!("cargo:rustc-link-lib=dylib=amdhip64");
+    Ok(())
 }
