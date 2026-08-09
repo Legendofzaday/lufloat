@@ -1,7 +1,7 @@
 # LuFloat
+![AGPL](https://img.shields.io/badge/AGPL-blue?logo=gnu&logoColor=white&logoSize=auto)
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C)
 ![Fedora](https://img.shields.io/badge/Fedora-3C6BE4?logo=fedora&logoColor=white&logoSize=auto)
-![License AGPL v3](https://img.shields.io/badge/AGPL-blue?logo=gnu&logoColor=white&logoSize=auto)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=white&logoSize=auto)
 ![Rust](https://img.shields.io/badge/Rust-D34516?logo=rust&logoColor=white&logoSize=auto)
 ## Architectural Highlights
