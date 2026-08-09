@@ -44,19 +44,21 @@ fn main() -> Result<(), Box<dyn Error>> {
             return Err(format!("hipcc compilation failed for: {}", src_path).into());
         }
     }
-    let mut ar_cmd = Command::new("ar");
-    ar_cmd
-        .arg("rcs")
-        .arg(PathBuf::from(&out_dir).join("libkernels.a"));
-    for obj in &obj_files {
-        ar_cmd.arg(obj);
+    if !obj_files.is_empty() {
+        let mut ar_cmd = Command::new("ar");
+        ar_cmd
+            .arg("rcs")
+            .arg(PathBuf::from(&out_dir).join("libkernels.a"));
+        for obj in &obj_files {
+            ar_cmd.arg(obj);
+        }
+        let ar_status = ar_cmd.status()?;
+        if !ar_status.success() {
+            return Err(format!("ar command failed with status: {}", ar_status).into());
+        }
+        println!("cargo:rustc-link-search=native={}", out_dir);
+        println!("cargo:rustc-link-lib=static=kernels");
     }
-    let ar_status = ar_cmd.status()?;
-    if !ar_status.success() {
-        return Err(format!("ar command failed with status: {}", ar_status).into());
-    }
-    println!("cargo:rustc-link-search=native={}", out_dir);
-    println!("cargo:rustc-link-lib=static=kernels");
     let rocm_lib = var("ROCM_PATH")
         .map(|path| format!("{}/lib", path))
         .unwrap_or_else(|_| "/opt/rocm/lib".to_string());
