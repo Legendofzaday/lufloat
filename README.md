@@ -1,5 +1,5 @@
 # LuFloat
-![License AGPL v3](https://img.shields.io/badge/AGPL_v3-red?logo=gnu)
+![License AGPL v3](https://img.shields.io/badge/AGPL-blue?logo=gnu)
 ![Fedora](https://img.shields.io/badge/Fedora-3C6BE4?logo=fedora)
 ## Architectural Highlights
 ### Memory Management
