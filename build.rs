@@ -1,12 +1,12 @@
 use std::{env, fs, path, process};
 
 fn main() {
-    println!("cargo:rerun-if-changed=hip");
+    println!("cargo:rerun-if-changed=kernels");
     let out_dir: String = unsafe { env::var("OUT_DIR").unwrap_unchecked() };
-    let lib_file: String = format!("{}/lib{}.a", out_dir, "hip");
+    let lib_file: String = format!("{}/libkernels.a", out_dir);
     let mut obj_files: Vec<String> = Vec::new();
     let mut childs: Vec<process::Child> = Vec::new();
-    let entries: fs::ReadDir = unsafe { fs::read_dir("hip").unwrap_unchecked() };
+    let entries: fs::ReadDir = unsafe { fs::read_dir("kernels").unwrap_unchecked() };
     for entry in entries {
         let path: path::PathBuf = unsafe { entry.unwrap_unchecked().path() };
         println!("cargo:rerun-if-changed={}", path.display());
@@ -43,7 +43,7 @@ fn main() {
     }
     unsafe { ar_cmd.status().unwrap_unchecked() };
     println!("cargo:rustc-link-search=native={}", out_dir);
-    println!("cargo:rustc-link-lib=static=hip");
+    println!("cargo:rustc-link-lib=static=kernels");
     if path::Path::new("/usr/lib64/libamdhip64.so").exists() {
         println!("cargo:rustc-link-search=native=/usr/lib64");
     } else {
