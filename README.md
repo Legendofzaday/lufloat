@@ -1,4 +1,4 @@
 # LuFloat
 ## Architectural Highlights
 ### Memory Management
-* **Rust Native C-FFI Bridge:** custom Arena Allocator interfacing directly with AMD ROCm driver.
+The modern Rust-backed unified memory arena allocator improves safety while maintaining native performance and interfaces with ROCm via the C-FFI Bridge.
