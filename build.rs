@@ -60,7 +60,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let rocm_lib = var("ROCM_PATH")
         .map(|path| format!("{}/lib", path))
         .unwrap_or_else(|_| "/opt/rocm/lib".to_string());
-
     println!("cargo:rustc-link-search=native={}", rocm_lib);
     println!("cargo:rustc-link-lib=dylib=amdhip64");
     Ok(())
