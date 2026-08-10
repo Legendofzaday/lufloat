@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let child = Command::new(compiler)
             .args(["-c", path_str, "-o"])
             .arg(&obj_file)
-            .args(["-O3", "-fPIC"])
+            .args(["-O3", "-fPIC", "--offload-arch=native", "-ffast-math"])
             .spawn()?;
         children.push((path_str.to_string(), child));
         obj_files.push(obj_file);
