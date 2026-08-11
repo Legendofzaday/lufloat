@@ -88,7 +88,7 @@ pub(crate) struct GpuBuffer<'a> {
 }
 
 impl<'a> GpuBuffer<'a> {
-    pub(crate) fn to_cpu(self) -> &'a [u16] {
+    pub(crate) fn into_cpu(self) -> &'a [u16] {
         unsafe {
             let err = hipStreamSynchronize(std::ptr::null_mut());
             hip_check(err, file!(), line!());
