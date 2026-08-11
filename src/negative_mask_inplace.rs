@@ -4,7 +4,7 @@ unsafe extern "C" {
     fn negative_mask_inplace(data: *mut u16, size: usize);
 }
 
-pub(crate) fn apply_inplace<'a>(buffer: GpuBuffer<'a>) -> GpuBuffer<'a> {
+pub(crate) fn apply<'a>(buffer: GpuBuffer<'a>) -> GpuBuffer<'a> {
     if buffer.len == 0usize {
         return buffer;
     }
