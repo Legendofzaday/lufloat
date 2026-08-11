@@ -10,7 +10,7 @@ pub(crate) fn apply_inplace<'a>(buffer: GpuBuffer<'a>) -> GpuBuffer<'a> {
     }
     let padded_size: usize = (buffer.len + 2047usize) & !2047usize;
     unsafe {
-        negative_mask_inplace(buffer.ptr, padded_size as usize);
+        negative_mask_inplace(buffer.ptr, padded_size);
     }
     buffer
 }
