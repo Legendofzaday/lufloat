@@ -6,6 +6,7 @@ unsafe extern "C" {
     ) -> std::ffi::c_int;
     fn hipFree(ptr: *mut std::ffi::c_void) -> std::ffi::c_int;
     fn hipGetErrorString(hip_error: std::ffi::c_int) -> *const std::ffi::c_char;
+    fn hipStreamSynchronize(stream: *mut std::ffi::c_void) -> std::ffi::c_int;
 }
 
 fn hip_check(err: std::ffi::c_int, file: &str, line: u32) {
@@ -77,5 +78,21 @@ impl Arena {
 impl Drop for Arena {
     fn drop(&mut self) {
         hip_free(self.base_ptr.as_ptr() as *mut std::ffi::c_void);
+    }
+}
+
+pub struct GpuBuffer<'a> {
+    pub ptr: *mut u16,
+    pub len: usize,
+    pub _marker: std::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> GpuBuffer<'a> {
+    pub fn to_cpu(self) -> &'a [u16] {
+        unsafe {
+            let err = hipStreamSynchronize(std::ptr::null_mut());
+            hip_check(err, file!(), line!());
+            std::slice::from_raw_parts(self.ptf, self.len);
+        }
     }
 }
