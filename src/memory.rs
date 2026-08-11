@@ -41,7 +41,7 @@ fn hip_free(ptr: *mut std::ffi::c_void) {
     }
 }
 
-pub struct Arena {
+pub(crate) struct Arena {
     base_ptr: std::ptr::NonNull<u8>,
     capacity: usize,
     offset: usize,
@@ -51,7 +51,7 @@ unsafe impl Send for Arena {}
 unsafe impl Sync for Arena {}
 
 impl Arena {
-    pub fn new(capacity: usize) -> Self {
+    pub(crate) fn new(capacity: usize) -> Self {
         assert!(capacity > 0, "Arena capacity must be greater than 0.");
         let raw_ptr = hip_malloc(capacity) as *mut u8;
         Self {
@@ -60,7 +60,7 @@ impl Arena {
             offset: 0,
         }
     }
-    pub fn alloc(&mut self, size: usize) -> Option<std::ptr::NonNull<u8>> {
+    pub(crate) fn alloc(&mut self, size: usize) -> Option<std::ptr::NonNull<u8>> {
         let aligned_offset = self.offset.checked_add(255)? & !255;
         let end = aligned_offset.checked_add(size)?;
         if end > self.capacity {
@@ -70,7 +70,7 @@ impl Arena {
         self.offset = end;
         Some(unsafe { std::ptr::NonNull::new_unchecked(ptr) })
     }
-    pub fn reset(&mut self) {
+    pub(crate) fn reset(&mut self) {
         self.offset = 0;
     }
 }
@@ -81,14 +81,14 @@ impl Drop for Arena {
     }
 }
 
-pub struct GpuBuffer<'a> {
-    pub ptr: *mut u16,
-    pub len: usize,
-    pub _marker: std::marker::PhantomData<&'a ()>,
+pub(crate) struct GpuBuffer<'a> {
+    pub(crate) ptr: *mut u16,
+    pub(crate) len: usize,
+    pub(crate) _marker: std::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> GpuBuffer<'a> {
-    pub fn to_cpu(self) -> &'a [u16] {
+    pub(crate) fn to_cpu(self) -> &'a [u16] {
         unsafe {
             let err = hipStreamSynchronize(std::ptr::null_mut());
             hip_check(err, file!(), line!());
