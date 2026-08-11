@@ -92,7 +92,7 @@ impl<'a> GpuBuffer<'a> {
         unsafe {
             let err = hipStreamSynchronize(std::ptr::null_mut());
             hip_check(err, file!(), line!());
-            std::slice::from_raw_parts(self.ptr, self.len);
+            std::slice::from_raw_parts(self.ptr, self.len)
         }
     }
 }
