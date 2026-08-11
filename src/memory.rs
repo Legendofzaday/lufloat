@@ -90,6 +90,9 @@ pub(crate) struct GpuBuffer<'a> {
 
 impl<'a> GpuBuffer<'a> {
     pub(crate) fn into_cpu(self) -> &'a [u16] {
+        if self.len == 0usize || self.ptr.is_null() {
+            return &[];
+        }
         unsafe {
             let err: c_int = hipStreamSynchronize(null_mut());
             hip_check(err, file!(), line!());
