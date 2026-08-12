@@ -11,7 +11,8 @@ pub fn load_slice<'a>(arena: &'a mut Arena, data: &[u16]) -> Option<GpuBuffer<'a
             _marker: PhantomData,
         });
     }
-    let byte_size: usize = len.checked_mul(2)?;
+    let padded_len: usize = len.checked_add(2047usize)? & !2047usize;
+    let byte_size: usize = padded_len.checked_mul(2usize)?;
     let raw_ptr: NonNull<u8> = arena.alloc(byte_size)?;
     let gpu_ptr: *mut u16 = raw_ptr.as_ptr() as *mut u16;
     unsafe {
@@ -32,7 +33,8 @@ pub fn alloc_uninit<'a>(arena: &'a mut Arena, len: usize) -> Option<GpuBuffer<'a
             _marker: PhantomData,
         });
     }
-    let byte_size: usize = len.checked_mul(2)?;
+    let padded_len: usize = len.checked_add(2047usize)? & !2047usize;
+    let byte_size: usize = padded_len.checked_mul(2usize)?;
     let raw_ptr: NonNull<u8> = arena.alloc(byte_size)?;
     let gpu_ptr: *mut u16 = raw_ptr.as_ptr() as *mut u16;
     Some(GpuBuffer {
