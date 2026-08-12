@@ -53,32 +53,32 @@ mod tests {
     }
 
     fn run_neg_inplace(input: &[u16]) -> Vec<u16> {
-        let mut arena = Arena::new(arena_capacity_for(input.len()));
-        negative_mask_inplace(&mut arena, input)
+        let arena = Arena::new(arena_capacity_for(input.len()));
+        negative_mask_inplace(&arena, input)
             .unwrap()
             .into_cpu()
             .to_vec()
     }
 
     fn run_neg_out_of_place(input: &[u16]) -> Vec<u16> {
-        let mut arena = Arena::new(arena_capacity_for(input.len()));
-        negative_mask(&mut arena, input)
+        let arena = Arena::new(arena_capacity_for(input.len()));
+        negative_mask(&arena, input)
             .unwrap()
             .into_cpu()
             .to_vec()
     }
 
     fn run_pos_inplace(input: &[u16]) -> Vec<u16> {
-        let mut arena = Arena::new(arena_capacity_for(input.len()));
-        positive_mask_inplace(&mut arena, input)
+        let arena = Arena::new(arena_capacity_for(input.len()));
+        positive_mask_inplace(&arena, input)
             .unwrap()
             .into_cpu()
             .to_vec()
     }
 
     fn run_pos_out_of_place(input: &[u16]) -> Vec<u16> {
-        let mut arena = Arena::new(arena_capacity_for(input.len()));
-        positive_mask(&mut arena, input)
+        let arena = Arena::new(arena_capacity_for(input.len()));
+        positive_mask(&arena, input)
             .unwrap()
             .into_cpu()
             .to_vec()
@@ -131,14 +131,14 @@ mod tests {
     #[test]
     fn continuous_compute_pressure() {
         let input = make_input(65537usize);
-        let mut arena = Arena::new(arena_capacity_for(input.len()) * 2usize);
+        let arena = Arena::new(arena_capacity_for(input.len()) * 2usize);
         for iteration in 0usize..256usize {
-            let out_of_place = positive_mask(&mut arena, &input)
+            let out_of_place = positive_mask(&arena, &input)
                 .unwrap()
                 .into_cpu()
                 .to_vec();
             if iteration % 16usize == 0usize {
-                let inplace = positive_mask_inplace(&mut arena, &input)
+                let inplace = positive_mask_inplace(&arena, &input)
                     .unwrap()
                     .into_cpu()
                     .to_vec();
