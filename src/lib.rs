@@ -132,14 +132,14 @@ mod tests {
 
     #[test]
     fn continuous_compute_pressure() {
-        let input = make_input(65537);
+        let input = make_input(65537usize);
         let mut arena = Arena::new(arena_capacity_for(input.len()) * 2);
-        for iteration in 0..256 {
+        for iteration in 0..256usize {
             let out_of_place = positive_mask(&mut arena, &input)
                 .unwrap()
                 .into_cpu()
                 .to_vec();
-            if iteration % 16 == 0 {
+            if iteration % 16usize == 0usize {
                 let inplace = positive_mask_inplace(&mut arena, &input)
                     .unwrap()
                     .into_cpu()
