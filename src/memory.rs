@@ -1,3 +1,4 @@
+use std::cell::Cell;
 use std::ffi::{CStr, c_char, c_int, c_uint, c_void};
 use std::ptr::{NonNull, null_mut};
 use std::{marker::PhantomData, process::abort, slice::from_raw_parts};
@@ -44,7 +45,7 @@ fn hip_free(ptr: *mut c_void) {
 pub struct Arena {
     base_ptr: NonNull<u8>,
     capacity: usize,
-    offset: usize,
+    offset: Cell<usize>,
 }
 
 impl Arena {
@@ -54,22 +55,22 @@ impl Arena {
         Self {
             base_ptr: NonNull::new(raw_ptr).expect("Fatal: HIP driver returned hipSuccess but yielded a null pointer. Ensure ROCm Unified Memory is supported on this system."),
             capacity,
-            offset: 0usize,
+            offset: Cell::<usize>::new(0usize),
         }
     }
 
-    pub(crate) fn alloc(&mut self, size: usize) -> Option<NonNull<u8>> {
-        let aligned_offset: usize = self.offset.checked_add(255usize)? & !255usize;
+    pub(crate) fn alloc(&self, size: usize) -> Option<NonNull<u8>> {
+        let aligned_offset: usize = self.offset.get().checked_add(255usize)? & !255usize;
         let end: usize = aligned_offset.checked_add(size)?;
         if end > self.capacity {
             return None;
         }
         let ptr: *mut u8 = unsafe { self.base_ptr.as_ptr().add(aligned_offset) };
-        self.offset = end;
+        self.offset.set(end);
         Some(unsafe { NonNull::new_unchecked(ptr) })
     }
-    pub fn reset(&mut self) {
-        self.offset = 0usize;
+    pub fn reset(&self) {
+        self.offset.set(0usize);
     }
 }
 
