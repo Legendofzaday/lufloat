@@ -55,7 +55,7 @@ impl Arena {
         let raw_ptr: *mut u8 = hip_malloc(aligned_capacity) as *mut u8;
         Self {
             base_ptr: NonNull::new(raw_ptr).expect("Fatal: HIP driver returned hipSuccess but yielded a null pointer. Ensure ROCm Unified Memory is supported on this system."),
-            capacity,
+            capacity: aligned_capacity,
             offset: Cell::<usize>::new(0usize),
         }
     }
