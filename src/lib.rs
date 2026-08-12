@@ -122,6 +122,21 @@ mod tests {
         assert!(run_pos_inplace(&input).is_empty());
         assert!(run_pos_out_of_place(&input).is_empty());
     }
+    
+    #[test]
+    fn positive_mask_inplace_stress() {
+        let input = make_input(8589934592);
+        let mut arena = Arena::new(arena_capacity_for(8589934592));
+        let start = Instant::now();
+        for _ in 0..4 {
+            let _ = positive_mask_inplace(&arena, &input).unwrap().into_cpu();
+            arena.reset();
+        }
+        println!(
+            "processed 64GiB positive mask inplace in {} seconds",
+            start.elapsed().as_secs_f64()
+        );
+    }
 
     #[test]
     fn negative_mask_inplace_stress() {
