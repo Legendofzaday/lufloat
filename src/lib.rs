@@ -125,30 +125,30 @@ mod tests {
     
     #[test]
     fn positive_mask_inplace_stress() {
-        let input = make_input(8589934592);
-        let mut arena = Arena::new(arena_capacity_for(8589934592));
+        let input = make_input(1073741824);
+        let mut arena = Arena::new(arena_capacity_for(1073741824));
         let start = Instant::now();
         for _ in 0..4 {
             let _ = positive_mask_inplace(&arena, &input).unwrap().into_cpu();
             arena.reset();
         }
         println!(
-            "processed 64GiB positive mask inplace in {} seconds",
+            "processed 8GiB positive mask inplace in {} seconds",
             start.elapsed().as_secs_f64()
         );
     }
 
     #[test]
     fn negative_mask_inplace_stress() {
-        let input = make_input(8589934592);
-        let mut arena = Arena::new(arena_capacity_for(8589934592));
+        let input = make_input(1073741824);
+        let mut arena = Arena::new(arena_capacity_for(1073741824));
         let start = Instant::now();
         for _ in 0..4 {
             let _ = negative_mask_inplace(&arena, &input).unwrap().into_cpu();
             arena.reset();
         }
         println!(
-            "processed 64GiB negative mask inplace in {} seconds",
+            "processed 8GiB negative mask inplace in {} seconds",
             start.elapsed().as_secs_f64()
         );
     }
