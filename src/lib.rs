@@ -133,7 +133,7 @@ mod tests {
             arena.reset();
         }
         println!(
-            "processed 64GiB negative mask in place in {} seconds",
+            "processed 64GiB negative mask inplace in {} seconds",
             start.elapsed().as_secs_f64()
         );
     }
