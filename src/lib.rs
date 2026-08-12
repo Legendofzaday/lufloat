@@ -22,18 +22,16 @@ pub fn negative_mask_inplace<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBu
 
 pub fn positive_mask<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBuffer<'a>> {
     let len: usize = data.len();
-    let arena_ptr: *mut Arena = arena as *mut Arena;
-    let in_buf: GpuBuffer<'a> = load_slice(unsafe { &mut *arena_ptr }, data)?;
-    let mut out_buf: GpuBuffer<'a> = load::alloc_uninit(unsafe { &mut *arena_ptr }, len)?;
+    let in_buf: GpuBuffer<'a> = load_slice(arena, data)?;
+    let mut out_buf: GpuBuffer<'a> = load::alloc_uninit(arena, len)?;
     positive_mask::apply(&in_buf, &mut out_buf);
     Some(out_buf)
 }
 
 pub fn negative_mask<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBuffer<'a>> {
     let len: usize = data.len();
-    let arena_ptr: *mut Arena = arena as *mut Arena;
-    let in_buf: GpuBuffer<'a> = load_slice(unsafe { &mut *arena_ptr }, data)?;
-    let mut out_buf: GpuBuffer<'a> = load::alloc_uninit(unsafe { &mut *arena_ptr }, len)?;
+    let in_buf: GpuBuffer<'a> = load_slice(arena, data)?;
+    let mut out_buf: GpuBuffer<'a> = load::alloc_uninit(arena, len)?;
     negative_mask::apply(&in_buf, &mut out_buf);
     Some(out_buf)
 }
