@@ -37,3 +37,8 @@ pub fn negative_mask<'a>(arena: &'a mut Arena, data: &[u16]) -> Option<GpuBuffer
     negative_mask::apply(&in_buf, &mut out_buf);
     Some(out_buf)
 }
+
+#[cfg(tests)]
+mod tests {
+    use super::*;
+}
