@@ -133,7 +133,7 @@ mod tests {
     #[test]
     fn continuous_compute_pressure() {
         let input = make_input(65537usize);
-        let mut arena = Arena::new(arena_capacity_for(input.len()) * 2);
+        let mut arena = Arena::new(arena_capacity_for(input.len()) * 2usize);
         for iteration in 0..256usize {
             let out_of_place = positive_mask(&mut arena, &input)
                 .unwrap()
