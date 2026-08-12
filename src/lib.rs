@@ -46,7 +46,7 @@ mod tests {
             0x0000, 0x0001, 0x0002, 0x0003, 0x7fff, 0x8000, 0x8001, 0xffff, 0x1234, 0xabcd, 0x5555,
             0xaaaa, 0x00ff, 0xff00, 0x1357, 0x2468,
         ];
-        (0..len).map(|i| PATTERN[i % 16]).collect()
+        (0..len).map(|i| PATTERN[i & 15]).collect()
     }
 
     fn arena_capacity_for(len: usize) -> usize {
