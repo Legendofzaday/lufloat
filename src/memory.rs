@@ -47,9 +47,6 @@ pub struct Arena {
     offset: usize,
 }
 
-unsafe impl Send for Arena {}
-unsafe impl Sync for Arena {}
-
 impl Arena {
     pub fn new(capacity: usize) -> Self {
         assert!(capacity > 0usize, "Arena capacity must be greater than 0.");
