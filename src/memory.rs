@@ -41,7 +41,7 @@ fn hip_free(ptr: *mut c_void) {
     }
 }
 
-pub(crate) struct Arena {
+pub struct Arena {
     base_ptr: NonNull<u8>,
     capacity: usize,
     offset: usize,
@@ -51,7 +51,7 @@ unsafe impl Send for Arena {}
 unsafe impl Sync for Arena {}
 
 impl Arena {
-    pub(crate) fn new(capacity: usize) -> Self {
+    pub fn new(capacity: usize) -> Self {
         assert!(capacity > 0usize, "Arena capacity must be greater than 0.");
         let raw_ptr: *mut u8 = hip_malloc(capacity) as *mut u8;
         Self {
@@ -71,7 +71,7 @@ impl Arena {
         self.offset = end;
         Some(unsafe { NonNull::new_unchecked(ptr) })
     }
-    pub(crate) fn reset(&mut self) {
+    pub fn reset(&mut self) {
         self.offset = 0usize;
     }
 }
@@ -82,14 +82,14 @@ impl Drop for Arena {
     }
 }
 
-pub(crate) struct GpuBuffer<'a> {
+pub struct GpuBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
     pub(crate) _marker: PhantomData<&'a ()>,
 }
 
 impl<'a> GpuBuffer<'a> {
-    pub(crate) fn into_cpu(self) -> &'a [u16] {
+    pub fn into_cpu(self) -> &'a [u16] {
         unsafe {
             let err: c_int = hipStreamSynchronize(null_mut::<c_void>());
             hip_check(err, file!(), line!());
