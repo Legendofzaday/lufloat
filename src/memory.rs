@@ -69,7 +69,7 @@ impl Arena {
         self.offset.set(end);
         Some(unsafe { NonNull::new_unchecked(ptr) })
     }
-    pub fn reset(&self) {
+    pub fn reset(&mut self) {
         self.offset.set(0usize);
     }
 }
