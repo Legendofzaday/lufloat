@@ -28,7 +28,7 @@ fn hip_check(err: c_int, file: &str, line: u32) {
 }
 
 fn hip_malloc(size: usize) -> *mut c_void {
-    let mut ptr: *mut c_void = null_mut();
+    let mut ptr: *mut c_void = null_mut::<c_void>();
     let err: c_int = unsafe { hipMallocManaged(&mut ptr, size, 1 as c_uint) };
     hip_check(err, file!(), line!());
     ptr
@@ -90,11 +90,8 @@ pub(crate) struct GpuBuffer<'a> {
 
 impl<'a> GpuBuffer<'a> {
     pub(crate) fn into_cpu(self) -> &'a [u16] {
-        if self.len == 0usize || self.ptr.is_null() {
-            return &[];
-        }
         unsafe {
-            let err: c_int = hipStreamSynchronize(null_mut());
+            let err: c_int = hipStreamSynchronize(null_mut::<c_void>());
             hip_check(err, file!(), line!());
             from_raw_parts(self.ptr, self.len)
         }
