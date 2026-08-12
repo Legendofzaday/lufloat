@@ -2,7 +2,7 @@ use crate::memory::{Arena, GpuBuffer};
 use std::marker::PhantomData;
 use std::ptr::{NonNull, copy_nonoverlapping, null_mut};
 
-pub fn load_slice<'a>(arena: &'a mut Arena, data: &[u16]) -> Option<GpuBuffer<'a>> {
+pub fn load_slice<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBuffer<'a>> {
     let len: usize = data.len();
     if len == 0usize {
         return Some(GpuBuffer {
@@ -25,7 +25,7 @@ pub fn load_slice<'a>(arena: &'a mut Arena, data: &[u16]) -> Option<GpuBuffer<'a
     })
 }
 
-pub fn alloc_uninit<'a>(arena: &'a mut Arena, len: usize) -> Option<GpuBuffer<'a>> {
+pub fn alloc_uninit<'a>(arena: &'a Arena, len: usize) -> Option<GpuBuffer<'a>> {
     if len == 0usize {
         return Some(GpuBuffer {
             ptr: null_mut::<u16>(),
