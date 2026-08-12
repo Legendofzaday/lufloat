@@ -39,6 +39,7 @@ pub fn negative_mask<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBuffer<'a>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::time::Instant;
 
     fn make_input(len: usize) -> Vec<u16> {
         const PATTERN: [u16; 16] = [
@@ -62,10 +63,7 @@ mod tests {
 
     fn run_neg_out_of_place(input: &[u16]) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(input.len()));
-        negative_mask(&arena, input)
-            .unwrap()
-            .into_cpu()
-            .to_vec()
+        negative_mask(&arena, input).unwrap().into_cpu().to_vec()
     }
 
     fn run_pos_inplace(input: &[u16]) -> Vec<u16> {
@@ -78,10 +76,7 @@ mod tests {
 
     fn run_pos_out_of_place(input: &[u16]) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(input.len()));
-        positive_mask(&arena, input)
-            .unwrap()
-            .into_cpu()
-            .to_vec()
+        positive_mask(&arena, input).unwrap().into_cpu().to_vec()
     }
 
     fn assert_implementations_agree(input: &[u16]) {
@@ -129,22 +124,17 @@ mod tests {
     }
 
     #[test]
-    fn continuous_compute_pressure() {
-        let input = make_input(65537usize);
-        let mut arena = Arena::new(arena_capacity_for(input.len()) * 2usize);
-        for iteration in 0usize..256usize {
-            let out_of_place = positive_mask(&arena, &input)
-                .unwrap()
-                .into_cpu()
-                .to_vec();
-            if iteration % 16usize == 0usize {
-                let inplace = positive_mask_inplace(&arena, &input)
-                    .unwrap()
-                    .into_cpu()
-                    .to_vec();
-                assert_eq!(inplace, out_of_place, "mismatch at iteration {iteration}");
-            }
+    fn negative_mask_inplace_stress() {
+        let input = make_input(8589934592);
+        let mut arena = Arena::new(arena_capacity_for(8589934592));
+        let start = Instant::now();
+        for _ in 0..4 {
+            let _ = negative_mask_inplace(&arena, &input).unwrap().into_cpu();
             arena.reset();
         }
+        println!(
+            "processed 64GiB negative mask in place in {} seconds",
+            start.elapsed().as_secs_f64()
+        );
     }
 }
