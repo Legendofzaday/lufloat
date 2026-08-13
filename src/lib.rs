@@ -28,7 +28,7 @@ mod tests {
     use crate::memory::Arena;
     use std::time::Instant;
 
-        fn fill_input(dest: &mut [u16]) {
+    fn fill_input(dest: &mut [u16]) {
         const PATTERN: [u16; 16] = [
             0x0000, 0x0001, 0x0002, 0x0003, 0x7fff, 0x8000, 0x8001, 0xffff, 0x1234, 0xabcd, 0x5555,
             0xaaaa, 0x00ff, 0xff00, 0x1357, 0x2468,
@@ -41,7 +41,7 @@ mod tests {
         for chunk in chunks.by_ref() {
             chunk.copy_from_slice(&PATTERN);
         }
-        
+
         // 3. NOW consume the iterator to grab whatever didn't fit perfectly into 16
         let remainder = chunks.into_remainder();
         for (i, elem) in remainder.iter_mut().enumerate() {
@@ -49,11 +49,10 @@ mod tests {
         }
     }
 
-    
     fn arena_capacity_for(len: usize) -> usize {
         (((len + 2047) & !2047) << 2) + 1024
     }
-    
+
     fn run_neg_inplace(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len));
         let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
@@ -61,7 +60,7 @@ mod tests {
         let processed = negative_mask_inplace(buf);
         processed.into_cpu().to_vec()
     }
-    
+
     fn run_neg_out_of_place(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len * 2));
         let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
@@ -70,7 +69,7 @@ mod tests {
         negative_mask(&in_buf, &mut out_buf);
         out_buf.into_cpu().to_vec()
     }
-    
+
     fn run_pos_inplace(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len));
         let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
@@ -78,7 +77,7 @@ mod tests {
         let processed = positive_mask_inplace(buf);
         processed.into_cpu().to_vec()
     }
-    
+
     fn run_pos_out_of_place(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len * 2));
         let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
@@ -87,7 +86,7 @@ mod tests {
         positive_mask(&in_buf, &mut out_buf);
         out_buf.into_cpu().to_vec()
     }
-    
+
     fn assert_implementations_agree(len: usize) {
         let neg_inplace = run_neg_inplace(len);
         let neg_out = run_neg_out_of_place(len);
@@ -104,21 +103,21 @@ mod tests {
             len
         );
     }
-    
+
     #[test]
     fn mask_aligned_input() {
         for len in [2048usize, 4096usize, 8192usize] {
             assert_implementations_agree(len);
         }
     }
-    
+
     #[test]
     fn mask_unaligned_input() {
         for len in [1usize, 2047usize, 2049usize, 4095usize, 4097usize] {
             assert_implementations_agree(len);
         }
     }
-    
+
     #[test]
     fn mask_empty_input() {
         assert!(run_neg_inplace(0).is_empty());
@@ -126,7 +125,7 @@ mod tests {
         assert!(run_pos_inplace(0).is_empty());
         assert!(run_pos_out_of_place(0).is_empty());
     }
-    
+
     #[test]
     fn full_stress_suite() {
         let len = 1073741824;
