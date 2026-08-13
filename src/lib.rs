@@ -52,7 +52,7 @@ mod tests {
         let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
         fill_input(buf.host_slice_mut());
         let processed = negative_mask_inplace(buf);
-        processed.into_cpu().to_vec()
+        processed.host_sync().to_vec()
     }
 
     fn run_neg_out_of_place(len: usize) -> Vec<u16> {
@@ -61,7 +61,7 @@ mod tests {
         fill_input(in_buf.host_slice_mut());
         let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
         negative_mask(&in_buf, &mut out_buf);
-        out_buf.into_cpu().to_vec()
+        out_buf.host_sync().to_vec()
     }
 
     fn run_pos_inplace(len: usize) -> Vec<u16> {
@@ -69,7 +69,7 @@ mod tests {
         let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
         fill_input(buf.host_slice_mut());
         let processed = positive_mask_inplace(buf);
-        processed.into_cpu().to_vec()
+        processed.host_sync().to_vec()
     }
 
     fn run_pos_out_of_place(len: usize) -> Vec<u16> {
@@ -78,7 +78,7 @@ mod tests {
         fill_input(in_buf.host_slice_mut());
         let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
         positive_mask(&in_buf, &mut out_buf);
-        out_buf.into_cpu().to_vec()
+        out_buf.host_sync().to_vec()
     }
 
     fn assert_implementations_agree(len: usize) {
@@ -130,7 +130,7 @@ mod tests {
             fill_input(buf.host_slice_mut());
 
             let processed = positive_mask_inplace(buf);
-            let _ = processed.into_cpu();
+            let _ = processed.host_sync();
             arena.reset();
         }
         println!(
@@ -143,7 +143,7 @@ mod tests {
             fill_input(buf.host_slice_mut());
 
             let processed = negative_mask_inplace(buf);
-            let _ = processed.into_cpu();
+            let _ = processed.host_sync();
             arena.reset();
         }
         println!(
@@ -156,7 +156,7 @@ mod tests {
             fill_input(in_buf.host_slice_mut());
             let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
             positive_mask(&in_buf, &mut out_buf);
-            let _ = out_buf.into_cpu();
+            let _ = out_buf.host_sync();
             arena.reset();
         }
         println!(
@@ -169,7 +169,7 @@ mod tests {
             fill_input(in_buf.host_slice_mut());
             let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
             negative_mask(&in_buf, &mut out_buf);
-            let _ = out_buf.into_cpu();
+            let _ = out_buf.host_sync();
             arena.reset();
         }
         println!(
