@@ -33,16 +33,10 @@ mod tests {
             0x0000, 0x0001, 0x0002, 0x0003, 0x7fff, 0x8000, 0x8001, 0xffff, 0x1234, 0xabcd, 0x5555,
             0xaaaa, 0x00ff, 0xff00, 0x1357, 0x2468,
         ];
-
-        // 1. Make chunks mutable
         let mut chunks = dest.chunks_exact_mut(16);
-
-        // 2. Use .by_ref() to borrow the iterator instead of consuming it
         for chunk in chunks.by_ref() {
             chunk.copy_from_slice(&PATTERN);
         }
-
-        // 3. NOW consume the iterator to grab whatever didn't fit perfectly into 16
         let remainder = chunks.into_remainder();
         for (i, elem) in remainder.iter_mut().enumerate() {
             *elem = PATTERN[i & 15];
