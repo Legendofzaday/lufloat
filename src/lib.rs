@@ -124,7 +124,7 @@ mod tests {
     }
 
     #[test]
-    fn mask_full_stress_suite() {
+    fn full_stress_suite() {
         let len = 1073741824;
         let input = make_input(len);
         let mut arena = Arena::new(arena_capacity_for(len * 2));
