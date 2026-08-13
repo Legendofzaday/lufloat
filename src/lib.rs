@@ -1,136 +1,136 @@
-pub mod load;
 pub mod memory;
 pub mod negative_mask;
 pub mod negative_mask_inplace;
 pub mod positive_mask;
 pub mod positive_mask_inplace;
 
-use load::load_slice;
-use memory::{Arena, GpuBuffer};
+use memory::GpuBuffer;
 
-pub fn positive_mask_inplace<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBuffer<'a>> {
-    let buf: GpuBuffer<'a> = load_slice(arena, data)?;
-    let processed_buf: GpuBuffer<'a> = positive_mask_inplace::apply(buf);
-    Some(processed_buf)
+pub fn positive_mask_inplace<'a>(buf: GpuBuffer<'a>) -> GpuBuffer<'a> {
+    positive_mask_inplace::apply(buf)
 }
 
-pub fn negative_mask_inplace<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBuffer<'a>> {
-    let buf: GpuBuffer<'a> = load_slice(arena, data)?;
-    let processed_buf: GpuBuffer<'a> = negative_mask_inplace::apply(buf);
-    Some(processed_buf)
+pub fn negative_mask_inplace<'a>(buf: GpuBuffer<'a>) -> GpuBuffer<'a> {
+    negative_mask_inplace::apply(buf)
 }
 
-pub fn positive_mask<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBuffer<'a>> {
-    let len: usize = data.len();
-    let in_buf: GpuBuffer<'a> = load_slice(arena, data)?;
-    let mut out_buf: GpuBuffer<'a> = load::alloc_uninit(arena, len)?;
-    positive_mask::apply(&in_buf, &mut out_buf);
-    Some(out_buf)
+pub fn positive_mask<'a>(in_buf: &GpuBuffer<'a>, out_buf: &mut GpuBuffer<'a>) {
+    positive_mask::apply(in_buf, out_buf);
 }
 
-pub fn negative_mask<'a>(arena: &'a Arena, data: &[u16]) -> Option<GpuBuffer<'a>> {
-    let len: usize = data.len();
-    let in_buf: GpuBuffer<'a> = load_slice(arena, data)?;
-    let mut out_buf: GpuBuffer<'a> = load::alloc_uninit(arena, len)?;
-    negative_mask::apply(&in_buf, &mut out_buf);
-    Some(out_buf)
+pub fn negative_mask<'a>(in_buf: &GpuBuffer<'a>, out_buf: &mut GpuBuffer<'a>) {
+    negative_mask::apply(in_buf, out_buf);
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::memory::Arena;
     use std::time::Instant;
 
-    fn make_input(len: usize) -> Vec<u16> {
+    fn fill_input(dest: &mut [u16]) {
         const PATTERN: [u16; 16] = [
             0x0000, 0x0001, 0x0002, 0x0003, 0x7fff, 0x8000, 0x8001, 0xffff, 0x1234, 0xabcd, 0x5555,
             0xaaaa, 0x00ff, 0xff00, 0x1357, 0x2468,
         ];
-        (0..len).map(|i| PATTERN[i & 15]).collect()
+        let chunks = dest.chunks_exact_mut(16);
+        let remainder = chunks.into_remainder();
+        for chunk in chunks {
+            chunk.copy_from_slice(&PATTERN);
+        }
+        for (i, elem) in remainder.iter_mut().enumerate() {
+            *elem = PATTERN[i & 15];
+        }
     }
-
+    
     fn arena_capacity_for(len: usize) -> usize {
         (((len + 2047) & !2047) << 2) + 1024
     }
-
-    fn run_neg_inplace(input: &[u16]) -> Vec<u16> {
-        let arena = Arena::new(arena_capacity_for(input.len()));
-        negative_mask_inplace(&arena, input)
-            .unwrap()
-            .into_cpu()
-            .to_vec()
+    
+    fn run_neg_inplace(len: usize) -> Vec<u16> {
+        let arena = Arena::new(arena_capacity_for(len));
+        let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
+        fill_input(buf.as_mut_slice());
+        let processed = negative_mask_inplace(buf);
+        processed.into_cpu().to_vec()
     }
-
-    fn run_neg_out_of_place(input: &[u16]) -> Vec<u16> {
-        let arena = Arena::new(arena_capacity_for(input.len()));
-        negative_mask(&arena, input).unwrap().into_cpu().to_vec()
+    
+    fn run_neg_out_of_place(len: usize) -> Vec<u16> {
+        let arena = Arena::new(arena_capacity_for(len * 2));
+        let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
+        fill_input(in_buf.as_mut_slice());
+        let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
+        negative_mask(&in_buf, &mut out_buf);
+        out_buf.into_cpu().to_vec()
     }
-
-    fn run_pos_inplace(input: &[u16]) -> Vec<u16> {
-        let arena = Arena::new(arena_capacity_for(input.len()));
-        positive_mask_inplace(&arena, input)
-            .unwrap()
-            .into_cpu()
-            .to_vec()
+    
+    fn run_pos_inplace(len: usize) -> Vec<u16> {
+        let arena = Arena::new(arena_capacity_for(len));
+        let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
+        fill_input(buf.as_mut_slice());
+        let processed = positive_mask_inplace(buf);
+        processed.into_cpu().to_vec()
     }
-
-    fn run_pos_out_of_place(input: &[u16]) -> Vec<u16> {
-        let arena = Arena::new(arena_capacity_for(input.len()));
-        positive_mask(&arena, input).unwrap().into_cpu().to_vec()
+    
+    fn run_pos_out_of_place(len: usize) -> Vec<u16> {
+        let arena = Arena::new(arena_capacity_for(len * 2));
+        let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
+        fill_input(in_buf.as_mut_slice());
+        let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
+        positive_mask(&in_buf, &mut out_buf);
+        out_buf.into_cpu().to_vec()
     }
-
-    fn assert_implementations_agree(input: &[u16]) {
-        let neg_inplace = run_neg_inplace(input);
-        let neg_out = run_neg_out_of_place(input);
+    
+    fn assert_implementations_agree(len: usize) {
+        let neg_inplace = run_neg_inplace(len);
+        let neg_out = run_neg_out_of_place(len);
         assert_eq!(
-            neg_inplace,
-            neg_out,
+            neg_inplace, neg_out,
             "Negative masks disagreed for len={}",
-            input.len()
+            len
         );
-        let pos_inplace = run_pos_inplace(input);
-        let pos_out = run_pos_out_of_place(input);
+        let pos_inplace = run_pos_inplace(len);
+        let pos_out = run_pos_out_of_place(len);
         assert_eq!(
-            pos_inplace,
-            pos_out,
+            pos_inplace, pos_out,
             "Positive masks disagreed for len={}",
-            input.len()
+            len
         );
     }
-
+    
     #[test]
     fn mask_aligned_input() {
         for len in [2048usize, 4096usize, 8192usize] {
-            let input = make_input(len);
-            assert_implementations_agree(&input);
+            assert_implementations_agree(len);
         }
     }
-
+    
     #[test]
     fn mask_unaligned_input() {
         for len in [1usize, 2047usize, 2049usize, 4095usize, 4097usize] {
-            let input = make_input(len);
-            assert_implementations_agree(&input);
+            assert_implementations_agree(len);
         }
     }
-
+    
     #[test]
     fn mask_empty_input() {
-        let input: [u16; 0] = [];
-        assert!(run_neg_inplace(&input).is_empty());
-        assert!(run_neg_out_of_place(&input).is_empty());
-        assert!(run_pos_inplace(&input).is_empty());
-        assert!(run_pos_out_of_place(&input).is_empty());
+        assert!(run_neg_inplace(0).is_empty());
+        assert!(run_neg_out_of_place(0).is_empty());
+        assert!(run_pos_inplace(0).is_empty());
+        assert!(run_pos_out_of_place(0).is_empty());
     }
-
+    
     #[test]
     fn full_stress_suite() {
         let len = 1073741824;
-        let input = make_input(len);
         let mut arena = Arena::new(arena_capacity_for(len * 2));
         let start = Instant::now();
         for _ in 0..4 {
-            let _ = positive_mask_inplace(&arena, &input).unwrap().into_cpu();
+            let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
+            fill_input(buf.as_mut_slice());
+
+            let processed = positive_mask_inplace(buf);
+            let _ = processed.into_cpu();
             arena.reset();
         }
         println!(
@@ -139,7 +139,11 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let _ = negative_mask_inplace(&arena, &input).unwrap().into_cpu();
+            let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
+            fill_input(buf.as_mut_slice());
+
+            let processed = negative_mask_inplace(buf);
+            let _ = processed.into_cpu();
             arena.reset();
         }
         println!(
@@ -148,7 +152,11 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let _ = positive_mask(&arena, &input).unwrap().into_cpu();
+            let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
+            fill_input(in_buf.as_mut_slice());
+            let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
+            positive_mask(&in_buf, &mut out_buf);
+            let _ = out_buf.into_cpu();
             arena.reset();
         }
         println!(
@@ -157,7 +165,11 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let _ = negative_mask(&arena, &input).unwrap().into_cpu();
+            let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
+            fill_input(in_buf.as_mut_slice());
+            let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
+            negative_mask(&in_buf, &mut out_buf);
+            let _ = out_buf.into_cpu();
             arena.reset();
         }
         println!(
