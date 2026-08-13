@@ -1,7 +1,8 @@
 use std::cell::Cell;
 use std::ffi::{CStr, c_char, c_int, c_uint, c_void};
 use std::ptr::{NonNull, null_mut};
-use std::{marker::PhantomData, process::abort, slice::from_raw_parts};
+use std::slice::{from_raw_parts, from_raw_parts_mut};
+use std::{marker::PhantomData, process::abort};
 
 unsafe extern "C" {
     fn hipMallocManaged(ptr: *mut *mut c_void, size: usize, flags: c_uint) -> c_int;
@@ -88,6 +89,12 @@ pub struct GpuBuffer<'a> {
 }
 
 impl<'a> GpuBuffer<'a> {
+    pub fn host_slice_mut(&mut self) -> &mut [u16] {
+        if self.len == 0usize || self.ptr.is_null() {
+            return &mut [];
+        }
+        unsafe { from_raw_parts_mut(self.ptr, self.len) }
+    }
     pub fn into_cpu(self) -> &'a [u16] {
         if self.len == 0usize || self.ptr.is_null() {
             return &[];
