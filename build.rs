@@ -7,6 +7,7 @@ use std::{
     path::PathBuf,
     process::{Child, Command, ExitStatus},
 };
+
 fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-changed=kernels");
     println!("cargo:rerun-if-env-changed=ROCM_PATH");
