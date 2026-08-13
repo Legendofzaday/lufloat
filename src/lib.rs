@@ -50,7 +50,7 @@ mod tests {
     fn run_neg_inplace(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len));
         let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
-        fill_input(buf.host_mut_slice());
+        fill_input(buf.host_slice_mut());
         let processed = negative_mask_inplace(buf);
         processed.into_cpu().to_vec()
     }
@@ -58,7 +58,7 @@ mod tests {
     fn run_neg_out_of_place(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len * 2));
         let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
-        fill_input(in_buf.host_mut_slice());
+        fill_input(in_buf.host_slice_mut());
         let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
         negative_mask(&in_buf, &mut out_buf);
         out_buf.into_cpu().to_vec()
@@ -67,7 +67,7 @@ mod tests {
     fn run_pos_inplace(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len));
         let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
-        fill_input(buf.host_mut_slice());
+        fill_input(buf.host_slice_mut());
         let processed = positive_mask_inplace(buf);
         processed.into_cpu().to_vec()
     }
@@ -75,7 +75,7 @@ mod tests {
     fn run_pos_out_of_place(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len * 2));
         let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
-        fill_input(in_buf.host_mut_slice());
+        fill_input(in_buf.host_slice_mut());
         let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
         positive_mask(&in_buf, &mut out_buf);
         out_buf.into_cpu().to_vec()
@@ -127,7 +127,7 @@ mod tests {
         let start = Instant::now();
         for _ in 0..4 {
             let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
-            fill_input(buf.host_mut_slice());
+            fill_input(buf.host_slice_mut());
 
             let processed = positive_mask_inplace(buf);
             let _ = processed.into_cpu();
@@ -140,7 +140,7 @@ mod tests {
         let start = Instant::now();
         for _ in 0..4 {
             let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
-            fill_input(buf.host_mut_slice());
+            fill_input(buf.host_slice_mut());
 
             let processed = negative_mask_inplace(buf);
             let _ = processed.into_cpu();
@@ -153,7 +153,7 @@ mod tests {
         let start = Instant::now();
         for _ in 0..4 {
             let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
-            fill_input(in_buf.host_mut_slice());
+            fill_input(in_buf.host_slice_mut());
             let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
             positive_mask(&in_buf, &mut out_buf);
             let _ = out_buf.into_cpu();
@@ -166,7 +166,7 @@ mod tests {
         let start = Instant::now();
         for _ in 0..4 {
             let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
-            fill_input(in_buf.host_mut_slice());
+            fill_input(in_buf.host_slice_mut());
             let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
             negative_mask(&in_buf, &mut out_buf);
             let _ = out_buf.into_cpu();
