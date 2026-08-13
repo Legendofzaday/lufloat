@@ -13,6 +13,7 @@ __global__ void positive_mask_kernel(const unsigned short *__restrict__ data,
   const uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
   // temporary output container.
   uint4 out_vec;
+  // sign bit isolation for unsigned integer as 2 float16 (simd within register).
   out_vec.x = (~vec.x >> 15) & 0x00010001;
   out_vec.y = (~vec.y >> 15) & 0x00010001;
   out_vec.z = (~vec.z >> 15) & 0x00010001;
