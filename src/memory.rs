@@ -113,7 +113,7 @@ impl<'a> GpuBuffer<'a> {
         }
         unsafe { from_raw_parts_mut(self.ptr, self.len) }
     }
-    pub fn into_cpu(self) -> &'a [u16] {
+    pub fn host_sync(self) -> &'a [u16] {
         if self.len == 0usize || self.ptr.is_null() {
             return &[];
         }
