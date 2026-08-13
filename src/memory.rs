@@ -1,8 +1,11 @@
-use std::cell::Cell;
-use std::ffi::{CStr, c_char, c_int, c_uint, c_void};
-use std::ptr::{NonNull, null_mut};
-use std::slice::{from_raw_parts, from_raw_parts_mut};
-use std::{marker::PhantomData, process::abort};
+use std::{
+    cell::Cell,
+    ffi::{CStr, c_char, c_int, c_uint, c_void},
+    marker::PhantomData,
+    process::abort,
+    ptr::{NonNull, null_mut},
+    slice::{from_raw_parts, from_raw_parts_mut},
+};
 
 unsafe extern "C" {
     fn hipMallocManaged(ptr: *mut *mut c_void, size: usize, flags: c_uint) -> c_int;
