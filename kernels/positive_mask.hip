@@ -6,14 +6,18 @@
 */
 __global__ void positive_mask_kernel(const unsigned short *__restrict__ data,
                                      unsigned short *__restrict__ mask) {
+  // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
+  // 128bit vectorized load (8 float16 as uint4).
   const uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
+  // temporary output container.
   uint4 out_vec;
   out_vec.x = (~vec.x >> 15) & 0x00010001;
   out_vec.y = (~vec.y >> 15) & 0x00010001;
   out_vec.z = (~vec.z >> 15) & 0x00010001;
   out_vec.w = (~vec.w >> 15) & 0x00010001;
+  // 128bit vectorized store (uint4 as 8 float16).
   *reinterpret_cast<uint4 *>(&mask[idx]) = out_vec;
 }
 
