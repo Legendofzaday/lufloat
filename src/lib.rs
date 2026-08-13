@@ -122,33 +122,46 @@ mod tests {
         assert!(run_pos_inplace(&input).is_empty());
         assert!(run_pos_out_of_place(&input).is_empty());
     }
-    
+
     #[test]
-    fn positive_mask_inplace_stress() {
-        let input = make_input(1073741824);
-        let mut arena = Arena::new(arena_capacity_for(1073741824));
+    fn mask_full_stress_suite() {
+        let len = 1073741824;
+        let input = make_input(len);
+        let mut arena = Arena::new(arena_capacity_for(len * 2));
         let start = Instant::now();
         for _ in 0..4 {
             let _ = positive_mask_inplace(&arena, &input).unwrap().into_cpu();
             arena.reset();
         }
         println!(
-            "processed 8GiB positive mask inplace in {} seconds",
+            "Processed 8GiB Positive In-Place     : {:.4} seconds",
             start.elapsed().as_secs_f64()
         );
-    }
-
-    #[test]
-    fn negative_mask_inplace_stress() {
-        let input = make_input(1073741824);
-        let mut arena = Arena::new(arena_capacity_for(1073741824));
         let start = Instant::now();
         for _ in 0..4 {
             let _ = negative_mask_inplace(&arena, &input).unwrap().into_cpu();
             arena.reset();
         }
         println!(
-            "processed 8GiB negative mask inplace in {} seconds",
+            "Processed 8GiB Negative In-Place     : {:.4} seconds",
+            start.elapsed().as_secs_f64()
+        );
+        let start = Instant::now();
+        for _ in 0..4 {
+            let _ = positive_mask(&arena, &input).unwrap().into_cpu();
+            arena.reset();
+        }
+        println!(
+            "Processed 8GiB Positive Out-of-Place : {:.4} seconds",
+            start.elapsed().as_secs_f64()
+        );
+        let start = Instant::now();
+        for _ in 0..4 {
+            let _ = negative_mask(&arena, &input).unwrap().into_cpu();
+            arena.reset();
+        }
+        println!(
+            "Processed 8GiB Negative Out-of-Place : {:.4} seconds",
             start.elapsed().as_secs_f64()
         );
     }
