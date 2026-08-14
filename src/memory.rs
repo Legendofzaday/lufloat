@@ -55,7 +55,7 @@ pub struct Arena {
 impl Arena {
     pub fn new(capacity: usize) -> Self {
         assert!(capacity > 0usize, "Arena capacity must be greater than 0.");
-        let aligned_capacity: usize = (capacity + 4095usize) & !4095usize;
+        let aligned_capacity: usize = capacity.checked_add(4095usize).expect("Arena capacity overflowed during padding.") & !4095usize;
         let raw_ptr: *mut u8 = hip_malloc(aligned_capacity) as *mut u8;
         Self {
             base_ptr: NonNull::new(raw_ptr).expect("Fatal: HIP driver returned hipSuccess but yielded a null pointer. Ensure ROCm Unified Memory is supported on this system."),
