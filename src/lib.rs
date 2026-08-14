@@ -4,21 +4,21 @@ pub mod negative_mask_inplace;
 pub mod positive_mask;
 pub mod positive_mask_inplace;
 
-use memory::GpuBuffer;
+use memory::UnifiedBuffer;
 
-pub fn positive_mask_inplace<'a>(buf: GpuBuffer<'a>) -> GpuBuffer<'a> {
+pub fn positive_mask_inplace<'a>(buf: UnifiedBuffer<'a>) -> UnifiedBuffer<'a> {
     positive_mask_inplace::apply(buf)
 }
 
-pub fn negative_mask_inplace<'a>(buf: GpuBuffer<'a>) -> GpuBuffer<'a> {
+pub fn negative_mask_inplace<'a>(buf: UnifiedBuffer<'a>) -> UnifiedBuffer<'a> {
     negative_mask_inplace::apply(buf)
 }
 
-pub fn positive_mask<'a>(in_buf: &GpuBuffer<'a>, out_buf: &mut GpuBuffer<'a>) {
+pub fn positive_mask<'a>(in_buf: &UnifiedBuffer<'a>, out_buf: &mut UnifiedBuffer<'a>) {
     positive_mask::apply(in_buf, out_buf);
 }
 
-pub fn negative_mask<'a>(in_buf: &GpuBuffer<'a>, out_buf: &mut GpuBuffer<'a>) {
+pub fn negative_mask<'a>(in_buf: &UnifiedBuffer<'a>, out_buf: &mut UnifiedBuffer<'a>) {
     negative_mask::apply(in_buf, out_buf);
 }
 
@@ -49,7 +49,7 @@ mod tests {
 
     fn run_neg_inplace(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len));
-        let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
+        let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         fill_input(buf.host_slice_mut());
         let processed = negative_mask_inplace(buf);
         processed.host_sync().to_vec()
@@ -57,16 +57,16 @@ mod tests {
 
     fn run_neg_out_of_place(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len * 2));
-        let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
+        let mut in_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         fill_input(in_buf.host_slice_mut());
-        let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
+        let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         negative_mask(&in_buf, &mut out_buf);
         out_buf.host_sync().to_vec()
     }
 
     fn run_pos_inplace(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len));
-        let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
+        let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         fill_input(buf.host_slice_mut());
         let processed = positive_mask_inplace(buf);
         processed.host_sync().to_vec()
@@ -74,9 +74,9 @@ mod tests {
 
     fn run_pos_out_of_place(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len * 2));
-        let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
+        let mut in_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         fill_input(in_buf.host_slice_mut());
-        let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
+        let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         positive_mask(&in_buf, &mut out_buf);
         out_buf.host_sync().to_vec()
     }
@@ -126,7 +126,7 @@ mod tests {
         let mut arena = Arena::new(arena_capacity_for(len * 2));
         let start = Instant::now();
         for _ in 0..4 {
-            let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
+            let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             fill_input(buf.host_slice_mut());
             let processed = positive_mask_inplace(buf);
             let _ = processed.host_sync();
@@ -138,7 +138,7 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
+            let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             fill_input(buf.host_slice_mut());
             let processed = negative_mask_inplace(buf);
             let _ = processed.host_sync();
@@ -150,9 +150,9 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
+            let mut in_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             fill_input(in_buf.host_slice_mut());
-            let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
+            let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             positive_mask(&in_buf, &mut out_buf);
             let _ = out_buf.host_sync();
             arena.reset();
@@ -163,9 +163,9 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let mut in_buf = GpuBuffer::alloc(&arena, len).unwrap();
+            let mut in_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             fill_input(in_buf.host_slice_mut());
-            let mut out_buf = GpuBuffer::alloc(&arena, len).unwrap();
+            let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             negative_mask(&in_buf, &mut out_buf);
             let _ = out_buf.host_sync();
             arena.reset();
