@@ -93,7 +93,7 @@ pub struct GpuBuffer<'a> {
 }
 
 impl<'a> GpuBuffer<'a> {
-    /// Allocates a [`GpuBuffer`] of `len` `f16` elements from `arena`. 
+    /// Allocates a [`GpuBuffer`] of `len` `f16` elements represented as `u16` elements from `arena`. 
     pub fn alloc(arena: &'a Arena, len: usize) -> Option<Self> {
         if len == 0usize {
             return Some(GpuBuffer {
