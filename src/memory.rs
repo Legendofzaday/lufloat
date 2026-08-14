@@ -124,6 +124,7 @@ impl<'a> UnifiedBuffer<'a> {
         unsafe { from_raw_parts_mut(self.ptr, self.len) }
     }
 
+    /// Synchronizes the GPU and returns the [`UnifiedBuffer`].
     pub fn host_sync(self) -> &'a [u16] {
         if self.len == 0 || self.ptr.is_null() {
             return &[];
