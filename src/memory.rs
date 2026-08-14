@@ -120,18 +120,6 @@ impl<'a> UnifiedBuffer<'a> {
         })
     }
 
-    /// Synchronizes the GPU and returns the buffer mutably.
-    pub fn host_slice_mut(&mut self) -> &mut [u16] {
-        if self.len == 0 || self.ptr.is_null() {
-            return &mut [];
-        }
-        unsafe {
-            let err = hipStreamSynchronize(null_mut());
-            hip_check(err, file!(), line!());
-            from_raw_parts_mut(self.ptr, self.len)
-        }
-    }
-
     /// Synchronizes the GPU and returns the buffer immutably.
     pub fn host_slice(self) -> &'a [u16] {
         if self.len == 0 || self.ptr.is_null() {
@@ -141,6 +129,18 @@ impl<'a> UnifiedBuffer<'a> {
             let err = hipStreamSynchronize(null_mut());
             hip_check(err, file!(), line!());
             from_raw_parts(self.ptr, self.len)
+        }
+    }
+
+    /// Synchronizes the GPU and returns the buffer mutably.
+    pub fn host_slice_mut(&mut self) -> &mut [u16] {
+        if self.len == 0 || self.ptr.is_null() {
+            return &mut [];
+        }
+        unsafe {
+            let err = hipStreamSynchronize(null_mut());
+            hip_check(err, file!(), line!());
+            from_raw_parts_mut(self.ptr, self.len)
         }
     }
 }
