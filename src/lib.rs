@@ -128,7 +128,6 @@ mod tests {
         for _ in 0..4 {
             let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
             fill_input(buf.host_slice_mut());
-
             let processed = positive_mask_inplace(buf);
             let _ = processed.host_sync();
             arena.reset();
@@ -141,7 +140,6 @@ mod tests {
         for _ in 0..4 {
             let mut buf = GpuBuffer::alloc(&arena, len).unwrap();
             fill_input(buf.host_slice_mut());
-
             let processed = negative_mask_inplace(buf);
             let _ = processed.host_sync();
             arena.reset();
