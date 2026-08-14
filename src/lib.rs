@@ -52,7 +52,7 @@ mod tests {
         let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         fill_input(buf.host_slice_mut());
         let processed = negative_mask_inplace(buf);
-        processed.host_sync().to_vec()
+        processed.host_slice().to_vec()
     }
 
     fn run_neg_out_of_place(len: usize) -> Vec<u16> {
@@ -61,7 +61,7 @@ mod tests {
         fill_input(in_buf.host_slice_mut());
         let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         negative_mask(&in_buf, &mut out_buf);
-        out_buf.host_sync().to_vec()
+        out_buf.host_slice().to_vec()
     }
 
     fn run_pos_inplace(len: usize) -> Vec<u16> {
@@ -69,7 +69,7 @@ mod tests {
         let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         fill_input(buf.host_slice_mut());
         let processed = positive_mask_inplace(buf);
-        processed.host_sync().to_vec()
+        processed.host_slice().to_vec()
     }
 
     fn run_pos_out_of_place(len: usize) -> Vec<u16> {
@@ -78,7 +78,7 @@ mod tests {
         fill_input(in_buf.host_slice_mut());
         let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
         positive_mask(&in_buf, &mut out_buf);
-        out_buf.host_sync().to_vec()
+        out_buf.host_slice().to_vec()
     }
 
     fn assert_implementations_agree(len: usize) {
@@ -129,7 +129,7 @@ mod tests {
             let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             fill_input(buf.host_slice_mut());
             let processed = positive_mask_inplace(buf);
-            let _ = processed.host_sync();
+            let _ = processed.host_slice();
             arena.reset();
         }
         println!(
@@ -141,7 +141,7 @@ mod tests {
             let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             fill_input(buf.host_slice_mut());
             let processed = negative_mask_inplace(buf);
-            let _ = processed.host_sync();
+            let _ = processed.host_slice();
             arena.reset();
         }
         println!(
@@ -154,7 +154,7 @@ mod tests {
             fill_input(in_buf.host_slice_mut());
             let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             positive_mask(&in_buf, &mut out_buf);
-            let _ = out_buf.host_sync();
+            let _ = out_buf.host_slice();
             arena.reset();
         }
         println!(
@@ -167,7 +167,7 @@ mod tests {
             fill_input(in_buf.host_slice_mut());
             let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
             negative_mask(&in_buf, &mut out_buf);
-            let _ = out_buf.host_sync();
+            let _ = out_buf.host_slice();
             arena.reset();
         }
         println!(
