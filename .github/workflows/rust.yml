@@ -1,24 +1,19 @@
-name: Format Rust
+name: Rustfmt
 
 on:
-  push:
+    push:
+        branches: [main]
+    workflow_dispatch:
 
 permissions:
-  contents: write
+    contents: write
 
 jobs:
-  fmt:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
-
-      - run: cargo fmt --all
-
-      - uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "style: format Rust code"
+    format:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - run: cargo fmt --all
+            - uses: stefanzweifel/git-auto-commit-action@v5
+              with:
+                  commit_message: "style: auto-format rust files"
