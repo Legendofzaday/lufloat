@@ -49,7 +49,7 @@ mod tests {
 
     fn run_neg_inplace(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len));
-        let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+        let mut buf = UnifiedBuffer::new(&arena, len).unwrap();
         fill_input(buf.host_slice_mut());
         let processed = negative_mask_inplace(buf);
         processed.host_slice().to_vec()
@@ -57,16 +57,16 @@ mod tests {
 
     fn run_neg_out_of_place(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len * 2));
-        let mut in_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+        let mut in_buf = UnifiedBuffer::new(&arena, len).unwrap();
         fill_input(in_buf.host_slice_mut());
-        let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+        let mut out_buf = UnifiedBuffer::new(&arena, len).unwrap();
         negative_mask(&in_buf, &mut out_buf);
         out_buf.host_slice().to_vec()
     }
 
     fn run_pos_inplace(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len));
-        let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+        let mut buf = UnifiedBuffer::new(&arena, len).unwrap();
         fill_input(buf.host_slice_mut());
         let processed = positive_mask_inplace(buf);
         processed.host_slice().to_vec()
@@ -74,9 +74,9 @@ mod tests {
 
     fn run_pos_out_of_place(len: usize) -> Vec<u16> {
         let arena = Arena::new(arena_capacity_for(len * 2));
-        let mut in_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+        let mut in_buf = UnifiedBuffer::new(&arena, len).unwrap();
         fill_input(in_buf.host_slice_mut());
-        let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+        let mut out_buf = UnifiedBuffer::new(&arena, len).unwrap();
         positive_mask(&in_buf, &mut out_buf);
         out_buf.host_slice().to_vec()
     }
@@ -126,7 +126,7 @@ mod tests {
         let mut arena = Arena::new(arena_capacity_for(len * 2));
         let start = Instant::now();
         for _ in 0..4 {
-            let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+            let mut buf = UnifiedBuffer::new(&arena, len).unwrap();
             fill_input(buf.host_slice_mut());
             let processed = positive_mask_inplace(buf);
             let _ = processed.host_slice();
@@ -138,7 +138,7 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let mut buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+            let mut buf = UnifiedBuffer::new(&arena, len).unwrap();
             fill_input(buf.host_slice_mut());
             let processed = negative_mask_inplace(buf);
             let _ = processed.host_slice();
@@ -150,9 +150,9 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let mut in_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+            let mut in_buf = UnifiedBuffer::new(&arena, len).unwrap();
             fill_input(in_buf.host_slice_mut());
-            let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+            let mut out_buf = UnifiedBuffer::new(&arena, len).unwrap();
             positive_mask(&in_buf, &mut out_buf);
             let _ = out_buf.host_slice();
             arena.reset();
@@ -163,9 +163,9 @@ mod tests {
         );
         let start = Instant::now();
         for _ in 0..4 {
-            let mut in_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+            let mut in_buf = UnifiedBuffer::new(&arena, len).unwrap();
             fill_input(in_buf.host_slice_mut());
-            let mut out_buf = UnifiedBuffer::alloc(&arena, len).unwrap();
+            let mut out_buf = UnifiedBuffer::new(&arena, len).unwrap();
             negative_mask(&in_buf, &mut out_buf);
             let _ = out_buf.host_slice();
             arena.reset();
