@@ -36,7 +36,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         let path_str: &str = path
             .to_str()
             .ok_or_else(|| format!("Path contains invalid UTF-8: {}", path.display()))?;
-
         let compiler: String = var("HIPCC").unwrap_or_else(|_err: VarError| "hipcc".to_string());
         let child: Child = Command::new(compiler)
             .args(["-c", path_str, "-o"])
