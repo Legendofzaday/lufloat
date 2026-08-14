@@ -46,7 +46,7 @@ fn hip_free(ptr: *mut c_void) {
     }
 }
 
-/// A memory manager for allocations of [`UnifiedBuffer`].
+/// A memory manager for [`UnifiedBuffer`].
 pub struct Arena {
     base_ptr: NonNull<u8>,
     capacity: usize,
@@ -54,7 +54,7 @@ pub struct Arena {
 }
 
 impl Arena {
-    /// Reserves contiguous, unified memory of `capacity` bytes, aligned to 4096 bytes.
+    /// Reserve contiguous memory of `capacity` bytes.
     pub fn new(capacity: usize) -> Self {
         assert!(capacity > 0, "Arena capacity must be greater than 0.");
         let aligned_capacity = capacity
@@ -80,6 +80,7 @@ impl Arena {
         Some(unsafe { NonNull::new_unchecked(ptr) })
     }
 
+    /// Resets the arena for reuse.
     pub fn reset(&mut self) {
         self.offset.set(0);
     }
@@ -91,6 +92,7 @@ impl Drop for Arena {
     }
 }
 
+/// A view of `f16` elements stored as `u16` in an [`Arena`].
 pub struct UnifiedBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
@@ -98,7 +100,7 @@ pub struct UnifiedBuffer<'a> {
 }
 
 impl<'a> UnifiedBuffer<'a> {
-    /// Allocates space for `len` `f16` elements within the provided `arena`.
+    /// Reserves space for `len` `f16` elements within the provided [`Arena`].
     pub fn alloc(arena: &'a Arena, len: usize) -> Option<Self> {
         if len == 0 {
             return Some(UnifiedBuffer {
