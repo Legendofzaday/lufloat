@@ -100,8 +100,8 @@ pub struct UnifiedBuffer<'a> {
 }
 
 impl<'a> UnifiedBuffer<'a> {
-    /// Reserves space for `len` `f16` elements from the provided [`Arena`].
-    pub fn alloc(arena: &'a Arena, len: usize) -> Option<Self> {
+    /// Reserves space for `len` `f16` elements.
+    pub fn new(arena: &'a Arena, len: usize) -> Option<Self> {
         if len == 0 {
             return Some(UnifiedBuffer {
                 ptr: null_mut(),
@@ -120,7 +120,7 @@ impl<'a> UnifiedBuffer<'a> {
         })
     }
 
-    /// Returns the buffer mutably.
+    /// Synchronizes the GPU and returns the buffer mutably.
     pub fn host_slice_mut(&mut self) -> &mut [u16] {
         if self.len == 0 || self.ptr.is_null() {
             return &mut [];
