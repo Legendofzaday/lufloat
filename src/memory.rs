@@ -100,7 +100,7 @@ pub struct UnifiedBuffer<'a> {
 }
 
 impl<'a> UnifiedBuffer<'a> {
-    /// Reserves space for `len` `f16` elements within the provided [`Arena`].
+    /// Reserves space for `len` `f16` elements from the provided [`Arena`].
     pub fn alloc(arena: &'a Arena, len: usize) -> Option<Self> {
         if len == 0 {
             return Some(UnifiedBuffer {
