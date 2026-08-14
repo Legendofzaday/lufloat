@@ -46,6 +46,7 @@ fn hip_free(ptr: *mut c_void) {
     }
 }
 
+/// A memory manager for allocations of [`UnifiedBuffer`].
 pub struct Arena {
     base_ptr: NonNull<u8>,
     capacity: usize,
@@ -53,6 +54,7 @@ pub struct Arena {
 }
 
 impl Arena {
+    /// Reserves contiguous unified memory of `capacity` bytes.
     pub fn new(capacity: usize) -> Self {
         assert!(capacity > 0, "Arena capacity must be greater than 0.");
         let aligned_capacity = capacity
