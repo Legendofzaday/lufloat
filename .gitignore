@@ -1,6 +1,7 @@
 *
 !*/
 !.cargo/config.toml
+!.github/workflows/rust.yml
 !*.hip
 !*.rs
 !.gitattributes
