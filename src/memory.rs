@@ -129,7 +129,7 @@ impl<'a> UnifiedBuffer<'a> {
     }
 
     /// Synchronizes the GPU and returns the buffer immutably.
-    pub fn host_sync(self) -> &'a [u16] {
+    pub fn host_slice(self) -> &'a [u16] {
         if self.len == 0 || self.ptr.is_null() {
             return &[];
         }
