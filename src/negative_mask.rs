@@ -1,10 +1,10 @@
-use crate::memory::GpuBuffer;
+use crate::memory::UnifiedBuffer;
 
 unsafe extern "C" {
     fn negative_mask(data: *const u16, size: usize, mask: *mut u16);
 }
 
-pub(crate) fn apply<'a>(data: &GpuBuffer<'a>, mask: &mut GpuBuffer<'a>) {
+pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, mask: &mut UnifiedBuffer<'a>) {
     if data.len == 0usize {
         return;
     }
