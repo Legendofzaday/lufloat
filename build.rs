@@ -67,10 +67,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("cargo:rustc-link-search=native={}", out_dir);
         println!("cargo:rustc-link-lib=static=kernels");
     }
-    let rocm_lib: String = var("ROCM_PATH")
-        .map(|path: String| format!("{}/lib", path))
-        .unwrap_or_else(|_err: VarError| "/opt/rocm/lib".to_string());
-    println!("cargo:rustc-link-search=native={}", rocm_lib);
-    println!("cargo:rustc-link-lib=dylib=amdhip64");
+    link_rocm_hip_lib();
     Ok(())
+}
+
+fn link_rocm_hip_lib() {
+    let rocm_path = var("ROCM_PATH").unwrap_or_else(|_| String::from("/opt/rocm"));
+    println!("cargo:rustc-link-search=native={}/lib", rocm_path);
+    println!("cargo:rustc-link-lib=dylib=amdhip64");
 }
