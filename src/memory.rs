@@ -54,7 +54,7 @@ pub struct Arena {
 }
 
 impl Arena {
-    /// Reserve contiguous memory of `capacity` bytes.
+    /// Reserves contiguous memory of `capacity` bytes.
     pub fn new(capacity: usize) -> Self {
         assert!(capacity > 0, "Arena capacity must be greater than 0.");
         let aligned_capacity = capacity
