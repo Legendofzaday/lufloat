@@ -1,4 +1,4 @@
-name: Rustfmt
+name: Rust
 
 on:
     push:
