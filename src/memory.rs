@@ -109,9 +109,8 @@ impl<'a> UnifiedBuffer<'a> {
                 _marker: PhantomData,
             });
         }
-        let padded_len = len.checked_add(2047)? & !2047;
-        let byte_size = padded_len.checked_mul(2)?;
-        let raw_ptr = arena.alloc(byte_size)?;
+        assert!(len <= ((u32::MAX as usize) << 11), "len exceeds HIP grid limits.");
+        let raw_ptr = arena.alloc(((len + 2047) & !2047) << 1)?;
         let gpu_ptr = raw_ptr.as_ptr() as *mut u16;
         Some(UnifiedBuffer {
             ptr: gpu_ptr,
