@@ -85,7 +85,7 @@ impl Drop for Arena {
     }
 }
 
-/// A shared buffer allocated from an [`Arena`] uses `u16` values as `f16`.
+/// A shared buffer allocated from an [`Arena`] representing `f16` values as `u16`.
 pub struct GpuBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
@@ -93,6 +93,7 @@ pub struct GpuBuffer<'a> {
 }
 
 impl<'a> GpuBuffer<'a> {
+    /// Allocates a [`GpuBuffer`] of `len` `f16` elements from `arena`. 
     pub fn alloc(arena: &'a Arena, len: usize) -> Option<Self> {
         if len == 0usize {
             return Some(GpuBuffer {
