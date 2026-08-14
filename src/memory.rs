@@ -89,16 +89,16 @@ impl Drop for Arena {
     }
 }
 
-pub struct GpuBuffer<'a> {
+pub struct UnifiedBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
     pub(crate) _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> GpuBuffer<'a> {
+impl<'a> UnifiedBuffer<'a> {
     pub fn alloc(arena: &'a Arena, len: usize) -> Option<Self> {
         if len == 0 {
-            return Some(GpuBuffer {
+            return Some(UnifiedBuffer {
                 ptr: null_mut(),
                 len: 0,
                 _marker: PhantomData,
@@ -108,7 +108,7 @@ impl<'a> GpuBuffer<'a> {
         let byte_size = padded_len.checked_mul(2)?;
         let raw_ptr = arena.alloc(byte_size)?;
         let gpu_ptr = raw_ptr.as_ptr() as *mut u16;
-        Some(GpuBuffer {
+        Some(UnifiedBuffer {
             ptr: gpu_ptr,
             len,
             _marker: PhantomData,
