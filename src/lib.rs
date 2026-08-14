@@ -133,7 +133,7 @@ mod tests {
             arena.reset();
         }
         println!(
-            "Processed 8GiB Positive In-Place     : {:.4} seconds",
+            "Processed 8GiB Positive In-Place: {:.4} seconds",
             start.elapsed().as_secs_f64()
         );
         let start = Instant::now();
@@ -145,7 +145,7 @@ mod tests {
             arena.reset();
         }
         println!(
-            "Processed 8GiB Negative In-Place     : {:.4} seconds",
+            "Processed 8GiB Negative In-Place: {:.4} seconds",
             start.elapsed().as_secs_f64()
         );
         let start = Instant::now();
@@ -158,7 +158,7 @@ mod tests {
             arena.reset();
         }
         println!(
-            "Processed 8GiB Positive Out-of-Place : {:.4} seconds",
+            "Processed 8GiB Positive Out-of-Place: {:.4} seconds",
             start.elapsed().as_secs_f64()
         );
         let start = Instant::now();
@@ -171,7 +171,7 @@ mod tests {
             arena.reset();
         }
         println!(
-            "Processed 8GiB Negative Out-of-Place : {:.4} seconds",
+            "Processed 8GiB Negative Out-of-Place: {:.4} seconds",
             start.elapsed().as_secs_f64()
         );
     }
