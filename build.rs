@@ -2,8 +2,8 @@ use std::{
     env::{VarError, var},
     error::Error,
     ffi::OsStr,
-    fs::{DirEntry, read_dir},
-    io,
+    fs::read_dir,
+    os::unix::ffi::OsStrExt,
     path::PathBuf,
     process::{Child, Command, ExitStatus},
 };
@@ -13,17 +13,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-env-changed=ROCM_PATH");
     println!("cargo:rerun-if-env-changed=HIPCC");
     let out_dir: String = var("OUT_DIR")?;
-    let hip_paths: Vec<PathBuf> = read_dir("kernels")?
-        .map(|entry_result: Result<DirEntry, io::Error>| {
-            entry_result.map(|entry: DirEntry| entry.path())
-        })
-        .filter(
-            |path_result: &Result<PathBuf, io::Error>| match path_result {
-                Ok(path) => path.is_file() && path.extension() == Some(OsStr::new("hip")),
-                Err(_) => true,
-            },
-        )
-        .collect::<Result<Vec<PathBuf>, io::Error>>()?;
+    let hip_paths = get_hip_paths();
     let mut obj_files: Vec<PathBuf> = Vec::new();
     let mut children: Vec<(String, Child)> = Vec::new();
     for path in hip_paths {
@@ -69,6 +59,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     link_rocm_hip_lib();
     Ok(())
+}
+
+fn get_hip_paths() -> Vec<PathBuf> {
+    read_dir("kernels")
+        .unwrap()
+        .filter_map(|entry| {
+            let path = entry.unwrap().path();
+            if path.extension().map(|e| e.as_bytes()) == Some(b"hip") {
+                Some(path)
+            } else {
+                None
+            }
+        })
+        .collect()
 }
 
 fn link_rocm_hip_lib() {
