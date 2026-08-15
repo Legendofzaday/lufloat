@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-changed=kernels");
     println!("cargo:rerun-if-env-changed=ROCM_PATH");
     println!("cargo:rerun-if-env-changed=HIPCC");
-    let out_dir: String = var("OUT_DIR")?;
+    let out_dir: String = var("OUT_DIR").unwrap();
     let hip_paths = get_hip_paths();
     let mut obj_files: Vec<PathBuf> = Vec::new();
     let mut children: Vec<(String, Child)> = Vec::new();
