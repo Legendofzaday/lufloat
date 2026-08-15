@@ -76,7 +76,9 @@ fn get_hip_paths() -> Vec<PathBuf> {
 }
 
 fn link_rocm_hip_lib() {
-    let rocm_path = var("ROCM_PATH").unwrap_or_else(|_| String::from("/opt/rocm"));
-    println!("cargo:rustc-link-search=native={}/lib", rocm_path);
+    let rocm_path = var("HIP_PATH")
+        .or_else(|_| var("ROCM_PATH"))
+        .unwrap_or_else(|_| String::from("/opt/rocm"));
+    println!("cargo:rustc-link-search=native={rocm_path}/lib");
     println!("cargo:rustc-link-lib=dylib=amdhip64");
 }
