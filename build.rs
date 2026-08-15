@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .status()?
         .success()
     {
-        return Err(String::from("ar command failed to create archive"));
+        return Err(String::from("ar command failed to create archive."));
     }
     println!("cargo:rustc-link-search=native={out_dir}");
     println!("cargo:rustc-link-lib=static=kernels");
