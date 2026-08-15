@@ -14,11 +14,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-env-changed=HIPCC");
     println!("cargo:rerun-if-env-changed=HIP_PATH");
     let out_dir: String = var("OUT_DIR").unwrap();
+    let hipcc = var("HIPCC");
+    let hipcc = hipcc.as_deref().unwrap_or("hipcc");
     let hip_paths = get_hip_paths();
-    let mut obj_files: Vec<PathBuf> = Vec::new();
-    let mut children: Vec<(String, Child)> = Vec::new();
+    let mut obj_files = Vec::new();
+    let mut children = Vec::new();
     for path in hip_paths {
-        println!("cargo:rerun-if-changed={}", path.display());
+        let display = path.display();
+        println!("cargo:rerun-if-changed={display}");
         let file_stem: &str = path
             .file_stem()
             .and_then(|s: &OsStr| s.to_str())
