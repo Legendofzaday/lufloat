@@ -42,22 +42,17 @@ fn main() -> Result<(), Box<dyn Error>> {
             return Err(format!("hipcc compilation failed for: {}", src_path).into());
         }
     }
-    if !obj_files.is_empty() {
-        let mut ar_cmd: Command = Command::new("ar");
-        ar_cmd
-            .arg("rcs")
-            .arg(PathBuf::from(&out_dir).join("libkernels.a"));
-
-        for obj in &obj_files {
-            ar_cmd.arg(obj);
-        }
-        let ar_status: ExitStatus = ar_cmd.status()?;
-        if !ar_status.success() {
-            return Err(format!("ar command failed with status: {}", ar_status).into());
-        }
-        println!("cargo:rustc-link-search=native={}", out_dir);
-        println!("cargo:rustc-link-lib=static=kernels");
+    if !Command::new("ar")
+        .arg("rcs")
+        .arg(PathBuf::from(&out_dir).join("libkernels.a"))
+        .args(&obj_files)
+        .status()?
+        .success()
+    {
+        return Err(String::from("ar command failed to create archive"));
     }
+    println!("cargo:rustc-link-search=native={out_dir}");
+    println!("cargo:rustc-link-lib=static=kernels");
     link_rocm_hip_lib();
     Ok(())
 }
