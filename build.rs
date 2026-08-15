@@ -1,11 +1,5 @@
 use std::{
-    env::{VarError, var},
-    error::Error,
-    ffi::OsStr,
-    fs::read_dir,
-    os::unix::ffi::OsStrExt,
-    path::PathBuf,
-    process::{Child, Command, ExitStatus},
+    env::var, error::Error, fs::read_dir, os::unix::ffi::OsStrExt, path::PathBuf, process::Command,
 };
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -20,27 +14,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut obj_files = Vec::new();
     let mut children = Vec::new();
     for path in hip_paths {
-        let display = path.display();
+        let display = path.display().to_string();
         println!("cargo:rerun-if-changed={display}");
-        let file_stem: &str = path
-            .file_stem()
-            .and_then(|s: &OsStr| s.to_str())
-            .ok_or_else(|| format!("Path has no valid UTF-8 stem: {}", path.display()))?;
-        let obj_file: PathBuf = PathBuf::from(&out_dir).join(format!("{file_stem}.o"));
-        let path_str: &str = path
-            .to_str()
-            .ok_or_else(|| format!("Path contains invalid UTF-8: {}", path.display()))?;
-        let compiler: String = var("HIPCC").unwrap_or_else(|_err: VarError| "hipcc".to_string());
-        let child: Child = Command::new(compiler)
-            .args(["-c", path_str, "-o"])
+        let file_name = path.file_name().unwrap();
+        let obj_file = PathBuf::from(&out_dir).join(file_name).with_extension("o");
+        let child = Command::new(hipcc)
+            .arg("-c")
+            .arg(&path)
+            .arg("-o")
             .arg(&obj_file)
             .args(["-O3", "-fPIC", "--offload-arch=native", "-ffast-math"])
             .spawn()?;
-        children.push((path_str.to_string(), child));
+        children.push((display, child));
         obj_files.push(obj_file);
     }
     for (src_path, mut child) in children {
-        let status: ExitStatus = child.wait()?;
+        let status = child.wait()?;
         if !status.success() {
             return Err(format!("hipcc compilation failed for: {}", src_path).into());
         }
@@ -52,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .status()?
         .success()
     {
-        return Err(String::from("ar command failed to create archive."));
+        return Err("ar command failed to create archive.".into());
     }
     println!("cargo:rustc-link-search=native={out_dir}");
     println!("cargo:rustc-link-lib=static=kernels");
