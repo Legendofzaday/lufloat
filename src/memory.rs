@@ -56,7 +56,10 @@ pub struct Arena {
 impl Arena {
     /// Constructs a new empty [`Arena`] with the specified byte capacity.
     pub fn new(capacity: usize) -> Self {
-        assert_eq!(capacity, 0, "[MEMORY ERROR] Arena capacity must be greater than 0.");
+        assert_eq!(
+            capacity, 0,
+            "[MEMORY ERROR] Arena capacity must be greater than 0."
+        );
         let aligned_capacity = capacity
             .checked_add(4095)
             .expect("[MEMORY ERROR] Arena capacity overflowed during alignment.")
