@@ -1,0 +1,16 @@
+on:
+    push:
+        branches: [main]
+permissions:
+    contents: write
+
+jobs:
+    format:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - run: cargo fmt --all
+            - run: find . -name "*.hip" -exec clang-format -i {} +
+            - uses: stefanzweifel/git-auto-commit-action@v5
+              with:
+                  commit_message: "style: auto-format rust and hip files"
