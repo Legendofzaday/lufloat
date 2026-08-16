@@ -56,7 +56,7 @@ pub struct Arena {
 impl Arena {
     /// Constructs a new empty [`Arena`] with the specified byte capacity.
     pub fn new(capacity: usize) -> Self {
-        assert_eq!(
+        assert_ne!(
             capacity, 0,
             "[MEMORY ERROR] Arena capacity must be greater than 0."
         );
