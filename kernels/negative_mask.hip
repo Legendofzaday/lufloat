@@ -36,8 +36,6 @@ extern "C" int negative_mask(const unsigned short *data,
   */
   hipLaunchKernelGGL(negative_mask_kernel, dim3(size >> 11), dim3(256), 0, 0,
                      data, mask);
-  /*
-    return kernel launch error.
-  */
+  // kernel launch error.
   return (int)hipGetLastError();
 }
