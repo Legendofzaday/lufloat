@@ -27,7 +27,7 @@ __global__ void negative_mask_kernel(const unsigned short *__restrict__ data,
   @param size: length of input float16 array (must be a multiple of 2048).
   @param mask: pointer to output float16 array.
 */
-extern "C" void negative_mask(const unsigned short *data,
+extern "C" int negative_mask(const unsigned short *data,
                               const unsigned long long size,
                               unsigned short *mask) {
   /*
@@ -36,4 +36,8 @@ extern "C" void negative_mask(const unsigned short *data,
   */
   hipLaunchKernelGGL(negative_mask_kernel, dim3(size >> 11), dim3(256), 0, 0,
                      data, mask);
+  /*
+    return kernel launch error.
+  */
+  return (int)hipGetLastError();
 }
