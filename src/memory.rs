@@ -18,14 +18,14 @@ fn hip_check(err: c_int, file: &str, line: u32) {
     if err != 0 {
         let err_ptr = unsafe { hipGetErrorString(err) };
         let err_str = if err_ptr.is_null() {
-            String::from("[MEMORY ERROR] Unknown.")
+            String::from("[lufloat error] Unknown.")
         } else {
             unsafe { CStr::from_ptr(err_ptr) }
                 .to_string_lossy()
                 .into_owned()
         };
         eprintln!(
-            "[MEMORY ERROR] {} (Code: {}) at {}:{}.",
+            "[lufloat error] {} (Code: {}) at {}:{}.",
             err_str, err, file, line
         );
         abort();
@@ -58,15 +58,15 @@ impl Arena {
     pub fn new(capacity: usize) -> Self {
         assert_ne!(
             capacity, 0,
-            "[MEMORY ERROR] Arena capacity must be greater than 0."
+            "[lufloat error] Arena capacity must be greater than 0."
         );
         let aligned_capacity = capacity
             .checked_add(4095)
-            .expect("[MEMORY ERROR] Arena capacity overflowed during alignment.")
+            .expect("[lufloat error] Arena capacity overflowed during alignment.")
             & !4095;
         let raw_ptr = hip_malloc(aligned_capacity) as *mut u8;
         Self {
-            base_ptr: NonNull::new(raw_ptr).expect("[MEMORY ERROR] hipSuccess with null pointer."),
+            base_ptr: NonNull::new(raw_ptr).expect("[lufloat error] hipSuccess with null pointer."),
             capacity: aligned_capacity,
             offset: Cell::new(0),
         }
@@ -122,7 +122,7 @@ impl<'a> UnifiedBuffer<'a> {
         }
         assert!(
             len <= ((u32::MAX as usize) << 11),
-            "[MEMORY ERROR] len exceeds grid limits."
+            "[lufloat error] len exceeds grid limits."
         );
         let raw_ptr = arena.alloc(((len + 2047) & !2047) << 1)?;
         let gpu_ptr = raw_ptr.as_ptr() as *mut u16;
