@@ -54,7 +54,7 @@ pub struct Arena {
 }
 
 impl Arena {
-    /// Reserves contiguous memory of `capacity` bytes.
+    /// Constructs a new empty [`Arena`] with the specified byte capacity.
     pub fn new(capacity: usize) -> Self {
         assert!(capacity > 0, "Arena capacity must be greater than 0.");
         let aligned_capacity = capacity
@@ -80,7 +80,6 @@ impl Arena {
         Some(unsafe { NonNull::new_unchecked(ptr) })
     }
 
-    /// Resets the arena for reuse.
     pub fn reset(&mut self) {
         self.offset.set(0);
     }
@@ -100,7 +99,7 @@ pub struct UnifiedBuffer<'a> {
 }
 
 impl<'a> UnifiedBuffer<'a> {
-    /// Reserves space for `len` `f16` elements.
+    /// Constructs a new empty [`UnifiedBuffer`] with the specified `f16` capacity.
     pub fn new(arena: &'a Arena, len: usize) -> Option<Self> {
         if len == 0 {
             return Some(UnifiedBuffer {
@@ -122,7 +121,7 @@ impl<'a> UnifiedBuffer<'a> {
         })
     }
 
-    /// Synchronizes the GPU and returns the buffer immutably.
+    /// Synchronizes the GPU and returns the [`UnifiedBuffer`] as a `&mut [u16]`.
     pub fn host_slice(&self) -> &[u16] {
         if self.len == 0 || self.ptr.is_null() {
             return &[];
@@ -134,7 +133,7 @@ impl<'a> UnifiedBuffer<'a> {
         }
     }
 
-    /// Synchronizes the GPU and returns the buffer mutably.
+    /// Synchronizes the GPU and returns the [`UnifiedBuffer`] as a `&[u16]`.
     pub fn host_slice_mut(&mut self) -> &mut [u16] {
         if self.len == 0 || self.ptr.is_null() {
             return &mut [];
