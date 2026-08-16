@@ -1,4 +1,4 @@
-use crate::memory::UnifiedBuffer;
+use crate::memory::{UnifiedBuffer, hip_check};
 
 unsafe extern "C" {
     fn positive_mask(data: *const u16, size: usize, mask: *mut u16);
