@@ -1,4 +1,5 @@
 use crate::memory::{UnifiedBuffer, hip_check};
+use std::ffi::c_int;
 
 unsafe extern "C" {
     fn negative_mask_inplace(data: *mut u16, size: usize);
