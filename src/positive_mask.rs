@@ -5,6 +5,7 @@ unsafe extern "C" {
 }
 
 pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, mask: &mut UnifiedBuffer<'a>) {
+    assert_eq!(data.len, mask.len, "[lufloat error] input and output buffers must have the same length.");
     if data.len == 0usize {
         return;
     }
