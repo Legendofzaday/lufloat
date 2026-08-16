@@ -18,14 +18,14 @@ fn hip_check(err: c_int, file: &str, line: u32) {
     if err != 0 {
         let err_ptr = unsafe { hipGetErrorString(err) };
         let err_str = if err_ptr.is_null() {
-            String::from("[MEMORY ERROR] Unknown")
+            String::from("[MEMORY ERROR] Unknown.")
         } else {
             unsafe { CStr::from_ptr(err_ptr) }
                 .to_string_lossy()
                 .into_owned()
         };
         eprintln!(
-            "[MEMORY ERROR] {} (Code: {}) at {}:{}",
+            "[MEMORY ERROR] {} (Code: {}) at {}:{}.",
             err_str, err, file, line
         );
         abort();
