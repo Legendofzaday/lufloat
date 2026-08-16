@@ -3,7 +3,7 @@ use std::{
     ffi::{CStr, c_char, c_int, c_uint, c_void},
     marker::PhantomData,
     process::abort,
-    ptr::{NonNull, null_mut},
+    ptr::{NonNull, null_mut, write_bytes},
     slice::{from_raw_parts, from_raw_parts_mut},
 };
 
@@ -120,8 +120,12 @@ impl<'a> UnifiedBuffer<'a> {
             len <= ((u32::MAX as usize) << 11),
             "[lufloat error] len exceeds grid limits."
         );
-        let raw_ptr = arena.alloc(((len + 2047) & !2047) << 1)?;
-        let gpu_ptr = raw_ptr.as_ptr() as *mut u16;
+        let byte_size = ((len + 2047) & !2047) << 1;
+        let raw_ptr = arena.alloc(byte_size)?.as_ptr();
+        unsafe {
+            write_bytes(raw_ptr, 0, byte_size);
+        }
+        let gpu_ptr = raw_ptr as *mut u16;
         Some(UnifiedBuffer {
             ptr: gpu_ptr,
             len,
