@@ -85,20 +85,16 @@ impl Arena {
 
     /// Synchronizes the GPU and resets the [`Arena`].
     pub fn reset(&mut self) {
-        unsafe {
-            let err = hipStreamSynchronize(null_mut());
-            hip_check(err, file!(), line!());
-        }
+        let err = unsafe { hipStreamSynchronize(null_mut()) };
+        hip_check(err, file!(), line!());
         self.offset.set(0);
     }
 }
 
 impl Drop for Arena {
     fn drop(&mut self) {
-        unsafe {
-            let err = hipStreamSynchronize(null_mut());
-            hip_check(err, file!(), line!());
-        }
+        let err = unsafe { hipStreamSynchronize(null_mut()) };
+        hip_check(err, file!(), line!());
         hip_free(self.base_ptr.as_ptr() as *mut c_void);
     }
 }
@@ -138,11 +134,9 @@ impl<'a> UnifiedBuffer<'a> {
         if self.len == 0 || self.ptr.is_null() {
             return &[];
         }
-        unsafe {
-            let err = hipStreamSynchronize(null_mut());
-            hip_check(err, file!(), line!());
-            from_raw_parts(self.ptr, self.len)
-        }
+        let err = unsafe { hipStreamSynchronize(null_mut()) };
+        hip_check(err, file!(), line!());
+        unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
     /// Synchronizes the GPU and returns the mutable buffer.
@@ -150,10 +144,8 @@ impl<'a> UnifiedBuffer<'a> {
         if self.len == 0 || self.ptr.is_null() {
             return &mut [];
         }
-        unsafe {
-            let err = hipStreamSynchronize(null_mut());
-            hip_check(err, file!(), line!());
-            from_raw_parts_mut(self.ptr, self.len)
-        }
+        let err = unsafe { hipStreamSynchronize(null_mut()) };
+        hip_check(err, file!(), line!());
+        unsafe { from_raw_parts_mut(self.ptr, self.len) }
     }
 }
