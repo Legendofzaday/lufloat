@@ -22,7 +22,7 @@ __global__ void positive_mask_inplace_kernel(unsigned short *data) {
   @param data: pointer to input float16 array.
   @param size: length of input float16 array (must be a multiple of 2048).
 */
-extern "C" void positive_mask_inplace(unsigned short *data,
+extern "C" int positive_mask_inplace(unsigned short *data,
                                       const unsigned long long size) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
@@ -30,4 +30,6 @@ extern "C" void positive_mask_inplace(unsigned short *data,
   */
   hipLaunchKernelGGL(positive_mask_inplace_kernel, dim3(size >> 11), dim3(256),
                      0, 0, data);
+  // kernel launch error.
+  return (int)hipGetLastError();
 }
