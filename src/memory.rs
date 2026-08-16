@@ -121,7 +121,7 @@ impl<'a> UnifiedBuffer<'a> {
         })
     }
 
-    /// Synchronizes the GPU and returns the [`UnifiedBuffer`] as a `&mut [u16]`.
+    /// Synchronizes the GPU and returns the buffer`.
     pub fn host_slice(&self) -> &[u16] {
         if self.len == 0 || self.ptr.is_null() {
             return &[];
@@ -133,7 +133,7 @@ impl<'a> UnifiedBuffer<'a> {
         }
     }
 
-    /// Synchronizes the GPU and returns the [`UnifiedBuffer`] as a `&[u16]`.
+    /// Synchronizes the GPU and returns the buffer mutably`.
     pub fn host_slice_mut(&mut self) -> &mut [u16] {
         if self.len == 0 || self.ptr.is_null() {
             return &mut [];
