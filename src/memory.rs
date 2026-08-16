@@ -14,7 +14,7 @@ unsafe extern "C" {
     fn hipStreamSynchronize(stream: *mut c_void) -> c_int;
 }
 
-fn hip_check(err: c_int, file: &str, line: u32) {
+pub(crate) fn hip_check(err: c_int, file: &str, line: u32) {
     if err != 0 {
         let err_ptr = unsafe { hipGetErrorString(err) };
         let err_str = if err_ptr.is_null() {
