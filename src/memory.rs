@@ -104,7 +104,7 @@ impl Drop for Arena {
 pub struct UnifiedBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
-    pub(crate) _marker: PhantomData<&'a Arena>,
+    _marker: PhantomData<&'a Arena>,
 }
 
 impl<'a> UnifiedBuffer<'a> {
