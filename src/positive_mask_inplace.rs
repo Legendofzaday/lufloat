@@ -10,8 +10,9 @@ pub(crate) fn apply<'a>(buffer: UnifiedBuffer<'a>) -> UnifiedBuffer<'a> {
         return buffer;
     }
     let padded_size = (buffer.len + 2047) & !2047;
-    unsafe {
+    let err = unsafe {
         positive_mask_inplace(buffer.ptr, padded_size);
-    }
+    };
+    hip_check(err, file!(), line!());
     buffer
 }
