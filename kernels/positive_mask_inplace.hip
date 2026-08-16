@@ -9,7 +9,8 @@ __global__ void positive_mask_inplace_kernel(unsigned short *data) {
   const uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
   // temporary output container.
   uint4 out_vec;
-  // sign bit isolation for unsigned integer as 2 float16 (simd within register).
+  // sign bit isolation for unsigned integer as 2 float16 (simd within
+  // register).
   out_vec.x = (~vec.x >> 15) & 0x00010001;
   out_vec.y = (~vec.y >> 15) & 0x00010001;
   out_vec.z = (~vec.z >> 15) & 0x00010001;
@@ -23,7 +24,7 @@ __global__ void positive_mask_inplace_kernel(unsigned short *data) {
   @param size: length of input float16 array (must be a multiple of 2048).
 */
 extern "C" int positive_mask_inplace(unsigned short *data,
-                                      const unsigned long long size) {
+                                     const unsigned long long size) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
