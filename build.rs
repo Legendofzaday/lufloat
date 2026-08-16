@@ -71,6 +71,3 @@ fn link_lib(out_dir: &str) {
     println!("cargo:rustc-link-search=native={rocm_hip_path}/lib");
     println!("cargo:rustc-link-lib=dylib=amdhip64");
 }
-
-
-
