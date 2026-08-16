@@ -16,3 +16,9 @@ jobs:
             - uses: stefanzweifel/git-auto-commit-action@v5
               with:
                   commit_message: "style: auto-format rust files"
+
+    clippy:
+        needs: format
+        steps:
+            - uses: actions/checkout@v4
+            - run: cargo clippy --all-targets --all-features -- -D warnings
