@@ -14,7 +14,8 @@ pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, mask: &mut UnifiedBuffer<'a>) 
         return;
     }
     let padded_size = (data.len + 2047) & !2047;
-    unsafe {
+    let err = unsafe {
         positive_mask(data.ptr as *const u16, padded_size, mask.ptr);
-    }
+    };
+    hip_check(err, file!(), line!());
 }
