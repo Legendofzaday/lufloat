@@ -80,13 +80,22 @@ impl Arena {
         Some(unsafe { NonNull::new_unchecked(ptr) })
     }
 
+    /// Synchronizes the GPU and resets the [`Arena`].
     pub fn reset(&mut self) {
+        unsafe {
+            let err = hipStreamSynchronize(null_mut());
+            hip_check(err, file!(), line!());
+        }
         self.offset.set(0);
     }
 }
 
 impl Drop for Arena {
     fn drop(&mut self) {
+        unsafe {
+            let err = hipStreamSynchronize(null_mut());
+            hip_check(err, file!(), line!());
+        }
         hip_free(self.base_ptr.as_ptr() as *mut c_void);
     }
 }
