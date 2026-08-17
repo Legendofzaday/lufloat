@@ -43,7 +43,7 @@ mod tests {
 
         println!("Kernel dispatched! Waiting for GPU sync during Arena drop...");
         // When `arena` goes out of scope here, `Drop` is called.
-        // Arena::drop triggers hipStreamSynchronize, forcing the CPU to wait 
+        // Arena::drop triggers hipStreamSynchronize, forcing the CPU to wait
         // for the 16 GiB kernel to finish before exiting the test.
     }
 }
