@@ -6,7 +6,7 @@ unsafe extern "C" {
 }
 
 pub(crate) fn apply<'a>(buffer: UnifiedBuffer<'a>) -> UnifiedBuffer<'a> {
-    let err = unsafe { negative_mask_inplace(buffer.ptr, padded_size) };
+    let err = unsafe { negative_mask_inplace(buffer.ptr, buffer.len) };
     hip_check(err, file!(), line!());
     buffer
 }
