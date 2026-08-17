@@ -93,10 +93,10 @@ pub struct UnifiedBuffer<'a> {
 
 impl<'a> UnifiedBuffer<'a> {
     pub fn new(arena: &'a Arena, len: usize) -> Self {
-        debug_assert_ne!(capacity, 0);
-        debug_assert_eq!(capacity % 4096, 0);
+        debug_assert_ne!(len, 0);
+        debug_assert_eq!(len % 2048, 0);
         UnifiedBuffer {
-            ptr: arena.alloc(len).as_ptr() as *mut u16,
+            ptr: arena.alloc(len << 1).as_ptr() as *mut u16,
             len,
             _marker: PhantomData,
         }
