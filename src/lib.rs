@@ -24,6 +24,7 @@ impl<'a> UnifiedBuffer<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     #[should_panic(expected = "[lufloat error] Arena capacity must be greater than 0.")]
     fn arena_capacity_zero() {
