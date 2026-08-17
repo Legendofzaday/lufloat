@@ -9,6 +9,7 @@ use std::{
 
 unsafe extern "C" {
     fn hipMallocManaged(ptr: *mut *mut c_void, size: usize, flags: c_uint) -> c_int;
+    fn hipMemsetAsync(ptr: *mut c_void, value: c_int, count: usize, stream: *mut c_void) -> c_int;
     fn hipFree(ptr: *mut c_void) -> c_int;
     fn hipGetErrorString(hip_error: c_int) -> *const c_char;
     fn hipStreamSynchronize(stream: *mut c_void) -> c_int;
@@ -122,9 +123,8 @@ impl<'a> UnifiedBuffer<'a> {
         );
         let byte_size = ((len + 2047) & !2047) << 1;
         let raw_ptr = arena.alloc(byte_size)?.as_ptr();
-        unsafe {
-            write_bytes(raw_ptr, 0, byte_size);
-        }
+        let err = unsafe { hipMemsetAsync(raw_ptr as *mut c_void, 0, byte_size, null_mut()) };
+        hip_check(err);
         let gpu_ptr = raw_ptr as *mut u16;
         Some(UnifiedBuffer {
             ptr: gpu_ptr,
