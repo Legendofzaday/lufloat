@@ -20,3 +20,13 @@ impl<'a> UnifiedBuffer<'a> {
         negative_mask::apply(self, out_buf);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    #[should_panic(expected = "[lufloat error] Arena capacity must be greater than 0.")]
+    fn arena_capacity_zero() {
+        let _ = Arena::new(0);
+    }
+}
