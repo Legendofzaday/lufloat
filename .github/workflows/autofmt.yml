@@ -10,8 +10,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: cargo fmt --all
-            - run: find . -name "*.hip" -exec clang-format -i {} +
-            - uses: stefanzweifel/git-auto-commit-action@v5
-              with:
-                  commit_message: "style: auto-format rust and hip files"
+            - run: |
+                  cargo fmt --all
+                  find . -type f -name "*.hip" -exec clang-format -i {} +
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  if ! git diff --quiet; then
+                      git add -A
+                      git commit -m "style: auto-format rust and hip files."
+                      git push
+                  fi
