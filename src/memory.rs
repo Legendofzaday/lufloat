@@ -3,7 +3,7 @@ use std::{
     ffi::{CStr, c_char, c_int, c_uint, c_void},
     marker::PhantomData,
     process::abort,
-    ptr::{NonNull, null_mut, write_bytes},
+    ptr::{NonNull, null_mut},
     slice::{from_raw_parts, from_raw_parts_mut},
 };
 
