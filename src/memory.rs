@@ -95,6 +95,7 @@ impl<'a> UnifiedBuffer<'a> {
     pub fn new(arena: &'a Arena, len: usize) -> Self {
         debug_assert_ne!(len, 0);
         debug_assert_eq!(len % 2048, 0);
+        debug_assert!(len >> 11 < u32::MAX as usize);
         UnifiedBuffer {
             ptr: arena.alloc(len << 1).as_ptr() as *mut u16,
             len,
