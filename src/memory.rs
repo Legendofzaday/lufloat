@@ -124,7 +124,7 @@ impl<'a> UnifiedBuffer<'a> {
         let byte_size = ((len + 2047) & !2047) << 1;
         let raw_ptr = arena.alloc(byte_size)?.as_ptr();
         let err = unsafe { hipMemsetAsync(raw_ptr as *mut c_void, 0, byte_size, null_mut()) };
-        hip_check(err);
+        hip_check(err, file!(), line!());
         let gpu_ptr = raw_ptr as *mut u16;
         Some(UnifiedBuffer {
             ptr: gpu_ptr,
