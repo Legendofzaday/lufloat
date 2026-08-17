@@ -18,7 +18,7 @@ pub(crate) fn hip_check(err: c_int, file: &str, line: u32) {
     if err != 0 {
         let err_ptr = unsafe { hipGetErrorString(err) };
         let err_str = if err_ptr.is_null() {
-            String::from("[lufloat error] Unknown.")
+            String::from("[lufloat error] unknown.")
         } else {
             unsafe { CStr::from_ptr(err_ptr) }
                 .to_string_lossy()
@@ -40,13 +40,10 @@ fn hip_malloc(size: usize) -> *mut c_void {
 }
 
 fn hip_free(ptr: *mut c_void) {
-    if !ptr.is_null() {
-        let err = unsafe { hipFree(ptr) };
-        hip_check(err, file!(), line!());
-    }
+    let err = unsafe { hipFree(ptr) };
+    hip_check(err, file!(), line!());
 }
 
-/// A memory manager for [`UnifiedBuffer`].
 pub struct Arena {
     base_ptr: NonNull<u8>,
     capacity: usize,
@@ -54,36 +51,21 @@ pub struct Arena {
 }
 
 impl Arena {
-    /// Constructs a new empty [`Arena`] with the specified byte capacity.
     pub fn new(capacity: usize) -> Self {
-        assert_ne!(
-            capacity, 0,
-            "[lufloat error] Arena capacity must be greater than 0."
-        );
-        let aligned_capacity = capacity
-            .checked_add(4095)
-            .expect("[lufloat error] Arena capacity overflowed during alignment.")
-            & !4095;
-        let raw_ptr = hip_malloc(aligned_capacity) as *mut u8;
         Self {
-            base_ptr: NonNull::new(raw_ptr).expect("[lufloat error] hipSuccess with null pointer."),
-            capacity: aligned_capacity,
+            base_ptr: NonNull::new(hip_malloc(capacity) as *mut u8).unwrap(),
+            capacity,
             offset: Cell::new(0),
         }
     }
 
-    pub(crate) fn alloc(&self, size: usize) -> Option<NonNull<u8>> {
-        let aligned_offset = self.offset.get().checked_add(255)? & !255;
-        let end = aligned_offset.checked_add(size)?;
-        if end > self.capacity {
-            return None;
-        }
+    fn alloc(&self, size: usize) -> NonNull<u8> {
+        let aligned_offset = (self.offset.get() + 255) & !255;
         let ptr = unsafe { self.base_ptr.as_ptr().add(aligned_offset) };
-        self.offset.set(end);
-        Some(unsafe { NonNull::new_unchecked(ptr) })
+        self.offset.set(aligned_offset + size);
+        unsafe { NonNull::new_unchecked(ptr) }
     }
 
-    /// Synchronizes the GPU and resets the [`Arena`].
     pub fn reset(&mut self) {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
@@ -99,7 +81,6 @@ impl Drop for Arena {
     }
 }
 
-/// A view of `f16` elements stored as `u16` in an [`Arena`].
 pub struct UnifiedBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
@@ -107,41 +88,21 @@ pub struct UnifiedBuffer<'a> {
 }
 
 impl<'a> UnifiedBuffer<'a> {
-    /// Constructs a new empty [`UnifiedBuffer`] with the specified `f16` capacity.
-    pub fn new(arena: &'a Arena, len: usize) -> Option<Self> {
-        if len == 0 {
-            return Some(UnifiedBuffer {
-                ptr: null_mut(),
-                len: 0,
-                _marker: PhantomData,
-            });
-        }
-        assert!(
-            len <= ((u32::MAX as usize) << 11),
-            "[lufloat error] len exceeds grid limits."
-        );
-        Some(UnifiedBuffer {
-            ptr: arena.alloc(((len + 2047) & !2047) << 1)?.as_ptr() as *mut u16,
+    pub fn new(arena: &'a Arena, len: usize) -> Self {
+        UnifiedBuffer {
+            ptr: arena.alloc(len << 1).as_ptr() as *mut u16,
             len,
             _marker: PhantomData,
-        })
+        }
     }
 
-    /// Synchronizes the GPU and returns the buffer.
-    pub fn host_slice(&self) -> &[u16] {
-        if self.len == 0 || self.ptr.is_null() {
-            return &[];
-        }
+    pub fn slice(&self) -> &[u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
         unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
-    /// Synchronizes the GPU and returns the mutable buffer.
-    pub fn host_slice_mut(&mut self) -> &mut [u16] {
-        if self.len == 0 || self.ptr.is_null() {
-            return &mut [];
-        }
+    pub fn slice_mut(&mut self) -> &mut [u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
         unsafe { from_raw_parts_mut(self.ptr, self.len) }
