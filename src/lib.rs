@@ -36,7 +36,7 @@ mod tests {
     fn arena_capacity_overflow() {
         let _ = Arena::new(usize::MAX - 4094);
     }
-    
+
     #[test]
     fn arena_capacity_alignment() {
         for capacity in 1..10000 {
@@ -48,7 +48,10 @@ mod tests {
             } else {
                 12288
             };
-            assert_eq!(arena.capacity, expected_capacity, "arena capacity alignment failed for: {capacity}");
+            assert_eq!(
+                arena.capacity, expected_capacity,
+                "arena capacity alignment failed for: {capacity}"
+            );
         }
     }
 }
