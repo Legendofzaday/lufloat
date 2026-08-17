@@ -30,7 +30,7 @@ mod tests {
     fn arena_capacity_zero() {
         let _ = Arena::new(0);
     }
-    
+
     #[test]
     #[should_panic(expected = "[lufloat error] Arena capacity overflowed during alignment.")]
     fn arena_capacity_overflow() {
