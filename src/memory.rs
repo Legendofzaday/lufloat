@@ -90,7 +90,7 @@ pub struct UnifiedBuffer<'a> {
 impl<'a> UnifiedBuffer<'a> {
     pub fn new(arena: &'a Arena, len: usize) -> Self {
         UnifiedBuffer {
-            ptr: arena.alloc(len << 1).as_ptr() as *mut u16,
+            ptr: arena.alloc(len).as_ptr() as *mut u16,
             len,
             _marker: PhantomData,
         }
