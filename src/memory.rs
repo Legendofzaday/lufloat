@@ -53,7 +53,8 @@ pub struct Arena {
 impl Arena {
     pub fn new(capacity: usize) -> Self {
         debug_assert_ne!(capacity, 0);
-        debug_assert_eq!(capacity % 4096, 0);
+        debug_assert_eq!(capacity % 2048, 0);
+        let capacity = capacity << 1;
         Self {
             base_ptr: NonNull::new(hip_malloc(capacity) as *mut u8).unwrap(),
             capacity,
