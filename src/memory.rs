@@ -63,8 +63,10 @@ impl Arena {
 
     fn alloc(&self, size: usize) -> NonNull<u8> {
         let current = self.offset.get();
+        let end = current + size;
+        debug_assert!(end <= self.capacity);
         let ptr = unsafe { self.base_ptr.as_ptr().add(current) };
-        self.offset.set(current + size);
+        self.offset.set(end);
         unsafe { NonNull::new_unchecked(ptr) }
     }
 
