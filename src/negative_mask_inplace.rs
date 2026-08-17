@@ -6,10 +6,6 @@ unsafe extern "C" {
 }
 
 pub(crate) fn apply<'a>(buffer: UnifiedBuffer<'a>) -> UnifiedBuffer<'a> {
-    if buffer.len == 0 {
-        return buffer;
-    }
-    let padded_size = (buffer.len + 2047) & !2047;
     let err = unsafe { negative_mask_inplace(buffer.ptr, padded_size) };
     hip_check(err, file!(), line!());
     buffer
