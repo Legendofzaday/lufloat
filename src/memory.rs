@@ -9,7 +9,12 @@ use std::{
 
 unsafe extern "C" {
     fn hipMallocManaged(dev_ptr: *mut *mut c_void, size: usize, flags: c_uint) -> c_int;
-    fn hipMemsetAsync(dst: *mut c_void, myValue: c_int, sizeBytes: usize, stream: *mut c_void) -> c_int;
+    fn hipMemsetAsync(
+        dst: *mut c_void,
+        myValue: c_int,
+        sizeBytes: usize,
+        stream: *mut c_void,
+    ) -> c_int;
     fn hipFree(ptr: *mut c_void) -> c_int;
     fn hipGetErrorString(hipError: c_int) -> *const c_char;
     fn hipStreamSynchronize(stream: *mut c_void) -> c_int;
