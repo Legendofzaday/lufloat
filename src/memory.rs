@@ -60,9 +60,9 @@ impl Arena {
     }
 
     fn alloc(&self, size: usize) -> NonNull<u8> {
-        let aligned_offset = (self.offset.get() + 255) & !255;
-        let ptr = unsafe { self.base_ptr.as_ptr().add(aligned_offset) };
-        self.offset.set(aligned_offset + size);
+        let current = self.offset.get();
+        let ptr = unsafe { self.base_ptr.as_ptr().add(current) };
+        self.offset.set(current + size);
         unsafe { NonNull::new_unchecked(ptr) }
     }
 
