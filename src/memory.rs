@@ -9,12 +9,6 @@ use std::{
 
 unsafe extern "C" {
     fn hipMallocManaged(dev_ptr: *mut *mut c_void, size: usize, flags: c_uint) -> c_int;
-    fn hipMemsetAsync(
-        dst: *mut c_void,
-        myValue: c_int,
-        sizeBytes: usize,
-        stream: *mut c_void,
-    ) -> c_int;
     fn hipFree(ptr: *mut c_void) -> c_int;
     fn hipGetErrorString(hipError: c_int) -> *const c_char;
     fn hipStreamSynchronize(stream: *mut c_void) -> c_int;
@@ -126,13 +120,8 @@ impl<'a> UnifiedBuffer<'a> {
             len <= ((u32::MAX as usize) << 11),
             "[lufloat error] len exceeds grid limits."
         );
-        let byte_size = ((len + 2047) & !2047) << 1;
-        let raw_ptr = arena.alloc(byte_size)?.as_ptr();
-        let err = unsafe { hipMemsetAsync(raw_ptr as *mut c_void, 0, byte_size, null_mut()) };
-        hip_check(err, file!(), line!());
-        let gpu_ptr = raw_ptr as *mut u16;
         Some(UnifiedBuffer {
-            ptr: gpu_ptr,
+            ptr: arena.alloc(((len + 2047) & !2047) << 1)?.as_ptr() as *mut u16,
             len,
             _marker: PhantomData,
         })
