@@ -123,6 +123,25 @@ impl<'a> UnifiedBuffer<'a> {
         unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
+    /// Provides the data for writing operations.
+    ///
+    /// # Examples
+    ///
+    /// ## Writing 0.5 to the first index
+    ///
+    /// The formula for an `f16` is:
+    /// $$(-1)^{\text{sign}} \times (1 + \text{mantissa}) \times 2^{(\text{exponent} - 15)}$$.
+    /// * **Sign (1 bit):** 0 for positive.
+    /// * **Exponent (5 bits):** -1 needed + 15 bias = 14 i.e 01110 in binary
+    /// * **Mantisaa (10 bits):** 0 needed.
+    ///
+    /// ```rust
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// # let arena = Arena::new(2048);
+    /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
+    /// let data = buffer.slice_mut();
+    /// data[0] = 0b0_01110_0000000000;
+    /// ```
     pub fn slice_mut(&mut self) -> &mut [u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
