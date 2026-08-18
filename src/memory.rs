@@ -106,9 +106,7 @@ impl<'a> UnifiedBuffer<'a> {
 
     /// Provides the data for reading outputs.
     ///
-    /// # Examples
-    ///
-    /// ## Reading the first element
+    /// # Example
     ///
     /// ```rust
     /// use lufloat::{Arena, UnifiedBuffer};
@@ -127,9 +125,7 @@ impl<'a> UnifiedBuffer<'a> {
 
     /// Provides the data for writing inputs.
     ///
-    /// # Examples
-    ///
-    /// ## Writing 0.5 to the first element
+    /// # Example
     ///
     /// ```rust
     /// use lufloat::{Arena, UnifiedBuffer};
