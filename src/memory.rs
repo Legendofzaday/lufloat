@@ -104,14 +104,12 @@ impl<'a> UnifiedBuffer<'a> {
         }
     }
 
-    /// Provides data for reading.
     pub fn slice(&self) -> &[u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
         unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
-    /// Provides data for writing.
     pub fn slice_mut(&mut self) -> &mut [u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
