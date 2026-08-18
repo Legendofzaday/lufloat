@@ -93,6 +93,16 @@ pub struct UnifiedBuffer<'a> {
 }
 
 impl<'a> UnifiedBuffer<'a> {
+    /// Provides buffer for storing.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(6144);
+    /// let buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let buffer_b = UnifiedBuffer::new(&arena, 4096);
+    /// ```
     pub fn new(arena: &'a Arena, len: usize) -> Self {
         debug_assert_ne!(len, 0);
         debug_assert_eq!(len % 2048, 0);
