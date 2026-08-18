@@ -104,6 +104,21 @@ impl<'a> UnifiedBuffer<'a> {
         }
     }
 
+    /// Provides data for reading.
+    ///
+    /// # Performance
+    ///
+    /// Use only for readback.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(2048);
+    /// let buffer = UnifiedBuffer::new(&arena, 2048);
+    /// let data = buffer.slice();
+    /// println!("The first element is: {}", data[0]);
+    /// ```
     pub fn slice(&self) -> &[u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
@@ -114,7 +129,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Performance
     ///
-    /// Use only for initializing.
+    /// Use only for initialization.
     ///
     /// # Examples
     ///
