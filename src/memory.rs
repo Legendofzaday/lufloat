@@ -103,7 +103,18 @@ impl<'a> UnifiedBuffer<'a> {
             _marker: PhantomData,
         }
     }
-
+    
+    /// Provides the data for reading results.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(2048);
+    /// let buffer = UnifiedBuffer::new(&arena, 2048);
+    /// let data = buffer.slice();
+    /// println!("First element: {}", data[0]);
+    /// ```
     pub fn slice(&self) -> &[u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
