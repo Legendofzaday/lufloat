@@ -110,6 +110,18 @@ impl<'a> UnifiedBuffer<'a> {
         unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
+    /// Provides data for writing.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(2048);
+    /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
+    /// let data = buffer.slice_mut();
+    /// data[0] = 0b0_10101_0001010000;
+    /// data[1] = 0b0_10111_1010010000;
+    /// ```
     pub fn slice_mut(&mut self) -> &mut [u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
