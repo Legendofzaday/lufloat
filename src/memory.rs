@@ -103,7 +103,7 @@ impl<'a> UnifiedBuffer<'a> {
             _marker: PhantomData,
         }
     }
-    
+
     /// Provides the data for reading results.
     ///
     /// # Examples
