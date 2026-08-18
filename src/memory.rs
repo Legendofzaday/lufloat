@@ -129,7 +129,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ## Writing 0.5 to the first index
+    /// ## Writing 0.5 to the first element
     ///
     /// ```rust
     /// use lufloat::{Arena, UnifiedBuffer};
