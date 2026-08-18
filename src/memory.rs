@@ -51,10 +51,10 @@ pub struct Arena {
 }
 
 impl Arena {
-    pub fn new(capacity: usize) -> Self {
-        debug_assert_ne!(capacity, 0);
-        debug_assert_eq!(capacity % 2048, 0);
-        let capacity = capacity << 1;
+    pub fn new(len: usize) -> Self {
+        debug_assert_ne!(len, 0);
+        debug_assert_eq!(len % 2048, 0);
+        let capacity = len << 1;
         Self {
             base_ptr: NonNull::new(hip_malloc(capacity) as *mut u8).unwrap(),
             capacity,
@@ -94,6 +94,8 @@ pub struct UnifiedBuffer<'a> {
 
 impl<'a> UnifiedBuffer<'a> {
     /// Provides buffer for storing.
+    ///
+    /// # Panics
     ///
     /// # Examples
     ///
