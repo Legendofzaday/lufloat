@@ -44,6 +44,7 @@ fn hip_free(ptr: *mut c_void) {
     hip_check(err, file!(), line!());
 }
 
+/// Reserves contigious memory.
 pub struct Arena {
     base_ptr: NonNull<u8>,
     capacity: usize,
