@@ -68,7 +68,7 @@ impl Arena {
         debug_assert!(end <= self.capacity);
         let ptr = unsafe { self.base_ptr.as_ptr().add(current) };
         self.offset.set(end);
-        unsafe { NonNull::new_unchecked(ptr) }
+        NonNull::new(ptr).unwrap()
     }
 
     pub fn reset(&mut self) {
