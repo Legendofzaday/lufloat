@@ -112,6 +112,10 @@ impl<'a> UnifiedBuffer<'a> {
 
     /// Provides data for writing.
     ///
+    /// # Performance
+    ///
+    /// **Warning:** Call this method only once during initialization for optimal performance.
+    ///
     /// # Examples
     ///
     /// ```rust
