@@ -125,7 +125,7 @@ impl<'a> UnifiedBuffer<'a> {
         unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
-    /// Provides the data for writing operations.
+    /// Provides the data for writing inputs.
     ///
     /// # Examples
     ///
