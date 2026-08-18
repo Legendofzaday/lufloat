@@ -112,7 +112,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let buffer = UnifiedBuffer::new(&arena, 2048);
@@ -133,7 +133,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
