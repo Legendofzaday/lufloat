@@ -104,38 +104,14 @@ impl<'a> UnifiedBuffer<'a> {
         }
     }
 
-    /// Provides the data for reading outputs.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// use lufloat::{Arena, UnifiedBuffer};
-    ///
-    /// let arena = Arena::new(2048);
-    /// let buffer = UnifiedBuffer::new(&arena, 2048);
-    /// let data = buffer.slice();
-    ///
-    /// println!("First element: {}", data[0]);
-    /// ```
+    /// Provides the data for reading elements.
     pub fn slice(&self) -> &[u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
         unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
-    /// Provides the data for writing inputs.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// use lufloat::{Arena, UnifiedBuffer};
-    ///
-    /// let arena = Arena::new(2048);
-    /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
-    /// let data = buffer.slice_mut();
-    ///
-    /// data[0] = 0b0_01110_0000000000;
-    /// ```
+    /// Provides the data for writing elements.
     pub fn slice_mut(&mut self) -> &mut [u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
