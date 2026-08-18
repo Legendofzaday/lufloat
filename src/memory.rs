@@ -104,7 +104,7 @@ impl<'a> UnifiedBuffer<'a> {
         }
     }
 
-    /// Provides the data for reading results.
+    /// Provides the data for reading outputs.
     ///
     /// # Examples
     ///
