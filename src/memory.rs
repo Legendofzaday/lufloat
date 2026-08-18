@@ -114,7 +114,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Performance
     ///
-    /// **Warning:** Call this method only once during initialization for optimal performance.
+    /// Use only for initializing for optimal performance.
     ///
     /// # Examples
     ///
