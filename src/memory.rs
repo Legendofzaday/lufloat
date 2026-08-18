@@ -86,6 +86,7 @@ impl Drop for Arena {
     }
 }
 
+/// Stores `f16` elements as `u16` in an [`Arena`].
 pub struct UnifiedBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
@@ -104,14 +105,14 @@ impl<'a> UnifiedBuffer<'a> {
         }
     }
 
-    /// Provides the data for reading elements.
+    /// Provides data for reading elements.
     pub fn slice(&self) -> &[u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
         unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
-    /// Provides the data for writing elements.
+    /// Provides data for writing elements.
     pub fn slice_mut(&mut self) -> &mut [u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
