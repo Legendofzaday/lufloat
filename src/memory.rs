@@ -44,7 +44,6 @@ fn hip_free(ptr: *mut c_void) {
     hip_check(err, file!(), line!());
 }
 
-/// Reserves contigious memory.
 pub struct Arena {
     base_ptr: NonNull<u8>,
     capacity: usize,
@@ -87,7 +86,6 @@ impl Drop for Arena {
     }
 }
 
-/// Stores `f16` elements as `u16` in an [`Arena`].
 pub struct UnifiedBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
@@ -106,14 +104,14 @@ impl<'a> UnifiedBuffer<'a> {
         }
     }
 
-    /// Provides data for reading elements.
+    /// Provides data for reading.
     pub fn slice(&self) -> &[u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
         unsafe { from_raw_parts(self.ptr, self.len) }
     }
 
-    /// Provides data for writing elements.
+    /// Provides data for writing.
     pub fn slice_mut(&mut self) -> &mut [u16] {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
