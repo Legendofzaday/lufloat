@@ -135,7 +135,7 @@ impl<'a> UnifiedBuffer<'a> {
     /// * `len` is `0`.
     /// * `len` is not perfect multiple of `2048`.
     /// * `len` exceeds `u32::MAX * 2048`.
-    /// * `len` exceeds remaining capacity of `arena`.
+    /// * `len` exceeds remaining `arena` capacity.
     ///
     /// # Examples
     ///
