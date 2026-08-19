@@ -1,4 +1,4 @@
-pub mod memory;
+mod memory;
 mod negative_mask;
 mod negative_mask_inplace;
 mod positive_mask;
