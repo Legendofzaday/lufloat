@@ -5,8 +5,7 @@ unsafe extern "C" {
     fn positive_mask_inplace(data: *mut u16, size: usize) -> c_int;
 }
 
-pub(crate) fn apply<'a>(buffer: UnifiedBuffer<'a>) -> UnifiedBuffer<'a> {
+pub(crate) fn apply(buffer: &mut UnifiedBuffer<'_>) {
     let err = unsafe { positive_mask_inplace(buffer.ptr, buffer.len) };
     hip_check(err, file!(), line!());
-    buffer
 }
