@@ -71,6 +71,22 @@ impl Arena {
         NonNull::new(ptr).unwrap()
     }
 
+    /// Resets the `arena` for reuse.
+    ///
+    /// # Performance
+    ///
+    /// Use only when `arena` is full.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let mut arena = Arena::new(6144);
+    /// let buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let buffer_b = UnifiedBuffer::new(&arena, 4096);
+    /// arena.reset();
+    /// let buffer_c = UnifiedBuffer::new(&arena, 6144);
+    /// ```
     pub fn reset(&mut self) {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
