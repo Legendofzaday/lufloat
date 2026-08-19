@@ -71,7 +71,7 @@ impl Arena {
         NonNull::new(ptr).unwrap()
     }
 
-    /// Resets the `arena` for reuse.
+    /// Resets `arena` for reuse.
     ///
     /// # Performance
     ///
