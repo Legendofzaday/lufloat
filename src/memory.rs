@@ -71,7 +71,7 @@ impl Arena {
         NonNull::new(ptr).unwrap()
     }
 
-    /// Resets `arena` for reuse.
+    /// Resets allocator for reuse.
     ///
     /// # Performance
     ///
