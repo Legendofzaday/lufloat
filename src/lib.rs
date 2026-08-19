@@ -33,8 +33,8 @@ impl<'a> UnifiedBuffer<'a> {
     }
 
     /// Replaces negatives with 1, positives with 0.
-    pub fn negative_mask_inplace(self) -> Self {
-        negative_mask_inplace::apply(self)
+    pub fn negative_mask_inplace(&mut self) {
+        negative_mask_inplace::apply(self);
     }
 
     /// Converts negatives to 0, positives to 1.
@@ -63,7 +63,7 @@ impl<'a> UnifiedBuffer<'a> {
     }
 
     /// Replaces negatives with 0, positives with 1.
-    pub fn positive_mask_inplace(self) -> Self {
-        positive_mask_inplace::apply(self)
+    pub fn positive_mask_inplace(&mut self) {
+        positive_mask_inplace::apply(self);
     }
 }
