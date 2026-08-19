@@ -86,6 +86,7 @@ impl Drop for Arena {
     }
 }
 
+/// Stores `f16` elements as `u16` in an [`Arena`].
 pub struct UnifiedBuffer<'a> {
     pub(crate) ptr: *mut u16,
     pub(crate) len: usize,
