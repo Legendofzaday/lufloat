@@ -11,10 +11,10 @@ __global__ void positive_mask_inplace_kernel(unsigned short *data) {
   uint4 out_vec;
   // sign bit isolation for unsigned integer as 2 float16 (simd within
   // register).
-  out_vec.x = (~vec.x >> 15) & 0x00010001;
-  out_vec.y = (~vec.y >> 15) & 0x00010001;
-  out_vec.z = (~vec.z >> 15) & 0x00010001;
-  out_vec.w = (~vec.w >> 15) & 0x00010001;
+  out_vec.x = ((~vec.x >> 15) & 0x00010001) * 0x3C00;
+  out_vec.y = ((~vec.y >> 15) & 0x00010001) * 0x3C00;
+  out_vec.z = ((~vec.z >> 15) & 0x00010001) * 0x3C00;
+  out_vec.w = ((~vec.w >> 15) & 0x00010001) * 0x3C00;
   // 128bit vectorized store (uint4 as 8 float16).
   *reinterpret_cast<uint4 *>(&data[idx]) = out_vec;
 }
