@@ -51,6 +51,23 @@ pub struct Arena {
 }
 
 impl Arena {
+    /// Provides reusable allocator.
+    ///
+    /// # Panics
+    ///
+    /// * `len` is `0`.
+    /// * `len` is not a perfect multiple of `2048`.
+    ///
+    /// # Performance
+    ///
+    /// Use only for initialization.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::Arena;
+    /// let arena = Arena::new(2048);
+    /// ```
     pub fn new(len: usize) -> Self {
         debug_assert_ne!(len, 0);
         debug_assert_eq!(len % 2048, 0);
