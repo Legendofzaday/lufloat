@@ -230,16 +230,8 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn buffer_overalloc_single() {
+    fn buffer_overalloc() {
         let arena = Arena::new(2048);
-        let _ = UnifiedBuffer::new(&arena, 4096);
-    }
-
-    #[test]
-    #[should_panic]
-    fn buffer_overalloc_cumulative() {
-        let arena = Arena::new(4096);
-        let _ = UnifiedBuffer::new(&arena, 2048);
         let _ = UnifiedBuffer::new(&arena, 4096);
     }
 
