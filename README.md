@@ -11,14 +11,9 @@
 
 ## Usage
 
-### Add to `Cargo.toml`
-
-```toml
-[dependencies]
-lufloat = "0.1.0"
+```bash
+cargo add lufloat
 ```
-
-### Then
 
 ```rust
 use lufloat::{Arena, UnifiedBuffer};
