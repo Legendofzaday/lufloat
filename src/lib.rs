@@ -1,5 +1,14 @@
 //! Fastest FP16 Math and AI Library for AMD APUs.
 //!
+//! # Getting Started
+//!
+//! ## Add to `Cargo.toml`
+//!
+//! ```toml
+//! [dependencies]
+//! lufloat = "0.1.0"
+//! ```
+//!
 //! # License
 //!
 //! lufloat
