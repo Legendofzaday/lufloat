@@ -26,8 +26,8 @@ let arena = Arena::new(2048);
 let mut buffer = UnifiedBuffer::new(&arena, 2048);
 let input_data = buffer.slice_mut();
 input_data[0] = 0b1_01111_0000000000; // -1.0
-input_data[1] = 0b0_00000_0000000000; // +0.0
-input_data[2] = 0b0_01111_0000000000; // +1.0
+input_data[1] = 0b0_00000_0000000000; // 0.0
+input_data[2] = 0b0_01111_0000000000; // 1.0
 buffer.positive_mask_inplace();
 let output_data = buffer.slice();
 println!("The first 3 elements are: {:?}", &output_data[..3]); // 0.0, 0.0, 1.0
