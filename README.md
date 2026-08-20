@@ -9,7 +9,7 @@
 * **ROCm/HIP `hipcc`**
 * **binutils `ar`**
 
-## Getting Started
+## Usage
 
 ### Add to `Cargo.toml`
 
