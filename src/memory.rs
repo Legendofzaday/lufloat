@@ -70,8 +70,8 @@ impl Arena {
     /// let arena = Arena::new(2048);
     /// ```
     pub fn new(len: usize) -> Self {
-        debug_assert_ne!(len, 0);
-        debug_assert_eq!(len % 2048, 0);
+        assert_ne!(len, 0);
+        assert_eq!(len % 2048, 0);
         let capacity = len << 1;
         Self {
             base_ptr: NonNull::new(hip_malloc(capacity) as *mut u8).unwrap(),
@@ -83,7 +83,7 @@ impl Arena {
     fn alloc(&self, size: usize) -> NonNull<u8> {
         let current = self.offset.get();
         let end = current + size;
-        debug_assert!(end <= self.capacity);
+        assert!(end <= self.capacity);
         let ptr = unsafe { self.base_ptr.as_ptr().add(current) };
         self.offset.set(end);
         NonNull::new(ptr).unwrap()
@@ -146,9 +146,9 @@ impl<'a> UnifiedBuffer<'a> {
     /// let buffer_b = UnifiedBuffer::new(&arena, 4096);
     /// ```
     pub fn new(arena: &'a Arena, len: usize) -> Self {
-        debug_assert_ne!(len, 0);
-        debug_assert_eq!(len % 2048, 0);
-        debug_assert!(len >> 11 < u32::MAX as usize);
+        assert_ne!(len, 0);
+        assert_eq!(len % 2048, 0);
+        assert!(len >> 11 < u32::MAX as usize);
         UnifiedBuffer {
             ptr: arena.alloc(len << 1).as_ptr() as *mut u16,
             len,
