@@ -234,7 +234,7 @@ mod tests {
         let arena = Arena::new(2048);
         let _ = UnifiedBuffer::new(&arena, 4096);
     }
-    
+
     #[test]
     #[should_panic]
     fn buffer_overalloc_cumulative() {
@@ -242,7 +242,7 @@ mod tests {
         let _ = UnifiedBuffer::new(&arena, 2048);
         let _ = UnifiedBuffer::new(&arena, 4096);
     }
-    
+
     #[test]
     fn arena_reset() {
         let mut arena = Arena::new(4096);
