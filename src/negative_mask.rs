@@ -15,7 +15,7 @@ pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, mask: &mut UnifiedBuffer<'a>) 
 mod tests {
     use super::*;
     use crate::memory::{Arena, UnifiedBuffer};
-    
+
     #[test]
     fn exhaustive_negative_mask() {
         let arena = Arena::new(1 << 17);
