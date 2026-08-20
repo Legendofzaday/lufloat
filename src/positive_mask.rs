@@ -28,10 +28,10 @@ mod tests {
         apply(&data, &mut mask);
         let output_data = mask.slice();
         for i in 0..(1 << 16) {
-            let expected = if (i as u16 & 0x8000) == 0 {
-                0x3C00
-            } else {
+            let expected = if (i as u16 & 0x8000) != 0 {
                 0x0000
+            } else {
+                0x3C00
             };
             assert_eq!(output_data[i], expected, "Failed at {:016b}", i as u16);
         }
