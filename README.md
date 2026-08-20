@@ -4,10 +4,10 @@
 
 ## Requirements
 
-* **AMD APU**
-* **Linux**
-* **ROCm/HIP `hipcc`**
-* **binutils `ar`**
+* AMD APU
+* Linux
+* ROCm/HIP `hipcc`
+* binutils `ar`
 
 ## Usage
 
