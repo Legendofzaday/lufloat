@@ -1,3 +1,5 @@
+//! Fastest FP16 Math and AI Library for AMD APUs.
+
 mod memory;
 mod negative_mask;
 mod negative_mask_inplace;
