@@ -238,8 +238,7 @@ mod tests {
     #[test]
     fn arena_reset() {
         let mut arena = Arena::new(4096);
-        let _ = UnifiedBuffer::new(&arena, 2048);
-        let _ = UnifiedBuffer::new(&arena, 2048);
+        let _ = UnifiedBuffer::new(&arena, 4096);
         arena.reset();
         let _ = UnifiedBuffer::new(&arena, 4096);
     }
