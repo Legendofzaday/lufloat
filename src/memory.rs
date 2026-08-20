@@ -134,7 +134,6 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// * `len` is `0`.
     /// * `len` is not perfect multiple of `2048`.
-    /// * `len` exceeds `u32::MAX * 2048`.
     /// * `len` exceeds remaining `arena` capacity.
     ///
     /// # Examples
@@ -148,7 +147,6 @@ impl<'a> UnifiedBuffer<'a> {
     pub fn new(arena: &'a Arena, len: usize) -> Self {
         assert_ne!(len, 0);
         assert_eq!(len % 2048, 0);
-        assert!(len >> 11 < u32::MAX as usize);
         UnifiedBuffer {
             ptr: arena.alloc(len << 1).as_ptr() as *mut u16,
             len,
@@ -197,5 +195,60 @@ impl<'a> UnifiedBuffer<'a> {
         let err = unsafe { hipStreamSynchronize(null_mut()) };
         hip_check(err, file!(), line!());
         unsafe { from_raw_parts_mut(self.ptr, self.len) }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[should_panic]
+    fn arena_zero() {
+        let _ = Arena::new(0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn arena_unaligned() {
+        let _ = Arena::new(2047);
+    }
+
+    #[test]
+    #[should_panic]
+    fn buffer_zero() {
+        let arena = Arena::new(2048);
+        let _ = UnifiedBuffer::new(&arena, 0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn buffer_unaligned() {
+        let arena = Arena::new(2048);
+        let _ = UnifiedBuffer::new(&arena, 2047);
+    }
+
+    #[test]
+    #[should_panic]
+    fn buffer_overalloc_single() {
+        let arena = Arena::new(2048);
+        let _ = UnifiedBuffer::new(&arena, 4096);
+    }
+    
+    #[test]
+    #[should_panic]
+    fn buffer_overalloc_cumulative() {
+        let arena = Arena::new(4096);
+        let _ = UnifiedBuffer::new(&arena, 2048);
+        let _ = UnifiedBuffer::new(&arena, 4096);
+    }
+    
+    #[test]
+    fn arena_reset() {
+        let mut arena = Arena::new(4096);
+        let _ = UnifiedBuffer::new(&arena, 2048);
+        let _ = UnifiedBuffer::new(&arena, 2048);
+        arena.reset();
+        let _ = UnifiedBuffer::new(&arena, 4096);
     }
 }
