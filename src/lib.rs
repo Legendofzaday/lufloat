@@ -1,5 +1,9 @@
 //! Fastest FP16 Math and AI Library for AMD APUs.
 //!
+//! # Requirements
+//!
+//! AMD APU on Linux with ROCm/HIP `hipcc` and binutils `ar`.
+//!
 //! # Getting Started
 //!
 //! ## Add to `Cargo.toml`
