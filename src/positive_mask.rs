@@ -10,3 +10,30 @@ pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, mask: &mut UnifiedBuffer<'a>) 
     let err = unsafe { positive_mask(data.ptr as *const u16, data.len, mask.ptr) };
     hip_check(err, file!(), line!());
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::memory::{Arena, UnifiedBuffer};
+
+    #[test]
+    fn exhaustive_positive_mask() {
+        let arena = Arena::new(1 << 17);
+        let mut data = UnifiedBuffer::new(&arena, 1 << 16);
+        let mut mask = UnifiedBuffer::new(&arena, 1 << 16);
+        let input_data = data.slice_mut();
+        for i in 0..(1 << 16) {
+            input_data[i] = i as u16;
+        }
+        apply(&data, &mut mask);
+        let output_data = mask.slice();
+        for i in 0..(1 << 16) {
+            let expected = if (i as u16 & 0x8000) == 0 {
+                0x3C00
+            } else {
+                0x0000
+            };
+            assert_eq!(output_data[i], expected, "Failed at {:016b}", i as u16);
+        }
+    }
+}
