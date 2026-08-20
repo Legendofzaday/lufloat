@@ -9,16 +9,16 @@
 * **ROCm/HIP `hipcc`**
 * **binutils `ar`**
 
-# Getting Started
+## Getting Started
 
-## Add to `Cargo.toml`
+### Add to `Cargo.toml`
 
 ```toml
 [dependencies]
 lufloat = "0.1.0"
 ```
 
-## Then
+### Then
 
 ```rust
 use lufloat::{Arena, UnifiedBuffer};
@@ -33,7 +33,7 @@ let output_data = buffer.slice();
 println!("The first 3 elements are: {:?}", &output_data[..3]); // 0.0, 0.0, 1.0
 ```
 
-# License
+## License
 
 lufloat
 Copyright (C) 2026  Thopuri Omkar Eeswar
