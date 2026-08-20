@@ -6,7 +6,7 @@ unsafe extern "C" {
 }
 
 pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, mask: &mut UnifiedBuffer<'a>) {
-    debug_assert_eq!(data.len, mask.len);
+    assert_eq!(data.len, mask.len);
     let err = unsafe { positive_mask(data.ptr as *const u16, data.len, mask.ptr) };
     hip_check(err, file!(), line!());
 }
