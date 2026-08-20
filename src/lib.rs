@@ -2,7 +2,10 @@
 //!
 //! # Requirements
 //!
-//! AMD APU on Linux with ROCm/HIP `hipcc` and binutils `ar`.
+//! * **AMD APU**
+//! * **Linux**
+//! * **ROCm/HIP `hipcc`**
+//! * **binutils `ar`**
 //!
 //! # Getting Started
 //!
