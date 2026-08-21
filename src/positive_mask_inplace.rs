@@ -6,8 +6,16 @@ unsafe extern "C" {
 }
 
 pub(crate) fn apply(buffer: &mut UnifiedBuffer<'_>) {
-    let err = unsafe { positive_mask_inplace(buffer.ptr, buffer.len) };
-    hip_check(err, file!(), line!());
+    let mut remaining = buffer.len;
+    let mut offset = 0;
+    while remaining > 0 {
+        let current = remaining.min(1 << 34);
+        let ptr = unsafe { buffer.ptr.add(offset) };
+        let err = unsafe { positive_mask_inplace(ptr, current) };
+        hip_check(err, file!(), line!());
+        remaining -= current;
+        offset += current;
+    }
 }
 
 #[cfg(test)]
