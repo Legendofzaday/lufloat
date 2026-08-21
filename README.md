@@ -9,6 +9,8 @@
 
 **⚠️ WORK IN PROGRESS PRE ALPHA**
 
+**Note:** Tested on AI Max+ 395.
+
 ## Usage
 
 ```bash
