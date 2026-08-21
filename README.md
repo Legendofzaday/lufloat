@@ -1,7 +1,7 @@
 # lufloat
 
 ![Rust](https://img.shields.io/badge/Rust-black?logo=rust&logoColor=white)
-![ROCm / HIP](https://img.shields.io/badge/ROCm%20%2F%20HIP-black?logo=amd&logoColor=white)
+![ROCm/HIP](https://img.shields.io/badge/ROCm%2FHIP-black?logo=amd&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-black?logo=linux&logoColor=white)
 ![AGPL v3.0](https://img.shields.io/badge/AGPL--v3.0-black?logo=gnu&logoColor=white)
 
