@@ -1,9 +1,9 @@
 # lufloat
 
-![Rust](https://img.shields.io/badge/Rust-white?style=flat-square&logo=rust&logoColor=000000&labelColor=white&color=white)
-![ROCm / HIP](https://img.shields.io/badge/ROCm%20%2F%20HIP-white?style=flat-square&logo=amd&logoColor=000000&labelColor=white&color=white)
-![Linux](https://img.shields.io/badge/Linux-white?style=flat-square&logo=linux&logoColor=000000&labelColor=white&color=white)
-![AGPL v3.0](https://img.shields.io/badge/AGPL--v3.0-white?style=flat-square&logo=gnu&logoColor=000000&labelColor=white&color=white)
+![Rust](https://img.shields.io/badge/Rust-black?style=flat-square&logo=rust&logoColor=white)
+![ROCm / HIP](https://img.shields.io/badge/ROCm%20%2F%20HIP-black?style=flat-square&logo=amd&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-black?style=flat-square&logo=linux&logoColor=white)
+![AGPL v3.0](https://img.shields.io/badge/AGPL--v3.0-black?style=flat-square&logo=gnu&logoColor=white)
 
 ## Fastest FP16 Math and AI Library for AMD APUs
 
