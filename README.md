@@ -1,5 +1,7 @@
 # lufloat
 
+[![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust)](https://rust-lang.org/)
+
 ## Fastest FP16 Math and AI Library for AMD APUs
 
 ## Usage
