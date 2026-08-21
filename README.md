@@ -34,7 +34,7 @@ println!("The first 3 elements are: {:?}", &output_data[..3]); // 0.0, 1.0, 1.0
 
 ## Requirements
 
-* AMD APU RDNA 3
+* AMD RDNA 3 iGPU
 * Linux
 * ROCm/HIP `hipcc`
 * binutils `ar`
