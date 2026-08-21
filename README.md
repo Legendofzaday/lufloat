@@ -1,6 +1,6 @@
 # lufloat
 
-[![ROCm/HIP](https://img.shields.io/badge/ROCm-HIP-blue?logo=amd&logoSize=auto)](https://rocm.docs.amd.com)
+[![ROCm/HIP](https://img.shields.io/badge/ROCm%2FHIP?logo=amd&logoSize=auto)](https://rocm.docs.amd.com)
 [![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust)](https://rust-lang.org/)
 [![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/)
 [![License](https://img.shields.io/badge/License-AGPL--3.0-blue)](LICENSE)
