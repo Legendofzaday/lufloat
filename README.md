@@ -2,13 +2,6 @@
 
 ## Fastest FP16 Math and AI Library for AMD APUs
 
-## Requirements
-
-* AMD APU
-* Linux
-* ROCm/HIP `hipcc`
-* binutils `ar`
-
 ## Usage
 
 ```bash
@@ -31,6 +24,13 @@ let output_data = buffer.slice();
 
 println!("The first 3 elements are: {:?}", &output_data[..3]); // 0.0, 1.0, 1.0
 ```
+
+## Requirements
+
+* AMD APU
+* Linux
+* ROCm/HIP `hipcc`
+* binutils `ar`
 
 ## License
 
