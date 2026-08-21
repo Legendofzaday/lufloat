@@ -7,8 +7,17 @@ unsafe extern "C" {
 
 pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, mask: &mut UnifiedBuffer<'a>) {
     assert_eq!(data.len, mask.len);
-    let err = unsafe { positive_mask(data.ptr as *const u16, data.len, mask.ptr) };
-    hip_check(err, file!(), line!());
+    let mut remaining = data.len;
+    let mut offset = 0;
+    while remaining > 0 {
+        let current = remaining.min(1 << 34);
+        let data_ptr = unsafe { data.ptr.add(offset) };
+        let mask_ptr = unsafe { mask.ptr.add(offset) };
+        let err = unsafe { positive_mask(data_ptr, current, mask_ptr) };
+        hip_check(err, file!(), line!());
+        remaining -= current;
+        offset += current;
+    }
 }
 
 #[cfg(test)]
