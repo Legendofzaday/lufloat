@@ -1,10 +1,8 @@
 # lufloat
 
-[![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust)](https://rust-lang.org/)
-
-[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/)
-[![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust)](https://www.rust-lang.org/)
 [![ROCm/HIP](https://img.shields.io/badge/ROCm-HIP-blue?logo=amd)](https://rocm.docs.amd.com)
+[![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust)](https://rust-lang.org/)
+[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/)
 [![License](https://img.shields.io/badge/License-AGPL--3.0-blue)](LICENSE)
 
 ## Fastest FP16 Math and AI Library for AMD APUs
