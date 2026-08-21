@@ -9,7 +9,10 @@
 
 **⚠️ WORK IN PROGRESS PRE ALPHA**
 
-**Note:** Tested on AI Max+ 395.
+**Note:** Tested with AI Max+ 395 on Fedora.
+
+| Operation | Size | Data Read | Data Write | Time | Bandwidth | Utilitzation |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 
 ## Usage
 
