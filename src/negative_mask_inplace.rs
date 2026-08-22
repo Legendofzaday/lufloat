@@ -34,12 +34,13 @@ mod tests {
         apply(&mut buffer);
         let output_data = buffer.slice();
         for i in 0..(1 << 16) {
-            let expected = if (i as u16 & 0x8000) == 0 {
+            let val = i as u16;
+            let expected = if (val & 0x8000) == 0 {
                 0x0000
             } else {
                 0x3C00
             };
-            assert_eq!(output_data[i], expected, "Failed at {:016b}", i as u16);
+            assert_eq!(output_data[i], expected, "Failed at {:016b}", val);
         }
     }
 }
