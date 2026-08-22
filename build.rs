@@ -6,6 +6,9 @@ use std::{
 };
 
 fn main() {
+    if var("DOCS_RS").is_ok() {
+        return;
+    }
     println!("cargo:rerun-if-changed=kernels");
     println!("cargo:rerun-if-env-changed=ROCM_PATH");
     println!("cargo:rerun-if-env-changed=HIPCC");
