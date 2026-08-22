@@ -38,11 +38,7 @@ mod tests {
         let output_data = mask.slice();
         for i in 0..(1 << 16) {
             let val = i as u16;
-            let expected = if (val & 0x8000) != 0 {
-                0x0000
-            } else {
-                0x3C00
-            };
+            let expected = if (val & 0x8000) != 0 { 0x0000 } else { 0x3C00 };
             assert_eq!(output_data[i], expected, "Failed at {:016b}", val);
         }
     }
