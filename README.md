@@ -17,6 +17,8 @@
 | `negative_mask_inplace` | `2^35` | 64GiB | 64GiB |  576ms | 238.6GB/s | 93.2% |
 | `positive_mask` | `2^34` | 32GiB | 32GiB |  288ms | 238.6GB/s | 93.2% |
 | `positive_mask_inplace` | `2^35` | 64GiB | 64GiB |  576ms | 238.6GB/s | 93.2% |
+| `relu` | `2^34` | 32GiB | 32GiB |  289ms | 237.7GB/s | 92.8% |
+| `relu_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
 
 ## Usage
 
