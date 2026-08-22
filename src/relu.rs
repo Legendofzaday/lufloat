@@ -39,7 +39,7 @@ mod tests {
         for i in 0..(1 << 16) {
             let val = i as u16;
             let expected = if (val & 0x8000) == 0 { val } else { 0x0000 };
-            assert_eq!(output_data[i], expected, "Failed at {:016b}", i as u16);
+            assert_eq!(output_data[i], expected, "Failed at {:016b}", val);
         }
     }
 }
