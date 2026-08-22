@@ -5,7 +5,7 @@
   @param activation: same as relu @param activation.
 */
 __global__ void relu_kernel(const unsigned short *__restrict__ data,
-                                     unsigned short *__restrict__ activation) {
+                            unsigned short *__restrict__ activation) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
@@ -28,15 +28,14 @@ __global__ void relu_kernel(const unsigned short *__restrict__ data,
   @param size: length of input float16 array (must be a multiple of 2048).
   @param activation: pointer to output float16 array.
 */
-extern "C" int relu(const unsigned short *data,
-                             const unsigned long long size,
-                             unsigned short *activation) {
+extern "C" int relu(const unsigned short *data, const unsigned long long size,
+                    unsigned short *activation) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
   */
-  hipLaunchKernelGGL(relu_kernel, dim3(size >> 11), dim3(256), 0, 0,
-                     data, activation);
+  hipLaunchKernelGGL(relu_kernel, dim3(size >> 11), dim3(256), 0, 0, data,
+                     activation);
   // kernel launch error.
   return (int)hipGetLastError();
 }
