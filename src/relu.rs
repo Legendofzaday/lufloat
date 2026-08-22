@@ -37,12 +37,8 @@ mod tests {
         apply(&data, &mut activation);
         let output_data = activation.slice();
         for i in 0..(1 << 16) {
-			let val = i as u16;
-            let expected = if (val & 0x8000) == 0 {
-                val
-            } else {
-                0x0000
-            };
+            let val = i as u16;
+            let expected = if (val & 0x8000) == 0 { val } else { 0x0000 };
             assert_eq!(output_data[i], expected, "Failed at {:016b}", i as u16);
         }
     }
