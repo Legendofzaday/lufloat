@@ -7,7 +7,7 @@
 
 ## Fastest FP16 Math and AI Library for AMD APUs
 
-**⚠️ WORK IN PROGRESS PRE ALPHA**
+**⚠️ WORK IN PROGRESS ALPHA**
 
 **Note:** Tested with AI Max+ 395 on Fedora.
 
