@@ -1,12 +1,13 @@
 [package]
 name = "lufloat"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2024"
 description = "Fastest FP16 Math and AI Library for AMD APUs"
 license = "AGPL-3.0-only"
 repository = "https://github.com/Legendofzaday/lufloat"
 readme = "README.md"
 keywords = ["gpu", "math", "f16", "rocm", "hip"]
+categories = ["concurrency", "graphics", "hardware-support", "mathematics", "memory-management"]
 
 [profile.release]
 codegen-units = 1
