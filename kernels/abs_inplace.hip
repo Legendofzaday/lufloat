@@ -24,13 +24,13 @@ __global__ void abs_inplace_kernel(unsigned short *data) {
   @param size: length of input float16 array (must be a multiple of 2048).
 */
 extern "C" int abs_inplace(unsigned short *data,
-                                     const unsigned long long size) {
+                           const unsigned long long size) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
   */
-  hipLaunchKernelGGL(abs_inplace_kernel, dim3(size >> 11), dim3(256),
-                     0, 0, data);
+  hipLaunchKernelGGL(abs_inplace_kernel, dim3(size >> 11), dim3(256), 0, 0,
+                     data);
   // kernel launch error.
   return (int)hipGetLastError();
 }
