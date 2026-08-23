@@ -10,7 +10,7 @@ __global__ void gelu_inplace_kernel(unsigned short *data) {
   uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
   // uint4 as 4 half2.
   half2 *h = reinterpret_cast<half2 *>(&vec);
-  // 1.702 * log2(e).
+  // -1.702 * log2(e).
   const half2 exp_coef = __builtin_bit_cast(half2, 0xC0E9C0E9U);
   // 1.0.
   const half2 one = __builtin_bit_cast(half2, 0x3C003C00U);
