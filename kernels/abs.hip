@@ -35,7 +35,8 @@ extern "C" int lufloat_abs(const unsigned short *data,
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
   */
-  hipLaunchKernelGGL(abs_kernel, dim3(size >> 11), dim3(256), 0, 0, data, magnitude);
+  hipLaunchKernelGGL(abs_kernel, dim3(size >> 11), dim3(256), 0, 0, data,
+                     magnitude);
   // kernel launch error.
   return (int)hipGetLastError();
 }
