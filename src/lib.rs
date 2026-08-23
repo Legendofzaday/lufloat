@@ -1,5 +1,7 @@
 #![doc = include_str!("../README.md")]
 
+mod abs;
+mod abs_inplace;
 mod memory;
 mod negative_mask;
 mod negative_mask_inplace;
