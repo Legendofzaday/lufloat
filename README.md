@@ -13,6 +13,8 @@
 
 | Operation | Size | Data Read | Data Write | Time | Bandwidth | Utilization |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `abs` | `2^34` | 32GiB | 32GiB |  288ms | 238.6GB/s | 93.2% |
+| `abs_inplace` | `2^35` | 64GiB | 64GiB |  576ms | 238.6GB/s | 93.2% |
 | `negative_mask` | `2^34` | 32GiB | 32GiB |  288ms | 238.6GB/s | 93.2% |
 | `negative_mask_inplace` | `2^35` | 64GiB | 64GiB |  576ms | 238.6GB/s | 93.2% |
 | `positive_mask` | `2^34` | 32GiB | 32GiB |  288ms | 238.6GB/s | 93.2% |
