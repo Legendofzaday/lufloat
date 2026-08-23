@@ -2,7 +2,7 @@ use crate::memory::{UnifiedBuffer, hip_check};
 use std::ffi::c_int;
 
 unsafe extern "C" {
-    fn positive_mask_inplace(data: *mut u16, size: usize) -> c_int;
+    fn lufloat_positive_mask_inplace(data: *mut u16, size: usize) -> c_int;
 }
 
 pub(crate) fn apply(buffer: &mut UnifiedBuffer<'_>) {
@@ -11,7 +11,7 @@ pub(crate) fn apply(buffer: &mut UnifiedBuffer<'_>) {
     while remaining > 0 {
         let current = remaining.min(1 << 34);
         let ptr = unsafe { buffer.ptr.add(offset) };
-        let err = unsafe { positive_mask_inplace(ptr, current) };
+        let err = unsafe { lufloat_positive_mask_inplace(ptr, current) };
         hip_check(err, file!(), line!());
         remaining -= current;
         offset += current;
@@ -24,7 +24,7 @@ mod tests {
     use crate::memory::{Arena, UnifiedBuffer};
 
     #[test]
-    fn exhaustive_positive_mask_inplace() {
+    fn exhaustive_lufloat_positive_mask_inplace() {
         let arena = Arena::new(1 << 16);
         let mut buffer = UnifiedBuffer::new(&arena, 1 << 16);
         let input_data = buffer.slice_mut();
