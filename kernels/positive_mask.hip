@@ -29,8 +29,8 @@ __global__ void positive_mask_kernel(const unsigned short *__restrict__ data,
   @param mask: pointer to output float16 array.
 */
 extern "C" int lufloat_positive_mask(const unsigned short *data,
-                             const unsigned long long size,
-                             unsigned short *mask) {
+                                     const unsigned long long size,
+                                     unsigned short *mask) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
