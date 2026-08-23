@@ -57,7 +57,7 @@ impl<'a> UnifiedBuffer<'a> {
     pub fn abs_inplace(&mut self) {
         abs_inplace::apply(self);
     }
-    
+
     /// Converts negatives to 1, positives to 0.
     ///
     /// # Panics
