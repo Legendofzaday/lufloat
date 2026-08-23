@@ -1,5 +1,5 @@
-#include <hip/hip_runtime.h>
 #include <hip/hip_fp16.h>
+#include <hip/hip_runtime.h>
 
 // @param data: same as gelu_inplace @param data.
 __global__ void gelu_inplace_kernel(unsigned short *data) {
