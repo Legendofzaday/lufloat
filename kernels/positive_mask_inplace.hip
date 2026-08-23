@@ -23,7 +23,7 @@ __global__ void positive_mask_inplace_kernel(unsigned short *data) {
   @param data: pointer to input float16 array.
   @param size: length of input float16 array (must be a multiple of 2048).
 */
-extern "C" int positive_mask_inplace(unsigned short *data,
+extern "C" int lufloat_positive_mask_inplace(unsigned short *data,
                                      const unsigned long long size) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
