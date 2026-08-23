@@ -10,17 +10,15 @@ __global__ void relu_kernel(const unsigned short *__restrict__ data,
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
   // 128bit vectorized load (8 float16 as uint4).
-  const uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
-  // temporary output container.
-  uint4 out_vec;
+  uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
   // sign bit isolation for unsigned integer as 2 float16 (simd within
   // register).
-  out_vec.x = vec.x & ~(((vec.x >> 15) & 0x00010001) * 0xFFFF);
-  out_vec.y = vec.y & ~(((vec.y >> 15) & 0x00010001) * 0xFFFF);
-  out_vec.z = vec.z & ~(((vec.z >> 15) & 0x00010001) * 0xFFFF);
-  out_vec.w = vec.w & ~(((vec.w >> 15) & 0x00010001) * 0xFFFF);
+  vec.x = vec.x & ~(((vec.x >> 15) & 0x00010001) * 0xFFFF);
+  vec.y = vec.y & ~(((vec.y >> 15) & 0x00010001) * 0xFFFF);
+  vec.z = vec.z & ~(((vec.z >> 15) & 0x00010001) * 0xFFFF);
+  vec.w = vec.w & ~(((vec.w >> 15) & 0x00010001) * 0xFFFF);
   // 128bit vectorized store (uint4 as 8 float16).
-  *reinterpret_cast<uint4 *>(&activation[idx]) = out_vec;
+  *reinterpret_cast<uint4 *>(&activation[idx]) = vec;
 }
 
 /*
