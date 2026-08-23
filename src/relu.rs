@@ -2,7 +2,7 @@ use crate::memory::{UnifiedBuffer, hip_check};
 use std::ffi::c_int;
 
 unsafe extern "C" {
-    fn relu(data: *const u16, size: usize, activation: *mut u16) -> c_int;
+    fn lufloat_relu(data: *const u16, size: usize, activation: *mut u16) -> c_int;
 }
 
 pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, activation: &mut UnifiedBuffer<'a>) {
@@ -13,7 +13,7 @@ pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, activation: &mut UnifiedBuffer
         let current = remaining.min(1 << 34);
         let data_ptr = unsafe { data.ptr.add(offset) };
         let activation_ptr = unsafe { activation.ptr.add(offset) };
-        let err = unsafe { relu(data_ptr, current, activation_ptr) };
+        let err = unsafe { lufloat_relu(data_ptr, current, activation_ptr) };
         hip_check(err, file!(), line!());
         remaining -= current;
         offset += current;
@@ -26,7 +26,7 @@ mod tests {
     use crate::memory::{Arena, UnifiedBuffer};
 
     #[test]
-    fn exhaustive_relu() {
+    fn exhaustive_lufloat_relu() {
         let arena = Arena::new(1 << 17);
         let mut data = UnifiedBuffer::new(&arena, 1 << 16);
         let mut activation = UnifiedBuffer::new(&arena, 1 << 16);
