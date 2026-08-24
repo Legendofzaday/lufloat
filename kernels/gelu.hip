@@ -2,8 +2,8 @@
 #include <hip/hip_runtime.h>
 
 /*
-  @param data: same as gelu @param data.
-  @param activation: same as gelu @param activation.
+  @param data: same as lufloat_gelu @param data.
+  @param activation: same as lufloat_gelu @param activation.
 */
 __global__ void gelu_kernel(const unsigned short *__restrict__ data,
                             unsigned short *__restrict__ activation) {
