@@ -1,6 +1,6 @@
 #include <hip/hip_runtime.h>
 
-// @param data: same as relu_inplace @param data.
+// @param data: same as lufloat_relu_inplace @param data.
 __global__ void relu_inplace_kernel(unsigned short *data) {
   // global vector index.
   const unsigned long long idx =
