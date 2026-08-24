@@ -1,8 +1,8 @@
 #include <hip/hip_runtime.h>
 
 /*
-  @param data: same as abs @param data.
-  @param magnitude: same as abs @param magnitude.
+  @param data: same as lufloat_abs @param data.
+  @param magnitude: same as lufloat_abs @param magnitude.
 */
 __global__ void abs_kernel(const unsigned short *__restrict__ data,
                            unsigned short *__restrict__ magnitude) {
