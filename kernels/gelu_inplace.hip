@@ -1,7 +1,7 @@
 #include <hip/hip_fp16.h>
 #include <hip/hip_runtime.h>
 
-// @param data: same as gelu_inplace @param data.
+// @param data: same as lufloat_gelu_inplace @param data.
 __global__ void gelu_inplace_kernel(unsigned short *data) {
   // global vector index.
   const unsigned long long idx =
