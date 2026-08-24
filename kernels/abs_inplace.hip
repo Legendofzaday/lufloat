@@ -1,6 +1,6 @@
 #include <hip/hip_runtime.h>
 
-// @param data: same as abs_inplace @param data.
+// @param data: same as lufloat_abs_inplace @param data.
 __global__ void abs_inplace_kernel(unsigned short *data) {
   // global vector index.
   const unsigned long long idx =
