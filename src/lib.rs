@@ -241,7 +241,7 @@ impl<'a> UnifiedBuffer<'a> {
     pub fn relu_inplace(&mut self) {
         relu_inplace::apply(self);
     }
-    
+
     /// Converts elements into element / (1 + e^(-element)).
     ///
     /// # Panics
