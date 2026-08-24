@@ -1,6 +1,6 @@
 #include <hip/hip_runtime.h>
 
-// @param data: same as negative_mask_inplace @param data.
+// @param data: same as lufloat_negative_mask_inplace @param data.
 __global__ void negative_mask_inplace_kernel(unsigned short *data) {
   // global vector index.
   const unsigned long long idx =
