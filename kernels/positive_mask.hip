@@ -1,8 +1,8 @@
 #include <hip/hip_runtime.h>
 
 /*
-  @param data: same as positive_mask @param data.
-  @param mask: same as positive_mask @param mask.
+  @param data: same as lufloat_positive_mask @param data.
+  @param mask: same as lufloat_positive_mask @param mask.
 */
 __global__ void positive_mask_kernel(const unsigned short *__restrict__ data,
                                      unsigned short *__restrict__ mask) {
