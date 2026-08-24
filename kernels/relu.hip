@@ -1,8 +1,8 @@
 #include <hip/hip_runtime.h>
 
 /*
-  @param data: same as relu @param data.
-  @param activation: same as relu @param activation.
+  @param data: same as lufloat_relu @param data.
+  @param activation: same as lufloat_relu @param activation.
 */
 __global__ void relu_kernel(const unsigned short *__restrict__ data,
                             unsigned short *__restrict__ activation) {
