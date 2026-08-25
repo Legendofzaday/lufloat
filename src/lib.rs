@@ -13,6 +13,8 @@ mod relu;
 mod relu_inplace;
 mod silu;
 mod silu_inplace;
+mod swiglu;
+mod swiglu_inplace;
 
 pub use memory::{Arena, UnifiedBuffer};
 
@@ -285,5 +287,65 @@ impl<'a> UnifiedBuffer<'a> {
     /// ```
     pub fn silu_inplace(&mut self) {
         silu_inplace::apply(self);
+    }
+    
+    /// Converts elements into gate * element / (1 + e^(-element)).
+    ///
+    /// # Panics
+    ///
+    /// * `self.len` is not equal to `gate.len`.
+    /// * `self.len` is not equal to `out_buf.len`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(6144);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_c = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer_a.slice_mut();
+    /// let input_gate = buffer_b.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// input_gate[0] = 0b1_01111_0000000000;
+    /// input_gate[1] = 0b0_00000_0000000000;
+    /// input_gate[2] = 0b0_01111_0000000000;
+    /// buffer_a.swiglu(&buffer_b, &mut buffer_c);
+    /// let output_data = buffer_c.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn swiglu(&self, gate: &Self, out_buf: &mut Self) {
+        swiglu::apply(self, gate, out_buf);
+    }
+
+    /// Replaces elements with gate * element / (1 + e^(-element)).
+    ///
+    /// # Panics
+    ///
+    /// * `self.len` is not equal to `gate.len`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(4096);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer_a.slice_mut();
+    /// let input_gate = buffer_b.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// input_gate[0] = 0b1_01111_0000000000;
+    /// input_gate[1] = 0b0_00000_0000000000;
+    /// input_gate[2] = 0b0_01111_0000000000;
+    /// buffer_a.swiglu_inplace(&buffer_b);
+    /// let output_data = buffer_a.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn swiglu_inplace(&mut self, gate: &Self) {
+        swiglu_inplace::apply(self, gate);
     }
 }
