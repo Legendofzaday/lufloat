@@ -25,6 +25,8 @@
 | `relu_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
 | `silu` | `2^34` | 32GiB | 32GiB |  289ms | 237.7GB/s | 92.8% |
 | `silu_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
+| `swiglu` | `2^33` | 32GiB | 16GiB |  224ms | 230GB/s | 90% |
+| `swiglu_inplace` | `2^34` | 64GiB | 32GiB |  448ms | 230GB/s | 90% |
 
 ## Usage
 
