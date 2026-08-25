@@ -12,7 +12,7 @@ __global__ void swiglu_inplace_kernel(unsigned short *__restrict__ data,
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
   // 128bit vectorized load (8 float16 as uint4).
   uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
-  uint4 vec_gate = *reinterpret_cast<const uint4 *>(&gate[idx]);
+  const uint4 vec_gate = *reinterpret_cast<const uint4 *>(&gate[idx]);
   // uint4 as 4 half2.
   half2 *h = reinterpret_cast<half2 *>(&vec);
   const half2 *h_gate = reinterpret_cast<half2 *>(&vec_gate);
