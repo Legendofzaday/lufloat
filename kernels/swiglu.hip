@@ -46,6 +46,7 @@ __global__ void swiglu_kernel(const unsigned short *__restrict__ data,
   h[1] = __hmul2(h_gate[1], s1);
   h[2] = __hmul2(h_gate[2], s2);
   h[3] = __hmul2(h_gate[3], s3);
+  // 128bit vectorized store (uint4 as 8 float16).
   *reinterpret_cast<uint4 *>(&activation[idx]) = vec;
 }
 
