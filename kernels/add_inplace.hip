@@ -5,7 +5,8 @@
   @param data: same as lufloat_add_inplace @param data.
   @param other: same as lufloat_add_inplace @param other.
 */
-__global__ void add_inplace_kernel(unsigned short *__restrict__ data, const unsigned short *__restrict__ other) {
+__global__ void add_inplace_kernel(unsigned short *__restrict__ data,
+                                   const unsigned short *__restrict__ other) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
@@ -29,8 +30,8 @@ __global__ void add_inplace_kernel(unsigned short *__restrict__ data, const unsi
   @param size: length of input float16 array (must be a multiple of 2048).
 */
 extern "C" int lufloat_add_inplace(unsigned short *data,
-                                    const unsigned short *other,
-                                    const unsigned long long size) {
+                                   const unsigned short *other,
+                                   const unsigned long long size) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
