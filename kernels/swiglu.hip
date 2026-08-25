@@ -7,8 +7,8 @@
   @param activation: same as lufloat_swiglu @param activation.
 */
 __global__ void swiglu_kernel(const unsigned short *__restrict__ data,
-                            const unsigned short *__restrict__ gate,
-                            unsigned short *__restrict__ activation) {
+                              const unsigned short *__restrict__ gate,
+                              unsigned short *__restrict__ activation) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
@@ -56,9 +56,9 @@ __global__ void swiglu_kernel(const unsigned short *__restrict__ data,
   @param activation: pointer to output float16 array.
 */
 extern "C" int lufloat_swiglu(const unsigned short *data,
-                            const unsigned short *gate,
-                            const unsigned long long size,
-                            unsigned short *activation) {
+                              const unsigned short *gate,
+                              const unsigned long long size,
+                              unsigned short *activation) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
