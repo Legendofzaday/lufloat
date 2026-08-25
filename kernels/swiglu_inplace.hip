@@ -16,7 +16,7 @@ __global__ void swiglu_inplace_kernel(unsigned short *__restrict__ data,
   // uint4 as 4 half2.
   half2 *h = reinterpret_cast<half2 *>(&vec);
   const half2 *h_gate = reinterpret_cast<half2 *>(&vec_gate);
-  // log2(e).
+  // -log2(e).
   const half2 exp_coef = __builtin_bit_cast(half2, 0xBDC5BDC5U);
   // 1.0.
   const half2 one = __builtin_bit_cast(half2, 0x3C003C00U);
