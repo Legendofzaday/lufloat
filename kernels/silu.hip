@@ -38,6 +38,7 @@ __global__ void silu_kernel(const unsigned short *__restrict__ data,
   h[1] = __hmul2(h[1], r1);
   h[2] = __hmul2(h[2], r2);
   h[3] = __hmul2(h[3], r3);
+  // 128bit vectorized store (uint4 as 8 float16).
   *reinterpret_cast<uint4 *>(&activation[idx]) = vec;
 }
 
