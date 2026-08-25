@@ -288,7 +288,7 @@ impl<'a> UnifiedBuffer<'a> {
     pub fn silu_inplace(&mut self) {
         silu_inplace::apply(self);
     }
-    
+
     /// Converts elements into gate * element / (1 + e^(-element)).
     ///
     /// # Panics

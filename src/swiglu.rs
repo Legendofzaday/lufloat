@@ -2,10 +2,19 @@ use crate::memory::{UnifiedBuffer, hip_check};
 use std::ffi::c_int;
 
 unsafe extern "C" {
-    fn lufloat_swiglu(data: *const u16, gate: *const u16, size: usize, activation: *mut u16) -> c_int;
+    fn lufloat_swiglu(
+        data: *const u16,
+        gate: *const u16,
+        size: usize,
+        activation: *mut u16,
+    ) -> c_int;
 }
 
-pub(crate) fn apply<'a>(data: &UnifiedBuffer<'a>, gate: &UnifiedBuffer<'a>, activation: &mut UnifiedBuffer<'a>) {
+pub(crate) fn apply<'a>(
+    data: &UnifiedBuffer<'a>,
+    gate: &UnifiedBuffer<'a>,
+    activation: &mut UnifiedBuffer<'a>,
+) {
     assert_eq!(data.len, gate.len);
     assert_eq!(data.len, activation.len);
     let mut remaining = data.len;
