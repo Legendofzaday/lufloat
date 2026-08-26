@@ -7,8 +7,8 @@
   @param accumulated: same as lufloat_add @param accumulated.
 */
 __global__ void add_kernel(const unsigned short *__restrict__ data,
-                            const unsigned short *__restrict__ other,
-                            unsigned short *__restrict__ accumulated) {
+                           const unsigned short *__restrict__ other,
+                           unsigned short *__restrict__ accumulated) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
@@ -33,15 +33,15 @@ __global__ void add_kernel(const unsigned short *__restrict__ data,
   @param accumulated: pointer to output float16 array.
 */
 extern "C" int lufloat_add(const unsigned short *data,
-                            const unsigned short *other,
-                            const unsigned long long size,
-                            unsigned short *accumulated) {
+                           const unsigned short *other,
+                           const unsigned long long size,
+                           unsigned short *accumulated) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
   */
-  hipLaunchKernelGGL(add_kernel, dim3(size >> 11), dim3(256), 0, 0, data,
-                     other, accumulated);
+  hipLaunchKernelGGL(add_kernel, dim3(size >> 11), dim3(256), 0, 0, data, other,
+                     accumulated);
   // kernel launch error.
   return (int)hipGetLastError();
 }
