@@ -7,6 +7,8 @@ mod add_inplace;
 mod gelu;
 mod gelu_inplace;
 mod memory;
+mod mul;
+mod mul_inplace;
 mod negative_mask;
 mod negative_mask_inplace;
 mod positive_mask;
@@ -171,6 +173,66 @@ impl<'a> UnifiedBuffer<'a> {
     /// ```
     pub fn gelu_inplace(&mut self) {
         gelu_inplace::apply(self);
+    }
+
+    /// Converts elements into element * other.
+    ///
+    /// # Panics
+    ///
+    /// * `self.len` is not equal to `other.len`.
+    /// * `self.len` is not equal to `out_buf.len`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(6144);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_c = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer_a.slice_mut();
+    /// let input_other = buffer_b.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// input_other[0] = 0b1_01111_0000000000;
+    /// input_other[1] = 0b0_00000_0000000000;
+    /// input_other[2] = 0b0_01111_0000000000;
+    /// buffer_a.mul(&buffer_b, &mut buffer_c);
+    /// let output_data = buffer_c.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn mul(&self, other: &Self, out_buf: &mut Self) {
+        mul::apply(self, other, out_buf);
+    }
+
+    /// Replaces elements with element * other.
+    ///
+    /// # Panics
+    ///
+    /// * `self.len` is not equal to `other.len`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(4096);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer_a.slice_mut();
+    /// let input_other = buffer_b.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// input_other[0] = 0b1_01111_0000000000;
+    /// input_other[1] = 0b0_00000_0000000000;
+    /// input_other[2] = 0b0_01111_0000000000;
+    /// buffer_a.mul_inplace(&buffer_b);
+    /// let output_data = buffer_a.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn mul_inplace(&mut self, other: &Self) {
+        mul_inplace::apply(self, other);
     }
 
     /// Converts negatives to 1, positives to 0.
