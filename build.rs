@@ -39,7 +39,8 @@ fn compile_lib(out_dir: &str) -> Vec<(Child, PathBuf)> {
                 .arg("-o")
                 .arg(&obj)
                 .args([
-                    "-Ofast",
+                    "-O3",
+                    "-ffast-math",
                     "-fPIC",
                     "-fgpu-flush-denormals-to-zero",
                     "--gpu-max-threads-per-block=256",
