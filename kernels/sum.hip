@@ -35,7 +35,8 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
     thread_sum += __shfl_down(thread_sum, offset);
   }
   __shared__ float wave_sums[8];
-  if (lane == 0) wave_sums[wave] = thread_sum;
+  if (lane == 0)
+    wave_sums[wave] = thread_sum;
   __syncthreads();
   if (wave == 0) {
     float block_sum = (lane < 8) ? wave_sums[lane] : 0.0f;
