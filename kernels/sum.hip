@@ -34,7 +34,9 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   for (unsigned int offset = 16; offset > 0; offset >>= 1) {
     thread_sum += __shfl_down(thread_sum, offset);
   }
+  // wavefront sums array.
   __shared__ double wave_sums[8];
+  // store wavefront sum.
   if (lane == 0)
     wave_sums[wave] = (double)thread_sum;
   __syncthreads();
