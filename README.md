@@ -33,6 +33,7 @@
 | `silu_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
 | `sub` | `2^34` | 64GiB | 32GiB |  445ms | 231.6GB/s | 90.5% |
 | `sub_inplace` | `2^34` | 64GiB | 32GiB |  445ms | 231.6GB/s | 90.5% |
+| `sum` | 2^35 | 64GiB | 0GiB | 645ms | 106GB/s | 41.5% |
 | `swiglu` | `2^34` | 64GiB | 32GiB |  448ms | 230GB/s | 90% |
 | `swiglu_inplace` | `2^34` | 64GiB | 32GiB |  448ms | 230GB/s | 90% |
 
