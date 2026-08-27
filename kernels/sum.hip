@@ -41,8 +41,8 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   if (wave == 0) {
     float block_sum = (lane < 8) ? wave_sums[lane] : 0.0f;
     /*
-      blocks 0..=1 + blocks 2..=3
-      block 0 + block 1
+      blocks 0..=1 += blocks 2..=3
+      block 0 += block 1
     */
     for (unsigned int offset = 4; offset > 0; offset >>= 1) {
       block_sum += __shfl_down(block_sum, offset);
