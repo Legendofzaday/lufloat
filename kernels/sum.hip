@@ -39,7 +39,9 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   // store wavefront sum.
   if (lane == 0)
     wave_sums[wave] = (double)thread_sum;
+  // block level synchronization.
   __syncthreads();
+  // wavefront reduction.
   if (wave == 0) {
     double block_sum = (lane < 8) ? wave_sums[lane] : 0.0;
     /*
@@ -49,6 +51,7 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
     for (unsigned int offset = 4; offset > 0; offset >>= 1) {
       block_sum += __shfl_down(block_sum, offset);
     }
+    // store block sum.
     if (lane == 0) {
       partials[blockIdx.x] = block_sum;
     }
