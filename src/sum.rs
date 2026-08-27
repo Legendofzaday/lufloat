@@ -1,4 +1,4 @@
-use crate::memory::{UnifiedBuffer, hipStreamSynchronize, hip_check, hip_free, hip_malloc};
+use crate::memory::{UnifiedBuffer, hip_check, hip_free, hip_malloc, hipStreamSynchronize};
 use std::{
     ffi::{c_int, c_void},
     ptr::null_mut,
