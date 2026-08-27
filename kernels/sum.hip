@@ -1,6 +1,10 @@
 #include <hip/hip_fp16.h>
 #include <hip/hip_runtime.h>
 
+/*
+  @param data: same as lufloat_sum @param data.
+  @param partials: same as lufloat_sum @param partials.
+*/
 __global__ void sum_kernel(const unsigned short *__restrict__ data,
                            double *__restrict__ partials) {
   // global vector index.
