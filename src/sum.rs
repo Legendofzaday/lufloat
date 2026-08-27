@@ -9,9 +9,6 @@ unsafe extern "C" {
 }
 
 pub(crate) fn apply(data: &UnifiedBuffer<'_>) -> f64 {
-    if data.len == 0 {
-        return 0.0;
-    }
     let sum_ptr = hip_malloc(8) as *mut f64;
     unsafe {
         *sum_ptr = 0.0;
