@@ -58,11 +58,11 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
 
 /*
   @param partials: pointer to intermediate float64 array.
-  @param final_sum: pointer to final float64 output.
+  @param sum: pointer to final float64 output.
   @param size: length of partials array.
 */
 __global__ void sum_intermediate_kernel(const double *__restrict__ partials,
-                                        double *__restrict__ final_sum,
+                                        double *__restrict__ sum,
                                         const unsigned long long size) {
   const unsigned long long idx = threadIdx.x;
   const unsigned long long stride = blockDim.x;
@@ -101,7 +101,7 @@ __global__ void sum_intermediate_kernel(const double *__restrict__ partials,
     }
     if (lane == 0) {
       // store final sum.
-      final_sum[0] = block_sum;
+      sum[0] = block_sum;
     }
   }
 }
