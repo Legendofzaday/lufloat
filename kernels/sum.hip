@@ -119,7 +119,9 @@ extern "C" int lufloat_sum(const unsigned short *data,
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
   */
-  hipLaunchKernelGGL(sum_kernel, dim3(size >> 11), dim3(256), 0, 0, data, partials);
-  hipLaunchKernelGGL(sum_intermediate_kernel, dim3(1), dim3(256), 0, 0, partials, sum, size >> 11);
+  hipLaunchKernelGGL(sum_kernel, dim3(size >> 11), dim3(256), 0, 0, data,
+                     partials);
+  hipLaunchKernelGGL(sum_intermediate_kernel, dim3(1), dim3(256), 0, 0,
+                     partials, sum, size >> 11);
   return (int)hipGetLastError();
 }
