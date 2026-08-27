@@ -11,7 +11,7 @@ unsafe extern "C" {
     fn hipMallocManaged(dev_ptr: *mut *mut c_void, size: usize, flags: c_uint) -> c_int;
     fn hipFree(ptr: *mut c_void) -> c_int;
     fn hipGetErrorString(hipError: c_int) -> *const c_char;
-    pub(crate) fn hipStreamSynchronize(stream: *mut c_void) -> c_int;
+    fn hipStreamSynchronize(stream: *mut c_void) -> c_int;
 }
 
 pub(crate) fn hip_check(err: c_int, file: &str, line: u32) {
@@ -32,14 +32,14 @@ pub(crate) fn hip_check(err: c_int, file: &str, line: u32) {
     }
 }
 
-pub(crate) fn hip_malloc(size: usize) -> *mut c_void {
+fn hip_malloc(size: usize) -> *mut c_void {
     let mut ptr = null_mut();
     let err = unsafe { hipMallocManaged(&mut ptr, size, 1) };
     hip_check(err, file!(), line!());
     ptr
 }
 
-pub(crate) fn hip_free(ptr: *mut c_void) {
+fn hip_free(ptr: *mut c_void) {
     let err = unsafe { hipFree(ptr) };
     hip_check(err, file!(), line!());
 }
