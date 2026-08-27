@@ -50,7 +50,7 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
 }
 
 __global__ void sum_intermediate_kernel(const double *__restrict__ partials,
-                                        double *__restrict__ final_sum,
+                                        double *__restrict__ sum,
                                         const unsigned long long size) {
   const unsigned long long idx = blockIdx.x * blockDim.x + threadIdx.x;
   const unsigned long long stride = blockDim.x * gridDim.x;
@@ -73,14 +73,14 @@ __global__ void sum_intermediate_kernel(const double *__restrict__ partials,
       block_sum += __shfl_down(block_sum, offset);
     }
     if (lane == 0) {
-      atomicAdd(final_sum, block_sum);
+      atomicAdd(sum, block_sum);
     }
   }
 }
 
 extern "C" int lufloat_sum(const unsigned short *data,
                            const unsigned long long size, double *partials,
-                           double *final_sum) {
+                           double *sum) {
   unsigned long long blocks = size >> 11;
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
@@ -92,6 +92,6 @@ extern "C" int lufloat_sum(const unsigned short *data,
   if (intermediate_blocks == 0)
     intermediate_blocks = 1;
   hipLaunchKernelGGL(sum_intermediate_kernel, dim3(intermediate_blocks),
-                     dim3(256), 0, 0, partials, final_sum, blocks);
+                     dim3(256), 0, 0, partials, sum, blocks);
   return (int)hipGetLastError();
 }
