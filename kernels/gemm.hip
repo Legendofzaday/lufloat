@@ -12,8 +12,7 @@
 __global__ void gemm_kernel(const unsigned short *__restrict__ A,
                             const unsigned short *__restrict__ B,
                             unsigned short *__restrict__ C,
-                            const unsigned int m,
-                            const unsigned int n,
+                            const unsigned int m, const unsigned int n,
                             const unsigned int k) {}
 
 /*
@@ -31,7 +30,7 @@ extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
     @param gridDim: 16x4 x 16x2 tiling.
     @param blockDim: wave32 * 8 wavefronts.
   */
-  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 5, m >> 6), dim3(32, 8), 0, 0,
-                     A, B, C, m, n, k);
+  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 5, m >> 6), dim3(32, 8), 0, 0, A, B,
+                     C, m, n, k);
   return static_cast<int>(hipGetLastError());
 }
