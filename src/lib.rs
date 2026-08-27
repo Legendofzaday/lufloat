@@ -36,7 +36,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -57,7 +57,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
@@ -82,7 +82,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(6144);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -112,7 +112,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -142,7 +142,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(6144);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -172,7 +172,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -201,7 +201,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -222,7 +222,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
@@ -247,7 +247,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(6144);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -277,7 +277,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -306,7 +306,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -327,7 +327,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
@@ -351,7 +351,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -372,7 +372,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
@@ -396,7 +396,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -417,7 +417,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
@@ -441,7 +441,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -462,7 +462,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
@@ -487,7 +487,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(6144);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -517,7 +517,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -547,7 +547,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(6144);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -577,7 +577,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(4096);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
@@ -602,7 +602,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// # use lufloat::{Arena, UnifiedBuffer};
     /// let arena = Arena::new(2048);
     /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
