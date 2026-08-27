@@ -2,7 +2,7 @@
 #include <hip/hip_runtime.h>
 
 __global__ void sum_kernel(const unsigned short *__restrict__ data,
-                                 double *__restrict__ partials) {
+                           double *__restrict__ partials) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
@@ -50,8 +50,8 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
 }
 
 __global__ void sum_intermediate_kernel(const double *__restrict__ partials,
-                                 double *__restrict__ final_sum,
-                                 const unsigned long long size) {
+                                        double *__restrict__ final_sum,
+                                        const unsigned long long size) {
   const unsigned long long idx = blockIdx.x * blockDim.x + threadIdx.x;
   const unsigned long long stride = blockDim.x * gridDim.x;
   double thread_sum = 0.0;
@@ -83,13 +83,12 @@ extern "C" int lufloat_sum(const unsigned short *data,
                            double *final_sum) {
 
   unsigned long long blocks = size >> 11;
-  hipLaunchKernelGGL(sum_kernel, dim3(blocks), dim3(256), 0, 0,
-                     data, partials);
+  hipLaunchKernelGGL(sum_kernel, dim3(blocks), dim3(256), 0, 0, data, partials);
   unsigned int intermediate_blocks =
       (blocks > 1024) ? 1024 : (unsigned int)blocks;
   if (intermediate_blocks == 0)
     intermediate_blocks = 1;
-  hipLaunchKernelGGL(sum_intermediate_kernel, dim3(intermediate_blocks), dim3(256), 0, 0,
-                     partials, final_sum, blocks);
+  hipLaunchKernelGGL(sum_intermediate_kernel, dim3(intermediate_blocks),
+                     dim3(256), 0, 0, partials, final_sum, blocks);
   return (int)hipGetLastError();
 }
