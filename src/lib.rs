@@ -21,7 +21,6 @@ mod silu;
 mod silu_inplace;
 mod sub;
 mod sub_inplace;
-mod sum;
 mod swiglu;
 mod swiglu_inplace;
 
@@ -596,24 +595,5 @@ impl<'a> UnifiedBuffer<'a> {
     /// ```
     pub fn swiglu_inplace(&mut self, gate: &Self) {
         swiglu_inplace::apply(self, gate);
-    }
-
-    /// Returns sum of elements.
-    ///
-    /// # Examples
-    ///
-    /// ```rust,ignore
-    /// # use lufloat::{Arena, UnifiedBuffer};
-    /// let arena = Arena::new(2048);
-    /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
-    /// let input_data = buffer.slice_mut();
-    /// input_data[0] = 0b1_01111_0000000000;
-    /// input_data[1] = 0b0_00000_0000000000;
-    /// input_data[2] = 0b0_01111_0000000000;
-    /// let result = buffer.sum();
-    /// println!("The sum is: {result}");
-    /// ```
-    pub fn sum(&self) -> f64 {
-        sum::apply(self)
     }
 }
