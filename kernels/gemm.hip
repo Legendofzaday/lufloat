@@ -16,6 +16,10 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   const _Float16 *A_f16 = reinterpret_cast<const _Float16 *>(A);
   const _Float16 *B_f16 = reinterpret_cast<const _Float16 *>(B);
   _Float16 *C_f16 = reinterpret_cast<_Float16 *>(C);
+  // 0..=31.
+  const unsigned int lane = threadIdx.x;
+  // 0..=7.
+  const unsigned int wave = threadIdx.y;
   __shared__ _Float16 A_lds[64][16];
   __shared__ _Float16 B_lds[16][32];
 }
