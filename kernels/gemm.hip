@@ -22,6 +22,10 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int wave = threadIdx.y;
   // 0..=255.
   const unsigned int thread = (wave << 5) + lane;
+  // 0..=15.
+  const unsigned int lane16 = lane & 15;
+  // 0..=1.
+  const unsigned int half = lane >> 4;
   // [2(0..=3)] * 16.
   const unsigned int wave_row = (wave >> 1) << 4;
   // (0..=1) * 16.
