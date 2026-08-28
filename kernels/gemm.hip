@@ -45,6 +45,12 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
         &A_lds[a_row, a_col]) =
         *reinterpret_cast<const unsigned int
                           __attribute__((ext_vector_type(2))) *>(a_src);
+    if (thread < 128) {
+      // 0..=15.
+      const unsigned int b_row = thread >> 3;
+      // 0..=31.
+      const unsigned int b_col = (thread & 7) << 2;
+    }
   }
 }
 
