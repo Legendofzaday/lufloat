@@ -61,6 +61,11 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
     __syncthreads();
     _Float16 __attribute__((ext_vector_type(16))) a_frag;
     _Float16 __attribute__((ext_vector_type(16))) b_frag;
+#pragma unroll
+    for (unsigned int i = 0; i < 16; ++i) {
+      a_frag[i] = A_lds[wave_row + i][lane16];
+      b_frag[i] = B_lds[i][wave_col + lane16];
+    }
   }
 }
 
