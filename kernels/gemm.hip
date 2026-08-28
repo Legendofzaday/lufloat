@@ -20,6 +20,8 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int lane = threadIdx.x;
   // 0..=7.
   const unsigned int wave = threadIdx.y;
+  // 0..=255
+  const unsigned int thread = (wave << 5) + lane;
   __shared__ _Float16 A_lds[64][16];
   __shared__ _Float16 B_lds[16][32];
 }
