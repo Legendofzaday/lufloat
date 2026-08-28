@@ -70,7 +70,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
     __syncthreads();
   }
 #pragma unroll
-  for (int i = 0; i < 8; ++e) {
+  for (unsigned int i = 0; i < 8; ++e) {
     const unsigned int row = macro_row + wave_row + (i << 1) + half;
     const unsigned int col = macro_col + wave_col + lane16;
     C_f16[row * n + col] = c_frag[i << 1];
