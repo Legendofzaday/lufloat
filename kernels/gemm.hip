@@ -40,6 +40,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
     const unsigned int a_row = thread >> 2;
     // 0..=3.
     const unsigned int a_col = (thread & 3) << 2;
+    // 64bit vectorized load (4 float16).
     const _Float16 *a_src = A_f16 + (block_row + a_row) * k + (ki + a_col);
     *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
         &A_lds([a_row][a_col]) =
@@ -50,6 +51,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       const unsigned int b_row = thread >> 3;
       // 0..=31.
       const unsigned int b_col = (thread & 7) << 2;
+      // 64bit vectorized load (4 float16).
       const _Float16 *b_src = B_f16 + (ki + b_row) * n + (block_col + b_col);
       *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
         &B_lds([b_row][b_col]) =
