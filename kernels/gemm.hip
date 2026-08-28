@@ -54,9 +54,9 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       // 64bit vectorized load (4 float16).
       const _Float16 *b_src = B_f16 + (ki + b_row) * n + (block_col + b_col);
       *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
-        &B_lds[b_row][b_col]) =
-        *reinterpret_cast<const unsigned int
-                          __attribute__((ext_vector_type(2))) *>(b_src);
+          &B_lds[b_row][b_col]) =
+          *reinterpret_cast<const unsigned int
+                            __attribute__((ext_vector_type(2))) *>(b_src);
     }
     __syncthreads();
     _Float16 __attribute__((ext_vector_type(16))) a_frag;
@@ -66,7 +66,8 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       a_frag[i] = A_lds[wave_row + i][lane16];
       b_frag[i] = B_lds[i][wave_col + lane16];
     }
-    c_frag = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(a_frag, b_frag, c_frag, false);
+    c_frag = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(a_frag, b_frag, c_frag,
+                                                        false);
     __syncthreads();
   }
 #pragma unroll
