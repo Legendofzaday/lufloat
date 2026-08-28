@@ -69,6 +69,12 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
     c_frag = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(a_frag, b_frag, c_frag, false);
     __syncthreads();
   }
+#pragma unroll
+  for (int i = 0; i < 8; ++e) {
+    const unsigned int row = macro_row + wave_row + (i << 1) + half;
+    const unsigned int col = macro_col + wave_col + lane16;
+    C_f16[row * n + col] = c_frag[i << 1];
+  }
 }
 
 /*
