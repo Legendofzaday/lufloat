@@ -13,9 +13,9 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
                             unsigned short *__restrict__ C,
                             const unsigned int m, const unsigned int n,
                             const unsigned int k) {
-  const _Float16* A_f16 = reinterpret_cast<const _Float16*>(A);
-  const _Float16* B_f16 = reinterpret_cast<const _Float16*>(B);
-  _Float16* C_f16 = reinterpret_cast<_Float16*>(C);
+  const _Float16 *A_f16 = reinterpret_cast<const _Float16 *>(A);
+  const _Float16 *B_f16 = reinterpret_cast<const _Float16 *>(B);
+  _Float16 *C_f16 = reinterpret_cast<_Float16 *>(C);
 }
 
 /*
