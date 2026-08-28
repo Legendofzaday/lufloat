@@ -1,4 +1,4 @@
-#include <hip/hip_fp16.h>
+#include <hip/hip_runtime.h>
 
 /*
   @param A: pointer to input float16 array.
