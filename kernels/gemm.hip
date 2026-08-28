@@ -23,9 +23,9 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   // 0..=255.
   const unsigned int thread = (wave << 5) + lane;
   // (0..=3) * 16.
-  const unsigned int row = wave << 3;
+  const unsigned int wave_row = wave << 3;
   // (0..=1) * 16.
-  const unsigned int col = (wave & 1) << 4;
+  const unsigned int wave_col = (wave & 1) << 4;
   __shared__ _Float16 A_lds[64][16];
   __shared__ _Float16 B_lds[16][32];
 }
