@@ -42,7 +42,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
     const unsigned int a_col = (thread & 3) << 2;
     const _Float16 *a_src = A_f16 + (block_row + a_row) * k + (ki + a_col);
     *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
-        &A_lds[a_row, a_col]) =
+        &A_lds([a_row][a_col]) =
         *reinterpret_cast<const unsigned int
                           __attribute__((ext_vector_type(2))) *>(a_src);
     if (thread < 128) {
@@ -52,10 +52,13 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       const unsigned int b_col = (thread & 7) << 2;
       const _Float16 *b_src = B_f16 + (ki + b_row) * n + (block_col + b_col);
       *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
-          &B_lds[b_row, b_col]) =
-          *reinterpret_cast<const unsigned int
-                            __attribute__((ext_vector_type(2))) *>(b_src);
+        &B_lds([b_row][b_col]) =
+        *reinterpret_cast<const unsigned int
+                          __attribute__((ext_vector_type(2))) *>(b_src);
     }
+    __syncthreads();
+    _Float16 __attribute__((ext_vector_type(16))) a_frag;
+    _Float16 __attribute__((ext_vector_type(16))) b_frag;
   }
 }
 
