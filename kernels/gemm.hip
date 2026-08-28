@@ -35,6 +35,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   __shared__ _Float16 A_lds[64][16];
   __shared__ _Float16 B_lds[16][32];
   _Float16 __attribute__((ext_vector_type(16))) c_frag = {};
+  for (unsigned int ki = 0; ki < k; ki += 16) {}
 }
 
 /*
