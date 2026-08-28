@@ -8,7 +8,6 @@ mod div;
 mod div_inplace;
 mod gelu;
 mod gelu_inplace;
-mod gemm;
 mod memory;
 mod mul;
 mod mul_inplace;
@@ -596,37 +595,5 @@ impl<'a> UnifiedBuffer<'a> {
     /// ```
     pub fn swiglu_inplace(&mut self, gate: &Self) {
         swiglu_inplace::apply(self, gate);
-    }
-
-    /// Performs Matrix Multiplication: C = A * B
-    ///
-    /// # Panics
-    ///
-    /// * `m`, `n`, `k` not divisible by 64.
-    /// * `self.len` not equal to `m * k`.
-    /// * `b.len` not equal to `k * n`.
-    /// * `out_c.len` not equal to `m * n`.
-    ///
-    /// # Examples
-    ///
-    /// ```rust,ignore
-    /// # use lufloat::{Arena, UnifiedBuffer};
-    /// let m = 64;
-    /// let n = 64;
-    /// let k = 64;
-    /// let arena = Arena::new(24576);
-    /// let mut buffer_a = UnifiedBuffer::new(&arena, m * k);
-    /// let mut buffer_b = UnifiedBuffer::new(&arena, k * n);
-    /// let mut buffer_c = UnifiedBuffer::new(&arena, m * n);
-    /// let input_a = buffer_a.slice_mut();
-    /// let input_b = buffer_b.slice_mut();
-    /// input_a[0] = 0b0_01111_0000000000;
-    /// input_b[0] = 0b0_01111_0000000000;
-    /// buffer_a.gemm(&buffer_b, &mut buffer_c, m, n, k);
-    /// let output_c = buffer_c.slice();
-    /// println!("The first element is: {:?}", output_c[0]);
-    /// ```
-    pub fn gemm(&self, b: &Self, c: &mut Self, m: usize, n: usize, k: usize) {
-        gemm::apply(self, b, c, m, n, k);
     }
 }
