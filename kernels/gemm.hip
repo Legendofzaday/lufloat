@@ -43,7 +43,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
     // 64bit vectorized load (4 float16).
     const _Float16 *a_src = A_f16 + (block_row + a_row) * k + (ki + a_col);
     *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
-        &A_lds([a_row][a_col]) =
+        &A_lds[a_row][a_col]) =
         *reinterpret_cast<const unsigned int
                           __attribute__((ext_vector_type(2))) *>(a_src);
     if (thread < 128) {
@@ -54,7 +54,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       // 64bit vectorized load (4 float16).
       const _Float16 *b_src = B_f16 + (ki + b_row) * n + (block_col + b_col);
       *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
-        &B_lds([b_row][b_col]) =
+        &B_lds[b_row][b_col]) =
         *reinterpret_cast<const unsigned int
                           __attribute__((ext_vector_type(2))) *>(b_src);
     }
@@ -71,8 +71,8 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   }
 #pragma unroll
   for (unsigned int i = 0; i < 8; ++i) {
-    const unsigned int row = macro_row + wave_row + (i << 1) + half;
-    const unsigned int col = macro_col + wave_col + lane16;
+    const unsigned int row = block_row + wave_row + (i << 1) + half;
+    const unsigned int col = block_col + wave_col + lane16;
     C_f16[row * n + col] = c_frag[i << 1];
   }
 }
