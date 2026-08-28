@@ -66,6 +66,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       a_frag[i] = A_lds[wave_row + i][lane16];
       b_frag[i] = B_lds[i][wave_col + lane16];
     }
+    c_frag = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(a_frag, b_frag, c_frag, false);
   }
 }
 
