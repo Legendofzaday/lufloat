@@ -11,7 +11,7 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   const uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
   const half2 *h = reinterpret_cast<const half2 *>(&vec);
   const half2 thread_tmp = __hadd2(__hadd2(h[0], h[1]), __hadd2(h[2], h[3]));
-  __half thread_sum = thread_tmp.x + thread_tmp.y;
+  __half thread_sum = __hadd(thread_tmp.x, thread_tmp.y);
 #pragma unroll
   for (unsigned int i = 16; i > 0; i >>= 1) {
     thread_sum += __shfl_down(thread_sum, i);
