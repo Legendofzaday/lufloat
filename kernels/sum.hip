@@ -34,8 +34,7 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   }
 }
 
-extern "C" int lufloat_sum(const unsigned short *data,
-                           unsigned short *reduced,
+extern "C" int lufloat_sum(const unsigned short *data, unsigned short *reduced,
                            const unsigned long long size) {
   hipLaunchKernelGGL(sum_kernel, dim3(size >> 11), dim3(256), 0, 0, data,
                      reduced);
