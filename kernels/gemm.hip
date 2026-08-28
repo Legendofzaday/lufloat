@@ -1,5 +1,4 @@
 #include <hip/hip_fp16.h>
-#include <hip/hip_runtime.h>
 
 /*
   @param A: pointer to input float16 array.
@@ -13,7 +12,11 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
                             const unsigned short *__restrict__ B,
                             unsigned short *__restrict__ C,
                             const unsigned int m, const unsigned int n,
-                            const unsigned int k) {}
+                            const unsigned int k) {
+  const _Float16* A_f16 = reinterpret_cast<const _Float16*>(A);
+  const _Float16* B_f16 = reinterpret_cast<const _Float16*>(B);
+  _Float16* C_f16 = reinterpret_cast<_Float16*>(C);
+}
 
 /*
   @param A: pointer to input float16 array.
