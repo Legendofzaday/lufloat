@@ -24,7 +24,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int thread = (wave << 5) + lane;
   const unsigned int block_row = blockIdx.y << 6;
   const unsigned int block_col = blockIdx.x << 5;
-  // 2[(0..=3)] * 16.
+  // [2(0..=3)] * 16.
   const unsigned int wave_row = (wave >> 1) << 4;
   // (0..=1) * 16.
   const unsigned int wave_col = (wave & 1) << 4;
