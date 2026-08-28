@@ -1,8 +1,5 @@
 #include <hip/hip_runtime.h>
 
-using half16 = _Float16 __attribute__((ext_vector_type(16)));
-using uint2 = unsigned int __attribute__((ext_vector_type(2)));
-
 /*
   @param A: pointer to input float16 array.
   @param B: pointer to input float16 array.
@@ -37,6 +34,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int block_col = blockIdx.x << 5;
   __shared__ _Float16 A_lds[64][16];
   __shared__ _Float16 B_lds[16][32];
+  _Float16 __attribute__((ext_vector_type(16))) c_frag;
 }
 
 /*
