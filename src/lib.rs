@@ -614,7 +614,7 @@ impl<'a> UnifiedBuffer<'a> {
     /// let m = 64;
     /// let n = 64;
     /// let k = 64;
-    /// let arena = Arena::new(24576); 
+    /// let arena = Arena::new(24576);
     /// let mut buffer_a = UnifiedBuffer::new(&arena, m * k);
     /// let mut buffer_b = UnifiedBuffer::new(&arena, k * n);
     /// let mut buffer_c = UnifiedBuffer::new(&arena, m * n);
