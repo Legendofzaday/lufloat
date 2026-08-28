@@ -51,6 +51,10 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       // 0..=31.
       const unsigned int b_col = (thread & 7) << 2;
       const _Float16 *b_src = B_f16 + (ki + b_row) * n + (block_col + b_col);
+      *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
+        &B_lds[b_row, b_col]) =
+        *reinterpret_cast<const unsigned int
+                          __attribute__((ext_vector_type(2))) *>(b_src);
     }
   }
 }
