@@ -5,8 +5,8 @@
   @param B: pointer to input float16 array.
   @param C: pointer to output float16 array.
   @param m: rows of A / rows of C - divisible by 64.
-  @param n: cols of A / rows of B - divisible by 64.
-  @param k: cols of B / cols of C - divisible by 64.
+  @param n: cols of B / cols of C - divisible by 64.
+  @param k: cols of A / rows of B - divisible by 64.
 */
 __global__ void gemm_kernel(const unsigned short *__restrict__ A,
                             const unsigned short *__restrict__ B,
@@ -23,8 +23,8 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   @param B: pointer to input float16 array.
   @param C: pointer to output float16 array.
   @param m: rows of A / rows of C - divisible by 64.
-  @param n: cols of A / rows of B - divisible by 64.
-  @param k: cols of B / cols of C - divisible by 64.
+  @param n: cols of B / cols of C - divisible by 64.
+  @param k: cols of A / rows of B - divisible by 64.
 */
 extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
                             unsigned short *C, const unsigned int m,
