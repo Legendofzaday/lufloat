@@ -1,5 +1,7 @@
 #include <hip/hip_runtime.h>
 
+using half16 = _Float16 __attribute__((ext_vector_type(16)));
+
 /*
   @param A: pointer to input float16 array.
   @param B: pointer to input float16 array.
@@ -34,7 +36,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int block_col = blockIdx.x << 5;
   __shared__ _Float16 A_lds[64][16];
   __shared__ _Float16 B_lds[16][32];
-  _Float16 __attribute__((ext_vector_type(16))) c_frag = {};
+  half16 c_frag = {};
   for (unsigned int ki = 0; ki < k; ki += 16) {
     // 0..=63.
     const unsigned int a_row = thread >> 2;
@@ -42,8 +44,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
     const unsigned int a_col = (thread & 3) << 2;
     // 64bit vectorized load (4 float16).
     const _Float16 *a_src = A_f16 + (block_row + a_row) * k + (ki + a_col);
-    *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
-        &A_lds[a_row][a_col]) =
+    *reinterpret_cast<uint2 *>(&A_lds[a_row][a_col]) =
         *reinterpret_cast<const unsigned int
                           __attribute__((ext_vector_type(2))) *>(a_src);
     if (thread < 128) {
@@ -53,14 +54,13 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       const unsigned int b_col = (thread & 7) << 2;
       // 64bit vectorized load (4 float16).
       const _Float16 *b_src = B_f16 + (ki + b_row) * n + (block_col + b_col);
-      *reinterpret_cast<unsigned int __attribute__((ext_vector_type(2))) *>(
-          &B_lds[b_row][b_col]) =
+      *reinterpret_cast<uint2 *>(&B_lds[b_row][b_col]) =
           *reinterpret_cast<const unsigned int
                             __attribute__((ext_vector_type(2))) *>(b_src);
     }
     __syncthreads();
-    _Float16 __attribute__((ext_vector_type(16))) a_frag;
-    _Float16 __attribute__((ext_vector_type(16))) b_frag;
+    half16 a_frag;
+    half16 b_frag;
 #pragma unroll
     for (unsigned int i = 0; i < 16; ++i) {
       a_frag[i] = A_lds[wave_row + i][lane16];
