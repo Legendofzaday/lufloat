@@ -1,5 +1,8 @@
 #include <hip/hip_runtime.h>
 
+using half16 = _Float16 __attribute__((ext_vector_type(16)));
+using uint2 = unsigned int __attribute__((ext_vector_type(2)));
+
 /*
   @param A: pointer to input float16 array.
   @param B: pointer to input float16 array.
