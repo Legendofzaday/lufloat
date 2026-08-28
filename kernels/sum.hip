@@ -2,7 +2,7 @@
 #include <hip/hip_runtime.h>
 
 __global__ void sum_kernel(const unsigned short *__restrict__ data,
-                      unsigned short *__restrict__ reduced) {
+                           unsigned short *__restrict__ reduced) {
   const unsigned long long idx =
       (static_cast<unsigned long long>(blockIdx.x) *
            static_cast<unsigned long long>(blockDim.x) +
@@ -35,7 +35,9 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
 }
 
 extern "C" int lufloat_sum(const unsigned short *data,
-                           const unsigned long long size, unsigned short *reduced) {
-  hipLaunchKernelGGL(sum_kernel, dim3(size >> 11), dim3(256), 0, 0, data, reduced);
+                           const unsigned long long size,
+                           unsigned short *reduced) {
+  hipLaunchKernelGGL(sum_kernel, dim3(size >> 11), dim3(256), 0, 0, data,
+                     reduced);
   return static_cast<int>(hipGetLastError());
 }
