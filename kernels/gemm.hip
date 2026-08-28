@@ -50,6 +50,7 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
       const unsigned int b_row = thread >> 3;
       // 0..=31.
       const unsigned int b_col = (thread & 7) << 2;
+      const _Float16 *b_src = B_f16 + (ki + b_row) * n + (block_col + b_col);
     }
   }
 }
