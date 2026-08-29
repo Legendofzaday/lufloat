@@ -42,6 +42,11 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   __syncthreads();
   if (wave == 0) {
     __half block_sum = (lane < 8) ? wave_sums[lane] : __float2half(0.0f);
+    /*
+      block_sum[0..=3] += block_sum[4..=7]
+      block_sum[0..=1] += block_sum[2..=3]
+      block_sum[0] += block_sum[1]
+    */
 #pragma unroll
     for (unsigned int i = 4; i > 0; i >>= 1) {
       block_sum += __shfl_down(block_sum, i);
