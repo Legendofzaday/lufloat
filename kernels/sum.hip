@@ -36,7 +36,12 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
 
 extern "C" int lufloat_sum(const unsigned short *data, unsigned short *reduced,
                            const unsigned long long size) {
+  /*
+    @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
+    @param blockDim: wave32 * 8 wavefronts = 256 threads.
+  */
   hipLaunchKernelGGL(sum_kernel, dim3(size >> 11), dim3(256), 0, 0, data,
                      reduced);
+  // kernel launch error.
   return static_cast<int>(hipGetLastError());
 }
