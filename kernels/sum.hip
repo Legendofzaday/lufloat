@@ -32,7 +32,9 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   for (unsigned int i = 16; i > 0; i >>= 1) {
     thread_sum += __shfl_down(thread_sum, i);
   }
+  // 0..=7.
   const unsigned int wave = threadIdx.x >> 5;
+  // 0..=31.
   const unsigned int lane = threadIdx.x & 31;
   __shared__ __half wave_sums[8];
   if (lane == 0)
