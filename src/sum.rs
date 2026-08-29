@@ -1,5 +1,9 @@
-use crate::memory::{Arena, UnifiedBuffer, hip_check, half2float};
-use std::{ffi::{c_int, c_void}, ptr::null_mut, slice::from_raw_parts};
+use crate::memory::{Arena, UnifiedBuffer, half2float, hip_check};
+use std::{
+    ffi::{c_int, c_void},
+    ptr::null_mut,
+    slice::from_raw_parts,
+};
 
 unsafe extern "C" {
     fn hipStreamSynchronize(stream: *mut c_void) -> c_int;
