@@ -7,11 +7,13 @@
 */
 __global__ void sum_kernel(const unsigned short *__restrict__ data,
                            unsigned short *__restrict__ reduced) {
+  // global vector index.
   const unsigned long long idx =
       (static_cast<unsigned long long>(blockIdx.x) *
            static_cast<unsigned long long>(blockDim.x) +
        static_cast<unsigned long long>(threadIdx.x))
       << 3;
+  // 128bit vectorized load (8 float16 as uint4).
   const uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
   const half2 *h = reinterpret_cast<const half2 *>(&vec);
   const half2 thread_tmp = __hadd2(__hadd2(h[0], h[1]), __hadd2(h[2], h[3]));
