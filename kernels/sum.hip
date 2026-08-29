@@ -22,6 +22,13 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   // half2 sum as __half.
   __half thread_sum = __hadd(thread_tmp.x, thread_tmp.y);
 #pragma unroll
+  /*
+    thread_sum[0..=15] += thread_sum[16..=31]
+    thread_sum[0..=7] += thread_sum[7..=15]
+    thread_sum[0..=3] += thread_sum[3..=7]
+    thread_sum[0..=1] += thread_sum[1..=3]
+    thread_sum[0] += thread_sum[1]
+  */
   for (unsigned int i = 16; i > 0; i >>= 1) {
     thread_sum += __shfl_down(thread_sum, i);
   }
