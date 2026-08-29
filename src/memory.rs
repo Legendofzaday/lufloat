@@ -198,6 +198,19 @@ impl<'a> UnifiedBuffer<'a> {
     }
 }
 
+pub(crate) fn half2float(n: u16) -> f32 {
+    let sign = ((n as u32) & 0x8000) << 16;
+    let exp = ((n as u32) & 0x7C00) >> 10;
+    let mant = (n as u32) & 0x03FF;
+    if exp == 0 {
+        f32::from_bits(sign)
+    } else if exp == 0x1F {
+        f32::from_bits(sign | 0x7F80_0000 | (mant << 13))
+    } else {
+        f32::from_bits(sign | ((exp + 112) << 23) | (mant << 13))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
