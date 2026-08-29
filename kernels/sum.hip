@@ -1,6 +1,10 @@
 #include <hip/hip_fp16.h>
 #include <hip/hip_runtime.h>
 
+/*
+  @param data: pointer to input float16 array.
+  @param reduced: pointer to output float16 array.
+*/
 __global__ void sum_kernel(const unsigned short *__restrict__ data,
                            unsigned short *__restrict__ reduced) {
   const unsigned long long idx =
