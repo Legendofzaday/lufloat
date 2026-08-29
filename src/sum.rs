@@ -38,7 +38,6 @@ pub(crate) fn apply(data: &UnifiedBuffer<'_>) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::memory::{Arena, UnifiedBuffer};
 
     #[test]
     fn exhaustive_lufloat_sum() {
