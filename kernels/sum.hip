@@ -5,8 +5,8 @@
   @param data: pointer to input float16 array.
   @param reduced: pointer to output float16 array.
 */
-__global__ void sum_kernel(const unsigned short *__restrict__ data,
-                           unsigned short *__restrict__ reduced) {
+__global__ void sum_kernel(const unsigned short *data,
+                           unsigned short *reduced) {
   // global vector index.
   const unsigned long long idx =
       (static_cast<unsigned long long>(blockIdx.x) *
