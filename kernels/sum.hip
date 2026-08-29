@@ -17,6 +17,7 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   const uint4 vec = *reinterpret_cast<const uint4 *>(&data[idx]);
   // uint4 as 4 half2.
   const half2 *h = reinterpret_cast<const half2 *>(&vec);
+  // 4 half2 sum as half2.
   const half2 thread_tmp = __hadd2(__hadd2(h[0], h[1]), __hadd2(h[2], h[3]));
   __half thread_sum = __hadd(thread_tmp.x, thread_tmp.y);
 #pragma unroll
