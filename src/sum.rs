@@ -34,3 +34,20 @@ pub(crate) fn apply(data: &UnifiedBuffer<'_>) -> f32 {
     }
     total
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::memory::{Arena, UnifiedBuffer};
+
+    #[test]
+    fn exhaustive_lufloat_sum() {
+        let arena = Arena::new(1 << 16);
+        let mut data = UnifiedBuffer::new(&arena, 1 << 16);
+        let input_data = data.slice_mut();
+        for i in 0..(1 << 16) {
+            input_data[i] = i as u16;
+        }
+        apply(&data);
+    }
+}
