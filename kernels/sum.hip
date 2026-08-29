@@ -34,6 +34,11 @@ __global__ void sum_kernel(const unsigned short *__restrict__ data,
   }
 }
 
+/*
+  @param data: pointer to input float16 array.
+  @param reduced: pointer to output float16 array.
+  @param size: length of input float16 array (must be a multiple of 2048).
+*/
 extern "C" int lufloat_sum(const unsigned short *data, unsigned short *reduced,
                            const unsigned long long size) {
   /*
