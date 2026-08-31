@@ -17,6 +17,8 @@ mod positive_mask;
 mod positive_mask_inplace;
 mod relu;
 mod relu_inplace;
+mod sigma;
+mod sigma_inplace;
 mod silu;
 mod silu_inplace;
 mod sub;
@@ -431,6 +433,51 @@ impl<'a> UnifiedBuffer<'a> {
     /// ```
     pub fn relu_inplace(&mut self) {
         relu_inplace::apply(self);
+    }
+
+    /// Converts elements into 1 / (1 + e^(-element)).
+    ///
+    /// # Panics
+    ///
+    /// * `self.len` is not equal to `out_buf.len`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(4096);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer_a.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// buffer_a.sigma(&mut buffer_b);
+    /// let output_data = buffer_b.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn sigma(&self, out_buf: &mut Self) {
+        sigma::apply(self, out_buf);
+    }
+
+    /// Replaces elements with 1 / (1 + e^(-element)).
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(2048);
+    /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// buffer.sigma_inplace();
+    /// let output_data = buffer.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn sigma_inplace(&mut self) {
+        sigma_inplace::apply(self);
     }
 
     /// Converts elements into element / (1 + e^(-element)).
