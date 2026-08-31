@@ -29,8 +29,8 @@
 | `positive_mask_inplace` | `2^35` | 64GiB | 64GiB |  576ms | 238.6GB/s | 93.2% |
 | `relu` | `2^34` | 32GiB | 32GiB |  289ms | 237.7GB/s | 92.8% |
 | `relu_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
-| `sigma` | `2^34` | 32GiB | 32GiB |   |  |  |
-| `sigma_inplace` | `2^35` | 64GiB | 64GiB |   |  |  |
+| `sigma` | `2^34` | 32GiB | 32GiB |  289ms | 237.7GB/s | 92.8% |
+| `sigma_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
 | `silu` | `2^34` | 32GiB | 32GiB |  289ms | 237.7GB/s | 92.8% |
 | `silu_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
 | `sub` | `2^34` | 64GiB | 32GiB |  445ms | 231.6GB/s | 90.5% |
