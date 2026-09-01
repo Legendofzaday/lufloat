@@ -5,7 +5,7 @@
 ![Linux](https://img.shields.io/badge/Linux-black?logo=linux&logoColor=white)
 ![AGPL v3.0](https://img.shields.io/badge/AGPL--v3.0-black?logo=gnu&logoColor=white)
 
-## Fastest FP16 Math and AI Library for AMD APUs
+## Fastest FP16 Math and AI Library for AMD Strix Halo.
 
 **⚠️ WORK IN PROGRESS ALPHA**
 
