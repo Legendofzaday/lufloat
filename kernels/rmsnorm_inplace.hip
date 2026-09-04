@@ -117,5 +117,6 @@ extern "C" int lufloat_rmsnorm(unsigned short *data,
   } else {
     return -1;
   }
+  // kernel launch error.
   return static_cast<int>(hipGetLastError());
 }
