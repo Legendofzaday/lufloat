@@ -1,6 +1,6 @@
 [package]
 name = "lufloat"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2024"
 description = "Fastest FP16 Math and AI Library for AMD APUs"
 license = "AGPL-3.0-only"

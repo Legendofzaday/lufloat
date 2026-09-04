@@ -437,10 +437,65 @@ impl<'a> UnifiedBuffer<'a> {
         relu_inplace::apply(self);
     }
 
+    /// Converts elements into element * weight / sqrt(sum(element^2) / cols + eps).
+    ///
+    /// # Panics
+    ///
+    /// * `data.len` is not multiple of `cols`.
+    /// * `weight.len` is not equal to `cols`.
+    /// * `cols` is not multiple of `256`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(6144);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_c = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer_a.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// let input_weight = buffer_b.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// buffer_a.rmsnorm(&buffer_b, 2048, 0.00001, &mut buffer_c);
+    /// let output_data = buffer_c.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
     pub fn rmsnorm(&self, weight: &Self, cols: usize, eps: f32, normalized: &mut Self) {
         rmsnorm::apply(self, weight, cols, eps, normalized);
     }
 
+    /// Replaces elements with element * weight / sqrt(sum(element^2) / cols + eps).
+    ///
+    /// # Panics
+    ///
+    /// * `data.len` is not multiple of `cols`.
+    /// * `weight.len` is not equal to `cols`.
+    /// * `cols` is not multiple of `256`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(4096);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer_a.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// let input_weight = buffer_b.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// buffer_a.rmsnorm_inplace(&buffer_b, 2048, 0.00001);
+    /// let output_data = buffer_a.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
     pub fn rmsnorm_inplace(&mut self, weight: &Self, cols: usize, eps: f32) {
         rmsnorm_inplace::apply(self, weight, cols, eps);
     }
