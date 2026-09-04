@@ -17,6 +17,8 @@ mod positive_mask;
 mod positive_mask_inplace;
 mod relu;
 mod relu_inplace;
+mod rmsnorm;
+mod rmsnorm_inplace;
 mod sigma;
 mod sigma_inplace;
 mod silu;
@@ -433,6 +435,14 @@ impl<'a> UnifiedBuffer<'a> {
     /// ```
     pub fn relu_inplace(&mut self) {
         relu_inplace::apply(self);
+    }
+
+    pub fn rmsnorm(&self, weight: &Self, cols: usize, eps: f32, normalized: &mut Self) {
+        rmsnorm::apply(self, weight, cols, eps, normalized);
+    }
+
+    pub fn rmsnorm_inplace(&mut self, weight: &Self, cols: usize, eps: f32) {
+        rmsnorm_inplace::apply(self, weight, cols, eps);
     }
 
     /// Converts elements into 1 / (1 + e^(-element)).
