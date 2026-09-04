@@ -99,9 +99,10 @@ rmsnorm_inplace_kernel(unsigned short *__restrict__ data,
   @param eps: epsilon.
 */
 extern "C" int lufloat_rmsnorm_inplace(unsigned short *data,
-                               const unsigned short *weight,
-                               const unsigned int cols, const unsigned int rows,
-                               const float eps) {
+                                       const unsigned short *weight,
+                                       const unsigned int cols,
+                                       const unsigned int rows,
+                                       const float eps) {
   if (cols % 2048 == 0) {
     hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<256>), dim3(rows),
                        dim3(256), 0, 0, data, weight, cols, eps);
