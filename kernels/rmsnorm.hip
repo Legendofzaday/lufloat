@@ -113,8 +113,8 @@ extern "C" int lufloat_rmsnorm(const unsigned short *data,
     @param gridDim: 1 block for each column.
     @param blockDim: 8 wave32 waves.
   */
-  hipLaunchKernelGGL(rmsnorm_kernel, dim3(rows), dim3(256u), 0u, 0u, data, weight,
-                     normalized, cols, eps);
+  hipLaunchKernelGGL(rmsnorm_kernel, dim3(rows), dim3(256u), 0u, 0u, data,
+                     weight, normalized, cols, eps);
   // kernel launch error.
   return static_cast<int>(hipGetLastError());
 }
