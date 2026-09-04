@@ -52,7 +52,7 @@ mod tests {
 
     #[test]
     fn exhaustive_lufloat_rmsnorm() {
-        let arena = Arena::new(1 << 18);
+        let arena = Arena::new((1 << 17) + 2048);
         let mut data = UnifiedBuffer::new(&arena, 1 << 16);
         let mut weight = UnifiedBuffer::new(&arena, 2048);
         let mut normalized = UnifiedBuffer::new(&arena, 1 << 16);
