@@ -103,17 +103,17 @@ extern "C" int lufloat_rmsnorm(unsigned short *data,
                                const unsigned int cols, const unsigned int rows,
                                const float eps) {
   if (cols % 2048 == 0) {
-    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<256>), dim3(rows), dim3(256), 0, 0,
-                       data, weight, cols, eps);
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<256>), dim3(rows),
+                       dim3(256), 0, 0, data, weight, cols, eps);
   } else if (cols % 1024 == 0) {
-    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<128>), dim3(rows), dim3(128), 0, 0,
-                       data, weight, cols, eps);
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<128>), dim3(rows),
+                       dim3(128), 0, 0, data, weight, cols, eps);
   } else if (cols % 512 == 0) {
-    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<64>), dim3(rows), dim3(64), 0, 0,
-                       data, weight, cols, eps);
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<64>), dim3(rows),
+                       dim3(64), 0, 0, data, weight, cols, eps);
   } else if (cols % 256 == 0) {
-    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<32>), dim3(rows), dim3(32), 0, 0,
-                       data, weight, cols, eps);
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<32>), dim3(rows),
+                       dim3(32), 0, 0, data, weight, cols, eps);
   } else {
     return -1;
   }
