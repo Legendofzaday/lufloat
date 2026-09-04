@@ -7,6 +7,7 @@
   @param cols: length of rows.
   @param eps: epsilon.
 */
+template <unsigned int BLOCK_THREADS>
 __global__ void
 rmsnorm_inplace_kernel(unsigned short *__restrict__ data,
                        const unsigned short *__restrict__ weight,
@@ -19,7 +20,7 @@ rmsnorm_inplace_kernel(unsigned short *__restrict__ data,
   // accumulator.
   auto thread_sum = 0.0f;
   // stride loop.
-  for (auto i = threadIdx.x << 3u; i < cols; i += 2048) {
+  for (auto i = threadIdx.x << 3u; i < cols; i += BLOCK_THREADS << 3) {
     // 128bit vectorized load.
     const auto vec = *reinterpret_cast<const uint4 *>(&rw_data[i]);
     // uint4 as 8 float16.
@@ -45,12 +46,12 @@ rmsnorm_inplace_kernel(unsigned short *__restrict__ data,
   const auto wave = threadIdx.x >> 5u;
   // 0..=31.
   const auto lane = threadIdx.x & 31u;
-  __shared__ float wave_sums[8u];
+  __shared__ float wave_sums[32u];
   if (lane == 0)
     wave_sums[wave] = thread_sum;
   __syncthreads();
   if (wave == 0) {
-    auto block_sum = (lane < 8) ? wave_sums[lane] : 0.0f;
+    auto block_sum = (lane < BLOCK_THREADS >> 5) ? wave_sums[lane] : 0.0f;
 #pragma unroll
     /*
       block_sum[0..=3] += block_sum[4..=7]
@@ -68,7 +69,7 @@ rmsnorm_inplace_kernel(unsigned short *__restrict__ data,
   __syncthreads();
   const auto rrms = wave_sums[0u];
   // stride loop.
-  for (auto i = threadIdx.x << 3u; i < cols; i += 2048) {
+  for (auto i = threadIdx.x << 3u; i < cols; i += BLOCK_THREADS << 3) {
     // 128bit vectorized load.
     const auto vec = *reinterpret_cast<const uint4 *>(&rw_data[i]);
     // 128bit vectorized load.
@@ -97,17 +98,24 @@ rmsnorm_inplace_kernel(unsigned short *__restrict__ data,
   @param rows: length of cols.
   @param eps: epsilon.
 */
-extern "C" int lufloat_rmsnorm_inplace(unsigned short *data,
-                                       const unsigned short *weight,
-                                       const unsigned int cols,
-                                       const unsigned int rows,
-                                       const float eps) {
-  /*
-    @param gridDim: 1 block for each column.
-    @param blockDim: 8 wave32 waves.
-  */
-  hipLaunchKernelGGL(rmsnorm_inplace_kernel, dim3(rows), dim3(256u), 0u, 0u,
-                     data, weight, cols, eps);
-  // kernel launch error.
+extern "C" int lufloat_rmsnorm(unsigned short *data,
+                               const unsigned short *weight,
+                               const unsigned int cols, const unsigned int rows,
+                               const float eps) {
+  if (cols % 2048 == 0) {
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<256>), dim3(rows), dim3(256), 0, 0,
+                       data, weight, cols, eps);
+  } else if (cols % 1024 == 0) {
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<128>), dim3(rows), dim3(128), 0, 0,
+                       data, weight, cols, eps);
+  } else if (cols % 512 == 0) {
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<64>), dim3(rows), dim3(64), 0, 0,
+                       data, weight, cols, eps);
+  } else if (cols % 256 == 0) {
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<32>), dim3(rows), dim3(32), 0, 0,
+                       data, weight, cols, eps);
+  } else {
+    return -1;
+  }
   return static_cast<int>(hipGetLastError());
 }
