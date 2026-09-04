@@ -98,7 +98,7 @@ rmsnorm_inplace_kernel(unsigned short *__restrict__ data,
   @param rows: length of cols.
   @param eps: epsilon.
 */
-extern "C" int lufloat_rmsnorm(unsigned short *data,
+extern "C" int lufloat_rmsnorm_inplace(unsigned short *data,
                                const unsigned short *weight,
                                const unsigned int cols, const unsigned int rows,
                                const float eps) {
