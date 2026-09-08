@@ -26,7 +26,7 @@ pub(crate) fn apply(
     let mut remaining = data.len;
     let mut offset = 0;
     while remaining > 0 {
-        let current = remaining.min((1 << 34) / cols * cols);
+        let current = remaining.min((1 << 31) / cols * cols);
         let data_ptr = unsafe { data.ptr.add(offset) };
         let normalized_ptr = unsafe { normalized.ptr.add(offset) };
         let err = unsafe {
