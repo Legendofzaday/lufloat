@@ -20,8 +20,8 @@ pub(crate) fn apply(
     normalized: &mut UnifiedBuffer<'_>,
 ) {
     assert_eq!(data.len % cols, 0);
-    assert!(weight.len == cols || (weight.len == 2048 && matches!(cols, 256 | 512 | 1024)));
-    assert_eq!(cols % 256, 0);
+    assert!(weight.len == cols || (weight.len == 2048 && cols <= 2048));
+    assert_eq!(cols % 8, 0);
     assert_eq!(data.len, normalized.len);
     let mut remaining = data.len;
     let mut offset = 0;

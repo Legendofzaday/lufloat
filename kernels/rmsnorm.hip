@@ -129,7 +129,7 @@ extern "C" int lufloat_rmsnorm(const unsigned short *data,
     hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<64, 4>),
                        dim3((rows + 3) >> 2), dim3(64, 4), 0, 0, data, weight,
                        normalized, cols, rows, eps);
-  } else if (cols % 256 == 0) {
+  } else if (cols % 8 == 0) {
     hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<32, 8>),
                        dim3((rows + 7) >> 3), dim3(32, 8), 0, 0, data, weight,
                        normalized, cols, rows, eps);
