@@ -51,7 +51,7 @@ rmsnorm_inplace_kernel(unsigned short *__restrict__ data,
   const auto wave = threadIdx.x >> 5u;
   // 0..=31.
   const auto lane = threadIdx.x & 31u;
-  __shared__ float wave_sums[ROWS_PER_BLOCK][8];
+  __shared__ float wave_sums[ROWS_PER_BLOCK][8u];
   if (lane == 0)
     wave_sums[threadIdx.y][wave] = thread_sum;
   __syncthreads();
@@ -124,7 +124,7 @@ extern "C" int lufloat_rmsnorm_inplace(unsigned short *data,
                        cols, rows, eps);
   } else if (cols % 256 == 0) {
     hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_inplace_kernel<32, 8>),
-                       dim3((rows + 5) >> 3), dim3(32, 8), 0, 0, data, weight,
+                       dim3((rows + 7) >> 3), dim3(32, 8), 0, 0, data, weight,
                        cols, rows, eps);
   } else {
     return -1;

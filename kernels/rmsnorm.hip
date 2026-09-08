@@ -6,15 +6,20 @@
   @param weight: pointer to input float16 array.
   @param normalized: pointer to output float16 array.
   @param cols: length of rows.
+  @param rows: total number of rows.
   @param eps: epsilon.
 */
-template <unsigned int BLOCK_THREADS>
+template <unsigned int BLOCK_THREADS, unsigned int ROWS_PER_BLOCK>
 __global__ void rmsnorm_kernel(const unsigned short *__restrict__ data,
                                const unsigned short *__restrict__ weight,
                                unsigned short *__restrict__ normalized,
-                               const unsigned int cols, const float eps) {
+                               const unsigned int cols, const unsigned int rows,
+                               const float eps) {
+  const auto row = blockIdx.x * ROWS_PER_BLOCK + threadIdx.y;
+  const auto active = (row < rows);
   // row * cols.
-  const auto block_offset = static_cast<unsigned long long>(blockIdx.x) * cols;
+  const auto block_offset =
+      static_cast<unsigned long long>(active ? row : 0u) * cols;
   // read only input float16 array.
   const auto *const r_data =
       reinterpret_cast<const _Float16 *>(data) + block_offset;
@@ -52,12 +57,13 @@ __global__ void rmsnorm_kernel(const unsigned short *__restrict__ data,
   const auto wave = threadIdx.x >> 5u;
   // 0..=31.
   const auto lane = threadIdx.x & 31u;
-  __shared__ float wave_sums[32u];
+  __shared__ float wave_sums[ROWS_PER_BLOCK][8u];
   if (lane == 0)
-    wave_sums[wave] = thread_sum;
+    wave_sums[threadIdx.y][wave] = thread_sum;
   __syncthreads();
   if (wave == 0) {
-    auto block_sum = (lane < BLOCK_THREADS >> 5) ? wave_sums[lane] : 0.0f;
+    auto block_sum =
+        (lane < BLOCK_THREADS >> 5) ? wave_sums[threadIdx.y][lane] : 0.0f;
 #pragma unroll
     /*
       block_sum[0..=3] += block_sum[4..=7]
@@ -69,11 +75,11 @@ __global__ void rmsnorm_kernel(const unsigned short *__restrict__ data,
     }
     if (lane == 0) {
       // \frac{1}{\sqrt{\frac{block\_sum}{cols} + eps}}
-      wave_sums[0u] = rsqrtf(block_sum / cols + eps);
+      wave_sums[threadIdx.y][0u] = rsqrtf(block_sum / cols + eps);
     }
   }
   __syncthreads();
-  const auto rrms = wave_sums[0u];
+  const auto rrms = wave_sums[threadIdx.y][0u];
   // stride loop.
   for (auto i = threadIdx.x << 3u; i < cols; i += BLOCK_THREADS << 3) {
     // 128bit vectorized load.
@@ -93,7 +99,8 @@ __global__ void rmsnorm_kernel(const unsigned short *__restrict__ data,
       h_normalized[j] = h[j] * h_weight[j] * rrms;
     }
     // 128bit vectorized store.
-    *reinterpret_cast<uint4 *>(&w_normalized[i]) = out_vec;
+    if (active)
+      *reinterpret_cast<uint4 *>(&w_normalized[i]) = out_vec;
   }
 }
 
@@ -111,17 +118,21 @@ extern "C" int lufloat_rmsnorm(const unsigned short *data,
                                const unsigned int cols, const unsigned int rows,
                                const float eps) {
   if (cols % 2048 == 0) {
-    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<256>), dim3(rows),
-                       dim3(256), 0, 0, data, weight, normalized, cols, eps);
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<256, 1>), dim3(rows),
+                       dim3(256), 0, 0, data, weight, normalized, cols, rows,
+                       eps);
   } else if (cols % 1024 == 0) {
-    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<128>), dim3(rows),
-                       dim3(128), 0, 0, data, weight, normalized, cols, eps);
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<128, 2>),
+                       dim3((rows + 1) >> 1), dim3(128, 2), 0, 0, data, weight,
+                       normalized, cols, rows, eps);
   } else if (cols % 512 == 0) {
-    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<64>), dim3(rows),
-                       dim3(64), 0, 0, data, weight, normalized, cols, eps);
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<64, 4>),
+                       dim3((rows + 3) >> 2), dim3(64, 4), 0, 0, data, weight,
+                       normalized, cols, rows, eps);
   } else if (cols % 256 == 0) {
-    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<32>), dim3(rows),
-                       dim3(32), 0, 0, data, weight, normalized, cols, eps);
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<32, 8>),
+                       dim3((rows + 7) >> 3), dim3(32, 8), 0, 0, data, weight,
+                       normalized, cols, rows, eps);
   } else {
     return -1;
   }
