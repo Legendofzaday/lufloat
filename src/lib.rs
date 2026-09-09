@@ -446,6 +446,7 @@ impl<'a> UnifiedBuffer<'a> {
     /// * `self.len` is not multiple of `cols`.
     /// * `weight.len` is not equal to `cols` (except 2048 padding).
     /// * `cols` is not multiple of `8`.
+    /// * `self.len` is not equal to `normalized.len`
     ///
     /// # Examples
     ///
@@ -591,6 +592,8 @@ impl<'a> UnifiedBuffer<'a> {
     pub fn silu_inplace(&mut self) {
         silu_inplace::apply(self);
     }
+
+
 
     /// Converts elements into element - other.
     ///
