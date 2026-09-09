@@ -5,7 +5,7 @@ unsafe extern "C" {
     fn lufloat_softmax(data: *const u16, probabilites: *mut u16, cols: u32, rows: u32) -> c_int;
 }
 
-pub(crate) fn apply(data: &UnifiedBuffer<'_>, cols: usize, probabilites: &mut UnifiedBuffer<'_>) {
+pub(crate) fn apply(data: &UnifiedBuffer<'_>, probabilites: &mut UnifiedBuffer<'_>, cols: usize) {
     assert_eq!(data.len % cols, 0);
     assert_eq!(cols % 8, 0);
     assert_eq!(data.len, probabilites.len);
@@ -43,6 +43,6 @@ mod tests {
         for i in 0..(1 << 16) {
             input_data[i] = i as u16;
         }
-        apply(&data, 2048, &mut probabilites);
+        apply(&data, &mut probabilites, 2048);
     }
 }
