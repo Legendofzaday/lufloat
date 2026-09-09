@@ -35,6 +35,8 @@
 | `sigma_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
 | `silu` | `2^34` | 32GiB | 32GiB |  289ms | 237.7GB/s | 92.8% |
 | `silu_inplace` | `2^35` | 64GiB | 64GiB |  578ms | 237.7GB/s | 92.8% |
+| `softmax` | `2^34` | 32GiB | 32GiB | 297ms | 231.7GB/s | 90.3% |
+| `softmax_inplace` | `2^35` | 64GiB | 64GiB | 594ms | 231.7GB/s | 90.3% | 
 | `sub` | `2^34` | 64GiB | 32GiB |  445ms | 231.6GB/s | 90.5% |
 | `sub_inplace` | `2^34` | 64GiB | 32GiB |  445ms | 231.6GB/s | 90.5% |
 | `sum` | `2^34*3` | 96GiB | N/A | 513ms | 201GB/s | 78.5% |
