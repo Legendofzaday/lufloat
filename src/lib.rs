@@ -23,6 +23,8 @@ mod sigma;
 mod sigma_inplace;
 mod silu;
 mod silu_inplace;
+mod softmax;
+mod softmax_inplace;
 mod sub;
 mod sub_inplace;
 mod sum;
