@@ -446,7 +446,7 @@ impl<'a> UnifiedBuffer<'a> {
     /// * `self.len` is not multiple of `cols`.
     /// * `weight.len` is not equal to `cols` (except 2048 padding).
     /// * `cols` is not multiple of `8`.
-    /// * `self.len` is not equal to `normalized.len`
+    /// * `self.len` is not equal to `normalized.len`.
     ///
     /// # Examples
     ///
@@ -593,7 +593,57 @@ impl<'a> UnifiedBuffer<'a> {
         silu_inplace::apply(self);
     }
 
+    /// Converts elements into exp(element) / sum(exp(elements)).
+    ///
+    /// # Panics
+    ///
+    /// * `self.len` is not multiple of `cols`.
+    /// * `cols` is not multiple of `8`.
+    /// * `self.len` is not equal to `probabilities.len`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(4096);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 2048);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer_a.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// buffer_a.softmax(&mut buffer_b, 2048);
+    /// let output_data = buffer_b.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn softmax(&self, probabilities: &mut Self, cols: usize) {
+        softmax::apply(self, probabilities, cols);
+    }
 
+    /// Replaces elements with exp(element) / sum(exp(elements)).
+    ///
+    /// # Panics
+    ///
+    /// * `self.len` is not multiple of `cols`.
+    /// * `cols` is not multiple of `8`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(2048);
+    /// let mut buffer = UnifiedBuffer::new(&arena, 2048);
+    /// let input_data = buffer.slice_mut();
+    /// input_data[0] = 0b1_01111_0000000000;
+    /// input_data[1] = 0b0_00000_0000000000;
+    /// input_data[2] = 0b0_01111_0000000000;
+    /// buffer.softmax_inplace(2048);
+    /// let output_data = buffer.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn softmax_inplace(&mut self, cols: usize) {
+        softmax_inplace::apply(self, cols);
+    }
 
     /// Converts elements into element - other.
     ///
