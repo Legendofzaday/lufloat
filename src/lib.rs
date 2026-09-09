@@ -443,7 +443,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Panics
     ///
-    /// * `data.len` is not multiple of `cols`.
+    /// * `self.len` is not multiple of `cols`.
     /// * `weight.len` is not equal to `cols` (except 2048 padding).
     /// * `cols` is not multiple of `8`.
     ///
@@ -475,7 +475,7 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Panics
     ///
-    /// * `data.len` is not multiple of `cols`.
+    /// * `self.len` is not multiple of `cols`.
     /// * `weight.len` is not equal to `cols` (except 2048 padding).
     /// * `cols` is not multiple of `8`.
     ///
