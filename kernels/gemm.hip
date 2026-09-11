@@ -16,8 +16,8 @@ __global__ void gemm_kernel(const unsigned short *__restrict__ A,
   const _Float16 *const A_f16 = reinterpret_cast<const _Float16 *>(A);
   const _Float16 *const B_f16 = reinterpret_cast<const _Float16 *>(B);
   _Float16 *const C_f16 = reinterpret_cast<_Float16 *>(C);
-  __shared__ __attribute__((aligned(32)) _Float16 A_lds_t[2][32][256];
-  __shared__ __attribute__((aligned(32)) _Float16 B_lds_t[2][256][32];
+  __shared__ _Float16 A_lds_t[2][32][256];
+  __shared__ _Float16 B_lds_t[2][256][32];
 }
 
 /*
