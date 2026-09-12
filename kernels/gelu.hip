@@ -5,7 +5,7 @@
   @param data: same as lufloat_gelu @param data.
   @param activation: same as lufloat_gelu @param activation.
 */
-__global__ void gelu_kernel(const unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) gelu_kernel(const unsigned short *__restrict__ data,
                             unsigned short *__restrict__ activation) {
   // global vector index.
   const unsigned long long idx =
