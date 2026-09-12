@@ -1,5 +1,6 @@
 #include <hip/hip_runtime.h>
 
+using half8 = _Float16 __attribute__((ext_vector_type(8)));
 using half16 = _Float16 __attribute__((ext_vector_type(16)));
 
 /*
@@ -27,6 +28,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int a_k_col = threadIdx.x << 3 & 24;
   const unsigned int b_k_base = threadIdx.x >> 5;
   const unsigned int b_n_col = threadIdx.x << 3 & 248;
+  half16 c_frag[4][4] = {};
 }
 
 /*
