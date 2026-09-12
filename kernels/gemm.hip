@@ -9,7 +9,7 @@ using half16 = _Float16 __attribute__((ext_vector_type(16)));
   @param n: cols of B || cols of C.
   @param k: cols of A || rows of B.
 */
-__global__ void gemm_kernel(const unsigned short *__restrict__ A,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) gemm_kernel(const unsigned short *__restrict__ A,
                             const unsigned short *__restrict__ B,
                             unsigned short *__restrict__ C,
                             const unsigned int n, const unsigned int k) {
