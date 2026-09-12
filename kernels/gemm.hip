@@ -33,7 +33,7 @@ extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
                             const unsigned int n, const unsigned int k) {
   /*
     @param gridDim: 256x256 tiling.
-    @param blockDim: 32 wave 32.
+    @param blockDim: 8 wave 32.
   */
   hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(256), 0, 0, A, B,
                      C, n, k);
