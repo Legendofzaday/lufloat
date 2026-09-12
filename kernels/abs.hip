@@ -4,7 +4,8 @@
   @param data: same as lufloat_abs @param data.
   @param magnitude: same as lufloat_abs @param magnitude.
 */
-__global__ void abs_kernel(const unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+abs_kernel(const unsigned short *__restrict__ data,
                            unsigned short *__restrict__ magnitude) {
   // global vector index.
   const unsigned long long idx =
