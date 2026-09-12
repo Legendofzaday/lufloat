@@ -5,8 +5,8 @@
   @param data: pointer to input float16 array.
   @param reduced: pointer to output float16 array.
 */
-__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) sum_kernel(const unsigned short *data,
-                           unsigned short *reduced) {
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+sum_kernel(const unsigned short *data, unsigned short *reduced) {
   // global vector index.
   const unsigned long long idx =
       (static_cast<unsigned long long>(blockIdx.x) *
