@@ -5,8 +5,7 @@
   @param data: same as lufloat_div_inplace @param data.
   @param other: same as lufloat_div_inplace @param other.
 */
-__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
-div_inplace_kernel(unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) div_inplace_kernel(unsigned short *__restrict__ data,
                    const unsigned short *__restrict__ other) {
   // global vector index.
   const unsigned long long idx =
