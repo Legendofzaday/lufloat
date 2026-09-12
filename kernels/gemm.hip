@@ -17,6 +17,9 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const _Float16 *const A_f16 = reinterpret_cast<const _Float16 *>(A);
   const _Float16 *const B_f16 = reinterpret_cast<const _Float16 *>(B);
   _Float16 *const C_f16 = reinterpret_cast<_Float16 *>(C);
+  const unsigned int wave_id = threadIdx.x >> 5;
+  const unsigned int lane_16 = threadIdx.x & 15;
+  const unsigned int wave_half = (threadIdx.x >> 4) & 1;
   alignas(16) __shared__ _Float16 A_lds_t[2][32][256];
   alignas(16) __shared__ _Float16 B_lds_t[2][256][32];
 }
