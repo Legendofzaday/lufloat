@@ -6,7 +6,8 @@
   @param other: same as lufloat_div @param other.
   @param accumulated: same as lufloat_div @param accumulated.
 */
-__global__ void div_kernel(const unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+div_kernel(const unsigned short *__restrict__ data,
                            const unsigned short *__restrict__ other,
                            unsigned short *__restrict__ accumulated) {
   // global vector index.
