@@ -6,7 +6,7 @@
   @param other: same as lufloat_mul @param other.
   @param accumulated: same as lufloat_mul @param accumulated.
 */
-__global__ void mul_kernel(const unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) mul_kernel(const unsigned short *__restrict__ data,
                            const unsigned short *__restrict__ other,
                            unsigned short *__restrict__ accumulated) {
   // global vector index.
