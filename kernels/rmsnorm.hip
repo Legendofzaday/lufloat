@@ -10,11 +10,11 @@
   @param eps: epsilon.
 */
 template <unsigned int BLOCK_THREADS, unsigned int ROWS_PER_BLOCK>
-__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) rmsnorm_kernel(const unsigned short *__restrict__ data,
-                               const unsigned short *__restrict__ weight,
-                               unsigned short *__restrict__ normalized,
-                               const unsigned int cols, const unsigned int rows,
-                               const float eps) {
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+rmsnorm_kernel(const unsigned short *__restrict__ data,
+               const unsigned short *__restrict__ weight,
+               unsigned short *__restrict__ normalized, const unsigned int cols,
+               const unsigned int rows, const float eps) {
   const auto row = blockIdx.x * ROWS_PER_BLOCK + threadIdx.y;
   const auto active = (row < rows);
   // row * cols.
