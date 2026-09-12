@@ -7,7 +7,7 @@
 */
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
 add_inplace_kernel(unsigned short *__restrict__ data,
-                                   const unsigned short *__restrict__ other) {
+                   const unsigned short *__restrict__ other) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
