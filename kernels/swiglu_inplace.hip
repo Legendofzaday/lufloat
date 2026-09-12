@@ -5,7 +5,7 @@
   @param data: same as lufloat_swiglu_inplace @param data.
   @param gate: same as lufloat_swiglu_inplace @param gate.
 */
-__global__ void swiglu_inplace_kernel(unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) swiglu_inplace_kernel(unsigned short *__restrict__ data,
                                       const unsigned short *__restrict__ gate) {
   // global vector index.
   const unsigned long long idx =
