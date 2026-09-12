@@ -24,9 +24,9 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int wave_m = threadIdx.x >> 6;
   const unsigned int wave_n = (threadIdx.x >> 5) & 1;
   const unsigned int a_m_base = threadIdx.x >> 2;
-  const unsigned int a_k_col  = (threadIdx.x << 3) & 24;
+  const unsigned int a_k_col = (threadIdx.x << 3) & 24;
   const unsigned int b_k_base = threadIdx.x >> 5;
-  const unsigned int b_n_col  = (threadIdx.x << 3) & 248;
+  const unsigned int b_n_col = (threadIdx.x << 3) & 248;
 }
 
 /*
