@@ -10,7 +10,7 @@
   @param eps: epsilon.
 */
 template <unsigned int BLOCK_THREADS, unsigned int ROWS_PER_BLOCK>
-__global__ void rmsnorm_kernel(const unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) rmsnorm_kernel(const unsigned short *__restrict__ data,
                                const unsigned short *__restrict__ weight,
                                unsigned short *__restrict__ normalized,
                                const unsigned int cols, const unsigned int rows,
