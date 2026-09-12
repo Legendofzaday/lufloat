@@ -5,8 +5,9 @@
   @param data: same as lufloat_sigma @param data.
   @param activation: same as lufloat_sigma @param activation.
 */
-__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) sigma_kernel(const unsigned short *__restrict__ data,
-                             unsigned short *__restrict__ activation) {
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+sigma_kernel(const unsigned short *__restrict__ data,
+             unsigned short *__restrict__ activation) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
