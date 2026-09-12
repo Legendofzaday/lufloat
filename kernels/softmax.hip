@@ -8,7 +8,7 @@
   @param rows: total number of rows.
 */
 template <unsigned int BLOCK_THREADS, unsigned int ROWS_PER_BLOCK>
-__global__ void softmax_kernel(const unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) softmax_kernel(const unsigned short *__restrict__ data,
                                unsigned short *__restrict__ probabilities,
                                const unsigned int cols,
                                const unsigned int rows) {
