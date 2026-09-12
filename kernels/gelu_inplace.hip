@@ -2,7 +2,7 @@
 #include <hip/hip_runtime.h>
 
 // @param data: same as lufloat_gelu_inplace @param data.
-__global__ void gelu_inplace_kernel(unsigned short *data) {
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) gelu_inplace_kernel(unsigned short *data) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
