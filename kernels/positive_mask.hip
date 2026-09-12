@@ -4,8 +4,9 @@
   @param data: same as lufloat_positive_mask @param data.
   @param mask: same as lufloat_positive_mask @param mask.
 */
-__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) positive_mask_kernel(const unsigned short *__restrict__ data,
-                                     unsigned short *__restrict__ mask) {
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+positive_mask_kernel(const unsigned short *__restrict__ data,
+                     unsigned short *__restrict__ mask) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
