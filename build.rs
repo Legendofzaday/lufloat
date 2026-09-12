@@ -43,7 +43,6 @@ fn compile_lib(out_dir: &str) -> Vec<(Child, PathBuf)> {
                     "-ffast-math",
                     "-fPIC",
                     "-fgpu-flush-denormals-to-zero",
-                    "--gpu-max-threads-per-block=256",
                     "-munsafe-fp-atomics",
                     "--offload-arch=native",
                 ])
