@@ -4,7 +4,7 @@
   @param data: same as lufloat_negative_mask @param data.
   @param mask: same as lufloat_negative_mask @param mask.
 */
-__global__ void negative_mask_kernel(const unsigned short *__restrict__ data,
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256))) negative_mask_kernel(const unsigned short *__restrict__ data,
                                      unsigned short *__restrict__ mask) {
   // global vector index.
   const unsigned long long idx =
