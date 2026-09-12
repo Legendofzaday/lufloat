@@ -20,7 +20,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
   _Float16 *const C_f16 = reinterpret_cast<_Float16 *>(C);
   alignas(16) __shared__ _Float16 A_lds_t[2][32][256];
   alignas(16) __shared__ _Float16 B_lds_t[2][256][32];
-  const unsigned int block_id = blockIdx.y * gridDim.x + blockIdx.x;
+  const unsigned int block_idx = blockIdx.y * gridDim.x + blockIdx.x;
   const unsigned int lane_16 = threadIdx.x & 15;
   const unsigned int wave_half = threadIdx.x >> 4 & 1;
   const unsigned int wave_m = threadIdx.x >> 6;
