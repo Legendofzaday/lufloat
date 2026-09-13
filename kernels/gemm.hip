@@ -100,29 +100,29 @@ gemm_kernel(const unsigned short *__restrict__ A,
         const unsigned int swizzle_row = (a_r >> 1) & 3;
         half8 alo = A_lds_t[phase][a_r * 4 + (c0 ^ swizzle_row)];
         half8 ahi = A_lds_t[phase][a_r * 4 + (c1 ^ swizzle_row)];
-        *reinterpret_cast<half8*>(&a_frag[i]) = alo;
-        *(reinterpret_cast<half8*>(&a_frag[i]) + 1) = ahi;
+        *reinterpret_cast<half8 *>(&a_frag[i]) = alo;
+        *(reinterpret_cast<half8 *>(&a_frag[i]) + 1) = ahi;
       }
+    }
   }
-}
 
-/*
-  @param A: pointer to input float16 array.
-  @param B: pointer to input float16 array.
-  @param C: pointer to output float16 array.
-  @param m: rows of A || rows of C.
-  @param n: cols of B || cols of C.
-  @param k: cols of A || rows of B.
-*/
-extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
-                            unsigned short *C, const unsigned int m,
-                            const unsigned int n, const unsigned int k) {
   /*
-    @param gridDim: 256x256 tiling.
-    @param blockDim: 16 wave 32.
+    @param A: pointer to input float16 array.
+    @param B: pointer to input float16 array.
+    @param C: pointer to output float16 array.
+    @param m: rows of A || rows of C.
+    @param n: cols of B || cols of C.
+    @param k: cols of A || rows of B.
   */
-  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
-                     C, n, k);
-  // kernel launch error.
-  return static_cast<int>(hipGetLastError());
-}
+  extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
+                              unsigned short *C, const unsigned int m,
+                              const unsigned int n, const unsigned int k) {
+    /*
+      @param gridDim: 256x256 tiling.
+      @param blockDim: 16 wave 32.
+    */
+    hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
+                       C, n, k);
+    // kernel launch error.
+    return static_cast<int>(hipGetLastError());
+  }
