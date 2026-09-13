@@ -25,12 +25,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int bx = blockIdx.x << 8;
   // blockIdx.y * 256.
   const unsigned int by = blockIdx.y << 8;
-  // 0..=15.
-  const unsigned int lane_16 = threadIdx.x & 15;
   // 0..=1.
   const unsigned int wave_half = threadIdx.x >> 4 & 1;
-  // 0..=3.
-  const unsigned int wave_m = threadIdx.x >> 7;
   // 0..=3.
   const unsigned int wave_n = threadIdx.x >> 5 & 3;
   // 0..=127.
@@ -93,7 +89,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
     for (unsigned int kj = 0; kj < 2; ++kj) {
 #pragma unroll
       for (unsigned int i = 0; i < 4; ++i) {
-        const unsigned int a_r = wave_m * 64 + i * 16 + lane_16;
+        const unsigned int a_r = (threadIdx.x << 1) + (i << 4) + (threadIdx.x & 15);
         const unsigned int c0 = kj << 1;
         const unsigned int c1 = c0 + 1;
         const unsigned int swizzle_row = (a_r >> 1) & 3;
