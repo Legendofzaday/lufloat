@@ -89,6 +89,20 @@ gemm_kernel(const unsigned short *__restrict__ A,
       rb[i] = *reinterpret_cast<const half8 *>(
           &B_f16[(b_k_base + (i << 4)) * n + (bx + b_n_col) + ki * n]);
     }
+#pragma unroll
+    for (unsigned int kj = 0; kj < 2; ++kj) {
+#pragma unroll
+      for (unsigned int i = 0; i < 4; ++i) {
+        const unsigned int a_r = wave_m * 64 + i * 16 + lane_16;
+        const unsigned int a_c = kj * 16;
+        const unsigned int c0 = a_c >> 3;
+        const unsigned int c1 = c0 + 1;
+        const unsigned int swizzle_row = (a_r >> 1) & 3;
+        half8 alo = A_lds_t[phase][a_r * 4 + (c0 ^ swizzle_row)];
+        half8 ahi = A_lds_t[phase][a_r * 4 + (c1 ^ swizzle_row)];
+        *reinterpret_cast<half8*>(&a_frag[i]) = alo;
+        *(reinterpret_cast<half8*>(&a_frag[i]) + 1) = ahi;
+      }
   }
 }
 
