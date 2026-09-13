@@ -76,18 +76,18 @@ gemm_kernel(const unsigned short *__restrict__ A,
   half16 a_frag[4];
   half16 b_frag[4];
   half8 c_frag[4][4] = {};
-  for (unsigned int kk = 32; kk < k; kk += 32) {
+  for (unsigned int ki = 32; ki < k; ki += 32) {
 #pragma unroll
     for (unsigned int i = 0; i < 2; ++i) {
       // 128 bit vectorized load.
       ra[i] = *reinterpret_cast<const half8 *>(
-          &A_f16[(by + (a_m_base + (i << 7))) * k + a_k_col + kk]);
+          &A_f16[(by + (a_m_base + (i << 7))) * k + a_k_col + ki]);
     }
 #pragma unroll
     for (unsigned int i = 0; i < 2; ++i) {
       // 128 bit vectorized load.
       rb[i] = *reinterpret_cast<const half8 *>(
-          &B_f16[(b_k_base + (i << 4)) * n + (bx + b_n_col) + kk * n]);
+          &B_f16[(b_k_base + (i << 4)) * n + (bx + b_n_col) + ki * n]);
     }
   }
 }
