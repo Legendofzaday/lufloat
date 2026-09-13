@@ -72,8 +72,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
     B_lds_t[0][b_k * 32 + swizzled_n] = rb[i];
   }
   __syncthreads();
-  half16 c_frag[4][4] = {};
-  for (unsigned int kk = 32; kk < k; k += 32) {
+  half8 c_frag[4][4] = {};
+  for (unsigned int kk = 32; kk < k; kk += 32) {
 #pragma unroll
     for (unsigned int i = 0; i < 2; ++i) {
       // 128 bit vectorized load.
