@@ -39,7 +39,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int a_k_col = threadIdx.x << 3 & 24;
   // 0..=7.
   const unsigned int b_k_base = threadIdx.x >> 5;
-  // 0 || 8 || 16 || 24 … || 248.
+  // 0 || 8 || 16 || 24 || … || 248.
   const unsigned int b_n_col = threadIdx.x << 3 & 248;
   alignas(16) __shared__ _Float16 A_lds_t[2][32][256];
   alignas(16) __shared__ _Float16 B_lds_t[2][256][32];
