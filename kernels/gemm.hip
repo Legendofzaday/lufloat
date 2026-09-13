@@ -10,7 +10,7 @@ using half16 = _Float16 __attribute__((ext_vector_type(16)));
   @param n: cols of B || cols of C.
   @param k: cols of A || rows of B.
 */
-__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+__global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const unsigned short *__restrict__ A,
             const unsigned short *__restrict__ B,
             unsigned short *__restrict__ C, const unsigned int n,
@@ -30,44 +30,44 @@ gemm_kernel(const unsigned short *__restrict__ A,
   // 0..=1.
   const unsigned int wave_half = threadIdx.x >> 4 & 1;
   // 0..=3.
-  const unsigned int wave_m = threadIdx.x >> 6;
-  // 0..=1.
-  const unsigned int wave_n = threadIdx.x >> 5 & 1;
-  // 0..=63.
+  const unsigned int wave_m = threadIdx.x >> 7;
+  // 0..=3.
+  const unsigned int wave_n = threadIdx.x >> 5 & 3;
+  // 0..=127.
   const unsigned int a_m_base = threadIdx.x >> 2;
   // 0 || 8 || 16 || 24.
   const unsigned int a_k_col = threadIdx.x << 3 & 24;
-  // 0..=7.
+  // 0..=15.
   const unsigned int b_k_base = threadIdx.x >> 5;
   // 0 || 8 || 16 || 24 || … || 248.
   const unsigned int b_n_col = threadIdx.x << 3 & 248;
-  alignas(16) __shared__ _Float16 A_lds_t[2][32][256];
-  alignas(16) __shared__ _Float16 B_lds_t[2][256][32];
-  half8 ra[4];
-  half8 rb[4];
+  alignas(16) __shared__ half8 A_lds_t[2][1024];
+  alignas(16) __shared__ half8 B_lds_t[2][1024];
+  half8 ra[2];
+  half8 rb[2];
 #pragma unroll
-  for (unsigned int i = 0; i < 4; ++i) {
+  for (unsigned int i = 0; i < 2; ++i) {
     // 128 bit vectorized load.
     ra[i] = *reinterpret_cast<const half8 *>(
-        &A_f16[(by + (a_m_base + (i << 6))) * k + a_k_col]);
+        &A_f16[(by + (a_m_base + (i << 7))) * k + a_k_col]);
   }
 #pragma unroll
-  for (unsigned int i = 0; i < 4; ++i) {
+  for (unsigned int i = 0; i < 2; ++i) {
     // 128 bit vectorized load.
     rb[i] = *reinterpret_cast<const half8 *>(
-        &B_f16[(b_k_base + (i << 3)) * n + (bx + b_n_col)]);
+        &B_f16[(b_k_base + (i << 4)) * n + (bx + b_n_col)]);
   }
 #pragma unroll
-  for (unsigned int i = 0; i < 4; ++i) {
-    // [0..=63] + 64 * i.
-    const unsigned int a_m = a_m_base + (i << 6);
+  for (unsigned int i = 0; i < 2; ++i) {
+    // [0..=127] + 128 * i.
+    const unsigned int a_m = a_m_base + (i << 7);
     const unsigned int swizzled_k = (a_k_col >> 3) ^ ((a_m >> 1) & 3);
     A_lds_t[0][a_m * 4 + swizzled_k] = ra[i];
   }
 #pragma unroll
-  for (unsigned int i = 0; i < 4; ++i) {
-    // [0..=7] + 8 * i.
-    const unsigned int b_k = b_k_base + (i << 3);
+  for (unsigned int i = 0; i < 2; ++i) {
+    // [0..=15] + 16 * i.
+    const unsigned int b_k = b_k_base + (i << 4);
     const unsigned int swizzled_n = (b_n_col >> 3) ^ b_k;
     B_lds_t[0][b_k * 32 + swizzled_n] = rb[i];
   }
@@ -87,9 +87,9 @@ extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
                             const unsigned int n, const unsigned int k) {
   /*
     @param gridDim: 256x256 tiling.
-    @param blockDim: 8 wave 32.
+    @param blockDim: 16 wave 32.
   */
-  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(256), 0, 0, A, B,
+  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
                      C, n, k);
   // kernel launch error.
   return static_cast<int>(hipGetLastError());
