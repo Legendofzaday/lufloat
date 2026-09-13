@@ -72,6 +72,9 @@ gemm_kernel(const unsigned short *__restrict__ A,
     B_lds_t[0][b_k * 32 + swizzled_n] = rb[i];
   }
   __syncthreads();
+  unsigned int phase = 0;
+  half16 a_frag[4];
+  half16 b_frag[4];
   half8 c_frag[4][4] = {};
   for (unsigned int kk = 32; kk < k; kk += 32) {
 #pragma unroll
