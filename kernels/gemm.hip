@@ -75,6 +75,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
   unsigned int phase = 0;
   half16 a_frag[4];
   half16 b_frag[4];
+  half8 c_frag[4][4] = {};
   for (unsigned int kk = 32; kk < k; kk += 32) {
 #pragma unroll
     for (unsigned int i = 0; i < 2; ++i) {
