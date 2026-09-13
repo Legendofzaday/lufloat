@@ -89,7 +89,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
     for (unsigned int kj = 0; kj < 2; ++kj) {
 #pragma unroll
       for (unsigned int i = 0; i < 4; ++i) {
-        const unsigned int a_r = (threadIdx.x << 1) + (i << 4) + (threadIdx.x & 15);
+        const unsigned int a_r =
+            (threadIdx.x << 1) + (i << 4) + (threadIdx.x & 15);
         const unsigned int c0 = kj << 1;
         const unsigned int c1 = c0 + 1;
         const unsigned int swizzle_row = (a_r >> 1) & 3;
