@@ -18,8 +18,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const _Float16 *const A_f16 = reinterpret_cast<const _Float16 *>(A);
   const _Float16 *const B_f16 = reinterpret_cast<const _Float16 *>(B);
   _Float16 *const C_f16 = reinterpret_cast<_Float16 *>(C);
-  const unsigned int bx = blockDim.x << 8;
-  const unsigned int by = blockDim.y << 8;
+  const unsigned int bx = blockIdx.x << 8;
+  const unsigned int by = blockIdx.y << 8;
   const unsigned int lane_16 = threadIdx.x & 15;
   const unsigned int wave_half = threadIdx.x >> 4 & 1;
   const unsigned int wave_m = threadIdx.x >> 6;
