@@ -42,7 +42,6 @@ gemm_kernel(const unsigned short *__restrict__ A,
     rb[i] = *reinterpret_cast<const half8 *>(
         &B_f16[(b_k_base + i * 8) * n + (bx + b_n_col)]);
   }
-  half16 c_frag[4][4] = {};
 }
 
 /*
