@@ -100,17 +100,6 @@ gemm_kernel(const unsigned short *__restrict__ A,
             A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
       }
     }
-#pragma unroll
-    for (unsigned int i = 0; i < 4; ++i) {
-      const unsigned int b_col = ((threadIdx.x >> 5 & 3) << 6) + (j << 4);
-#pragma unroll
-      for (unsigned int j = 0; j < 16; ++j) {
-        const unsigned int b_r = (ki << 4) + j;
-        const unsigned int b_c = b_col + (threadIdx.x & 15);
-        b_frag[i][j] =
-            B_lds_t[phase][b_r * 32 + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
-      }
-    }
   }
 
   /*
