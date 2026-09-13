@@ -85,7 +85,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
       rb[j] = *reinterpret_cast<const half8 *>(
           &B_f16[(b_k_base + (j << 4)) * n + (bx + b_n_col) + i * n]);
     }
-  }
+  
 #pragma unroll
   for (unsigned int i = 0; i < 2; ++i) {
 #pragma unroll
@@ -100,6 +100,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
       *(reinterpret_cast<half8 *>(&a_frag[j]) + 1) =
           A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
     }
+  }
   }
 }
 
