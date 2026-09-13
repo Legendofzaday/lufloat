@@ -47,14 +47,14 @@ gemm_kernel(const unsigned short *__restrict__ A,
     const unsigned int a_m = a_m_base + (i << 6);
     const unsigned int k_blk = a_k_col >> 3;
     const unsigned int swizzled_k = k_blk ^ ((a_m >> 1) & 3);
-    reinterpret_cast<half8 *>(A_lds_t[0])[a_m * 4 + swizzled_k] = ra[i];
+    A_lds_t[0][a_m * 4 + swizzled_k] = ra[i];
   }
 #pragma unroll
   for (unsigned int i = 0; i < 4; ++i) {
     const unsigned int b_k = b_k_base + (i << 3);
     const unsigned int n_blk = b_n_col >> 3;
     const unsigned int swizzled_n = n_blk ^ b_k;
-    reinterpret_cast<half8 *>(B_lds_t[0])[b_k * 32 + swizzled_n] = rb[i];
+    B_lds_t[0][b_k * 32 + swizzled_n] = rb[i];
   }
   __syncthreads();
 }
