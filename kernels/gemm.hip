@@ -15,18 +15,31 @@ gemm_kernel(const unsigned short *__restrict__ A,
             const unsigned short *__restrict__ B,
             unsigned short *__restrict__ C, const unsigned int n,
             const unsigned int k) {
+  // pointer to input float16 array.
   const _Float16 *const A_f16 = reinterpret_cast<const _Float16 *>(A);
+  // pointer to input float16 array.
   const _Float16 *const B_f16 = reinterpret_cast<const _Float16 *>(B);
+  // pointer to output float16 array.
   _Float16 *const C_f16 = reinterpret_cast<_Float16 *>(C);
+  // blockIdx.x * 256.
   const unsigned int bx = blockIdx.x << 8;
+  // blockIdx.y * 256.
   const unsigned int by = blockIdx.y << 8;
+  // 0..=15.
   const unsigned int lane_16 = threadIdx.x & 15;
+  // 0..=1.
   const unsigned int wave_half = threadIdx.x >> 4 & 1;
+  // 0..=3.
   const unsigned int wave_m = threadIdx.x >> 6;
+  // 0..=1.
   const unsigned int wave_n = threadIdx.x >> 5 & 1;
+  // 0..=63.
   const unsigned int a_m_base = threadIdx.x >> 2;
+  // 0 || 8 || 16 || 24.
   const unsigned int a_k_col = threadIdx.x << 3 & 24;
+  // 0..=7.
   const unsigned int b_k_base = threadIdx.x >> 5;
+  // 0 || 8 || 16 || 24 … || 248.
   const unsigned int b_n_col = threadIdx.x << 3 & 248;
   alignas(16) __shared__ _Float16 A_lds_t[2][32][256];
   alignas(16) __shared__ _Float16 B_lds_t[2][256][32];
