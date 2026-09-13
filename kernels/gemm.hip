@@ -64,7 +64,6 @@ gemm_kernel(const unsigned short *__restrict__ A,
     }
   }
   half16 c_frag[4][4] = {};
-  
 }
 
 /*
