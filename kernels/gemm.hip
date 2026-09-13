@@ -86,17 +86,17 @@ gemm_kernel(const unsigned short *__restrict__ A,
           &B_f16[(b_k_base + (j << 4)) * n + (bx + b_n_col) + i * n]);
     }
 #pragma unroll
-    for (unsigned int i = 0; i < 2; ++i) {
+    for (unsigned int j = 0; j < 2; ++j) {
 #pragma unroll
-      for (unsigned int j = 0; j < 4; ++j) {
+      for (unsigned int l = 0; l < 4; ++l) {
         const unsigned int a_r =
-            (threadIdx.x >> 7 << 6) + (j << 4) + (threadIdx.x & 15);
-        const unsigned int c0 = i << 1;
+            (threadIdx.x >> 7 << 6) + (l << 4) + (threadIdx.x & 15);
+        const unsigned int c0 = j << 1;
         const unsigned int c1 = c0 + 1;
         const unsigned int swizzle_row = (a_r >> 1) & 3;
-        *reinterpret_cast<half8 *>(&a_frag[j]) =
+        *reinterpret_cast<half8 *>(&a_frag[l]) =
             A_lds_t[phase][(a_r << 2) + (c0 ^ swizzle_row)];
-        *(reinterpret_cast<half8 *>(&a_frag[j]) + 1) =
+        *(reinterpret_cast<half8 *>(&a_frag[l]) + 1) =
             A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
       }
     }
