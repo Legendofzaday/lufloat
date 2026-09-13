@@ -97,8 +97,10 @@ gemm_kernel(const unsigned short *__restrict__ A,
         const unsigned int c0 = kj << 1;
         const unsigned int c1 = c0 + 1;
         const unsigned int swizzle_row = (a_r >> 1) & 3;
-        *reinterpret_cast<half8 *>(&a_frag[i]) = A_lds_t[phase][(a_r << 2) + (c0 ^ swizzle_row)];
-        *(reinterpret_cast<half8 *>(&a_frag[i]) + 1) = A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
+        *reinterpret_cast<half8 *>(&a_frag[i]) =
+            A_lds_t[phase][(a_r << 2) + (c0 ^ swizzle_row)];
+        *(reinterpret_cast<half8 *>(&a_frag[i]) + 1) =
+            A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
       }
     }
   }
