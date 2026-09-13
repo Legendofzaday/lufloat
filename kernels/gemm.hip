@@ -101,6 +101,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
       }
     }
   }
+}
 
   /*
     @param A: pointer to input float16 array.
