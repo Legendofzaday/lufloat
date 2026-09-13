@@ -72,6 +72,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
     B_lds_t[0][b_k * 32 + swizzled_n] = rb[i];
   }
   __syncthreads();
+  half16 c_frag[4][4] = {};
 }
 
 /*
