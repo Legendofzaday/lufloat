@@ -57,12 +57,14 @@ gemm_kernel(const unsigned short *__restrict__ A,
   }
 #pragma unroll
   for (unsigned int i = 0; i < 4; ++i) {
+    // [0..=63] + 64 * i.
     const unsigned int a_m = a_m_base + (i << 6);
     const unsigned int swizzled_k = (a_k_col >> 3) ^ ((a_m >> 1) & 3);
     A_lds_t[0][a_m * 4 + swizzled_k] = ra[i];
   }
 #pragma unroll
   for (unsigned int i = 0; i < 4; ++i) {
+    // [0..=7] + 8 * i.
     const unsigned int b_k = b_k_base + (i << 3);
     const unsigned int swizzled_n = (b_n_col >> 3) ^ b_k;
     B_lds_t[0][b_k * 32 + swizzled_n] = rb[i];
