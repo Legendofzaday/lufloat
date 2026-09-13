@@ -103,23 +103,23 @@ gemm_kernel(const unsigned short *__restrict__ A,
   }
 }
 
+/*
+  @param A: pointer to input float16 array.
+  @param B: pointer to input float16 array.
+  @param C: pointer to output float16 array.
+  @param m: rows of A || rows of C.
+  @param n: cols of B || cols of C.
+  @param k: cols of A || rows of B.
+*/
+extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
+                            unsigned short *C, const unsigned int m,
+                            const unsigned int n, const unsigned int k) {
   /*
-    @param A: pointer to input float16 array.
-    @param B: pointer to input float16 array.
-    @param C: pointer to output float16 array.
-    @param m: rows of A || rows of C.
-    @param n: cols of B || cols of C.
-    @param k: cols of A || rows of B.
+    @param gridDim: 256x256 tiling.
+    @param blockDim: 16 wave 32.
   */
-  extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
-                              unsigned short *C, const unsigned int m,
-                              const unsigned int n, const unsigned int k) {
-    /*
-      @param gridDim: 256x256 tiling.
-      @param blockDim: 16 wave 32.
-    */
-    hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
-                       C, n, k);
-    // kernel launch error.
-    return static_cast<int>(hipGetLastError());
-  }
+  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
+                     C, n, k);
+  // kernel launch error.
+  return static_cast<int>(hipGetLastError());
+}
