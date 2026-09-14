@@ -117,7 +117,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
         }
       }
     }
-phase ^= 1;
+    phase ^= 1;
 #pragma unroll
     for (unsigned int j = 0; j < 2; ++j) {
       const unsigned int a_m = a_m_base + (j << 7);
