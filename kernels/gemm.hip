@@ -34,14 +34,7 @@ __global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const unsigned short *__restrict__ A,
             const unsigned short *__restrict__ B,
             unsigned short *__restrict__ C, const unsigned int n,
-            const unsigned int k) {
-  // pointer to input float16 array.
-  const _Float16 *const A_f16 = reinterpret_cast<const _Float16 *>(A);
-  // pointer to input float16 array.
-  const _Float16 *const B_f16 = reinterpret_cast<const _Float16 *>(B);
-  // pointer to output float16 array.
-  _Float16 *const C_f16 = reinterpret_cast<_Float16 *>(C);
-}
+            const unsigned int k) {}
 
 /*
   @param A: pointer to input float16 array.
