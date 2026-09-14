@@ -45,7 +45,6 @@ gemm_kernel(const unsigned short *__restrict__ A,
     rb[i] = *reinterpret_cast<const half8 *>(
         &B_f16[(b_k_base + (i << 4)) * n + ((blockIdx.x << 8) + b_n_col)]);
   }
-
 #pragma unroll
   for (unsigned int i = 0; i < 2; ++i) {
     // [0..=127] + (i << 7).
