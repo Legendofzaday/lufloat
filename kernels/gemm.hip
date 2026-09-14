@@ -45,8 +45,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const auto lane = threadIdx.x & 31;
   const auto wave_m = wave << 4 & ~63;
   const auto wave_n = wave << 6 & 192;
-  __shared__ uint4 A_lds_t[2][256][4];
-  __shared__ uint4 B_lds_t[2][256][4];
+  __shared__ uint4 Alds[2][256][4];
+  __shared__ uint4 Blds[2][256][4];
   FragC fragC[4][4];
 #pragma unroll
   for (auto i = 0u; i < 4; ++i) {
