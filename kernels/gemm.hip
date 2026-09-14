@@ -17,7 +17,7 @@ constexpr auto ROCWMMA_K = 16u;
   @param n: cols of B || cols of C.
   @param k: cols of A || rows of B.
 */
-__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+__global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const unsigned short *__restrict__ A,
             const unsigned short *__restrict__ B,
             unsigned short *__restrict__ C, const unsigned int n,
@@ -43,9 +43,9 @@ extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
                             const unsigned int n, const unsigned int k) {
   /*
     @param gridDim: 256x256 tiling.
-    @param blockDim: 8 wave 32.
+    @param blockDim: 16 wave 32.
   */
-  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(256), 0, 0, A, B,
+  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
                      C, n, k);
   // kernel launch error.
   return static_cast<int>(hipGetLastError());
