@@ -21,8 +21,6 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const _Float16 *const B_f16 = reinterpret_cast<const _Float16 *>(B);
   // pointer to output float16 array.
   _Float16 *const C_f16 = reinterpret_cast<_Float16 *>(C);
-  // 0..=1.
-  const unsigned int wave_half = threadIdx.x >> 4 & 1;
   // 0..=127.
   const unsigned int a_m_base = threadIdx.x >> 2;
   // 0 || 8 || 16 || 24.
@@ -176,7 +174,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
           (blockIdx.x << 8) + ((threadIdx.x >> 5 & 3) << 6) + j * 16;
 #pragma unroll
       for (unsigned int r = 0; r < 8; ++r) {
-        const unsigned int g_row = g_row_base + wave_half + r * 2;
+        const unsigned int g_row = g_row_base + (threadIdx.x >> 4 & 1) + r * 2;
         const unsigned int g_col = g_col_base + (threadIdx.x & 15);
         C_f16[g_row * n + g_col] = c_frag[i][j][r];
       }
