@@ -2,9 +2,13 @@
 #include <rocwmma/rocwmma.hpp>
 #include <rocwmma/rocwmma_transforms.hpp>
 
-constexpr unsigned int ROCWMMA_M = 16;
-constexpr unsigned int ROCWMMA_N = 16;
-constexpr unsigned int ROCWMMA_K = 16;
+using DATA_LAYOUT_A = rocwmma::row_major;
+using DATA_LAYOUT_B = rocwmma::col_major;
+using DATA_LAYOUT_C = rocwmma::row_major;
+
+constexpr auto ROCWMMA_M = 16u;
+constexpr auto ROCWMMA_N = 16u;
+constexpr auto ROCWMMA_K = 16u;
 
 /*
   @param A: pointer to input float16 array.
