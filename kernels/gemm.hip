@@ -2,6 +2,10 @@
 #include <rocwmma/rocwmma.hpp>
 #include <rocwmma/rocwmma_transforms.hpp>
 
+constexpr unsigned int ROCWMMA_M = 16;
+constexpr unsigned int ROCWMMA_N = 16;
+constexpr unsigned int ROCWMMA_K = 16;
+
 /*
   @param A: pointer to input float16 array.
   @param B: pointer to input float16 array.
