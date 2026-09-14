@@ -21,10 +21,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const _Float16 *const B_f16 = reinterpret_cast<const _Float16 *>(B);
   // pointer to output float16 array.
   _Float16 *const C_f16 = reinterpret_cast<_Float16 *>(C);
-  // blockIdx.x * 256.
-  const unsigned int bx = blockIdx.x << 8;
-  // blockIdx.y * 256.
-  const unsigned int by = blockIdx.y << 8;
+  // 0..=1.
+  const unsigned int wave_half = threadIdx.x >> 4 & 1;
   // 0..=127.
   const unsigned int a_m_base = threadIdx.x >> 2;
   // 0 || 8 || 16 || 24.
@@ -41,13 +39,13 @@ gemm_kernel(const unsigned short *__restrict__ A,
   for (unsigned int i = 0; i < 2; ++i) {
     // 128 bit vectorized load.
     ra[i] = *reinterpret_cast<const half8 *>(
-        &A_f16[(by + (a_m_base + (i << 7))) * k + a_k_col]);
+        &A_f16[((blockIdx.y << 8) + (a_m_base + (i << 7))) * k + a_k_col]);
   }
 #pragma unroll
   for (unsigned int i = 0; i < 2; ++i) {
     // 128 bit vectorized load.
     rb[i] = *reinterpret_cast<const half8 *>(
-        &B_f16[(b_k_base + (i << 4)) * n + (bx + b_n_col)]);
+        &B_f16[(b_k_base + (i << 4)) * n + ((blockIdx.x << 8) + b_n_col)]);
   }
 #pragma unroll
   for (unsigned int i = 0; i < 2; ++i) {
@@ -73,13 +71,13 @@ gemm_kernel(const unsigned short *__restrict__ A,
     for (unsigned int j = 0; j < 2; ++j) {
       // 128 bit vectorized load.
       ra[j] = *reinterpret_cast<const half8 *>(
-          &A_f16[(by + (a_m_base + (j << 7))) * k + a_k_col + i]);
+          &A_f16[((blockIdx.y << 8) + (a_m_base + (j << 7))) * k + a_k_col + i]);
     }
 #pragma unroll
     for (unsigned int j = 0; j < 2; ++j) {
       // 128 bit vectorized load.
       rb[j] = *reinterpret_cast<const half8 *>(
-          &B_f16[(b_k_base + (j << 4)) * n + (bx + b_n_col) + i * n]);
+          &B_f16[(b_k_base + (j << 4)) * n + ((blockIdx.x << 8) + b_n_col) + i * n]);
     }
 #pragma unroll
     for (unsigned int j = 0; j < 2; ++j) {
@@ -168,13 +166,12 @@ gemm_kernel(const unsigned short *__restrict__ A,
     for (unsigned int i = 0; i < 4; ++i) {
 #pragma unroll
       for (unsigned int j = 0; j < 4; ++j) {
-        const unsigned int g_row_base = by + ((threadIdx.x >> 7) << 6) + i * 16;
+        const unsigned int g_row_base = (blockIdx.y << 8) + ((threadIdx.x >> 7) << 6) + i * 16;
         const unsigned int g_col_base =
-            bx + ((threadIdx.x >> 5 & 3) << 6) + j * 16;
+            (blockIdx.x << 8) + ((threadIdx.x >> 5 & 3) << 6) + j * 16;
 #pragma unroll
         for (unsigned int r = 0; r < 8; ++r) {
-          const unsigned int g_row =
-              g_row_base + (threadIdx.x >> 4 & 1) + r * 2;
+          const unsigned int g_row = g_row_base + wave_half + r * 2;
           const unsigned int g_col = g_col_base + (threadIdx.x & 15);
           C_f16[g_row * n + g_col] = c_frag[i][j][r];
         }
