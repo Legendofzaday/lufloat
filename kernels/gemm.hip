@@ -1,3 +1,4 @@
+#include <hip/amd_detail/amd_hip_runtime.h>
 #include <hip/hip_runtime.h>
 #include <rocwmma/rocwmma.hpp>
 #include <rocwmma/rocwmma_transforms.hpp>
@@ -39,11 +40,15 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const auto *const r_A = reinterpret_cast<const uint4 *>(A);
   const auto *const r_B = reinterpret_cast<const uint4 *>(B);
   auto *const rw_C = reinterpret_cast<uint4 *>(C);
+  const auto wave = threadIdx.x >> 5;
+  const auto lane = threadIdx.x & 31;
+  const auto wave_m = wave << 4 & ~63;
+  const auto wave_n = wave << 6 & 192;
   FragC fragC[4][4];
 #pragma unroll
   for (auto i = 0u; i < 4; ++i) {
 #pragma unroll
-    for (auto j = 0u; i < 4; ++j) {
+    for (auto j = 0u; j < 4; ++j) {
       fill_fragment(fragC[i][j], 0.0f);
     }
   }
