@@ -1,5 +1,3 @@
-#include <__clang_hip_runtime_wrapper.h>
-#include <hip/amd_detail/amd_hip_runtime.h>
 #include <hip/hip_runtime.h>
 #include <rocwmma/rocwmma.hpp>
 #include <rocwmma/rocwmma_transforms.hpp>
