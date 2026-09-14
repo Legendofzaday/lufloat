@@ -100,24 +100,24 @@ gemm_kernel(const unsigned short *__restrict__ A,
             A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
       }
 #pragma unroll
-    for (unsigned int l = 0; l < 4; ++l) {
-      const unsigned int b_col = ((threadIdx.x >> 5 & 3) << 6) + (l << 4);
+      for (unsigned int l = 0; l < 4; ++l) {
+        const unsigned int b_col = ((threadIdx.x >> 5 & 3) << 6) + (l << 4);
 #pragma unroll
-      for (unsigned int o = 0; o < 16; ++o) {
-        const unsigned int b_r = (i << 4) + o;
-        const unsigned int b_c = b_col + (threadIdx.x & 15);
-        b_frag[j][l] =
-            B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
+        for (unsigned int o = 0; o < 16; ++o) {
+          const unsigned int b_r = (i << 4) + o;
+          const unsigned int b_c = b_col + (threadIdx.x & 15);
+          b_frag[j][l] =
+              B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
+        }
       }
-    }
 #pragma unroll
-    for (unsigned int l = 0; l < 4; ++l) {
+      for (unsigned int l = 0; l < 4; ++l) {
 #pragma unroll
-      for (unsigned int m = 0; m < 4; ++m) {
-        c_frag[l][m] = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(
-            a_frag[l], b_frag[m], c_frag[l][m]);
+        for (unsigned int m = 0; m < 4; ++m) {
+          c_frag[l][m] = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(
+              a_frag[l], b_frag[m], c_frag[l][m]);
+        }
       }
-    }
     }
   }
 }
