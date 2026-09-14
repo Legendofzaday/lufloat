@@ -117,6 +117,20 @@ gemm_kernel(const unsigned short *__restrict__ A,
         }
       }
     }
+phase ^= 1;
+#pragma unroll
+    for (unsigned int j = 0; j < 2; ++j) {
+      const unsigned int a_m = a_m_base + (j << 7);
+      const unsigned int swizzled_k = (a_k_col >> 3) ^ ((a_m >> 1) & 3);
+      A_lds_t[phase][a_m * 4 + swizzled_k] = ra[j];
+    }
+#pragma unroll
+    for (unsigned int j = 0; j < 2; ++j) {
+      const unsigned int b_k = b_k_base + (j << 4);
+      const unsigned int swizzled_n = (b_n_col >> 3) ^ b_k;
+      B_lds_t[phase][b_k * 32 + swizzled_n] = rb[j];
+    }
+    __syncthreads();
   }
 }
 
