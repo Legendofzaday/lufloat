@@ -173,7 +173,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
             bx + ((threadIdx.x >> 5 & 3) << 6) + j * 16;
 #pragma unroll
         for (unsigned int r = 0; r < 8; ++r) {
-          const unsigned int g_row = g_row_base + (threadIdx.x >> 4 & 1) + r * 2;
+          const unsigned int g_row =
+              g_row_base + (threadIdx.x >> 4 & 1) + r * 2;
           const unsigned int g_col = g_col_base + (threadIdx.x & 15);
           C_f16[g_row * n + g_col] = c_frag[i][j][r];
         }
