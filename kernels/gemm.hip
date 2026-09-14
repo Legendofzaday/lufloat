@@ -55,6 +55,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
       fill_fragment(fragC[i][j], 0.0f);
     }
   }
+  const auto load_a_row_or_b_col = threadIdx.x >> 1;
+  const auto load_a_col_or_b_row = (threadIdx.x << 1) & 2;
 }
 
 /*
