@@ -72,13 +72,15 @@ gemm_kernel(const unsigned short *__restrict__ A,
     for (unsigned int j = 0; j < 2; ++j) {
       // 128 bit vectorized load.
       ra[j] = *reinterpret_cast<const half8 *>(
-          &A_f16[((blockIdx.y << 8) + (a_m_base + (j << 7))) * k + a_k_col + kk]);
+          &A_f16[((blockIdx.y << 8) + (a_m_base + (j << 7))) * k + a_k_col +
+                 kk]);
     }
 #pragma unroll
     for (unsigned int j = 0; j < 2; ++j) {
       // 128 bit vectorized load.
       rb[j] = *reinterpret_cast<const half8 *>(
-          &B_f16[(b_k_base + (j << 4)) * n + ((blockIdx.x << 8) + b_n_col) + kk * n]);
+          &B_f16[(b_k_base + (j << 4)) * n + ((blockIdx.x << 8) + b_n_col) +
+                 kk * n]);
     }
 #pragma unroll
     for (unsigned int chunk = 0; chunk < 2; ++chunk) {
