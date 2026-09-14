@@ -57,6 +57,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const auto load_a_col_or_b_row = (threadIdx.x << 1) & 2;
   const auto block_offset_m = blockIdx.y << 8;
   const auto block_offset_n = blockIdx.x << 8;
+  const auto k_strides = k >> 3;
 }
 
 /*
