@@ -111,6 +111,13 @@ gemm_kernel(const unsigned short *__restrict__ A,
             B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
       }
     }
+#pragma unroll
+    for (unsigned int j = 0; j < 4; ++j) {
+#pragma unroll
+      for (unsigned int l = 0; l < 4; ++l) {
+        c_frag[j][l] = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(a_frag[j], b_frag[l], c_frag[j][l]);
+      }
+    }
   }
 }
 
