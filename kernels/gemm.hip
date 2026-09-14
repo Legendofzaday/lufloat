@@ -173,7 +173,6 @@ gemm_kernel(const unsigned short *__restrict__ A,
         const unsigned int g_row_base = by + ((threadIdx.x >> 7) << 6) + i * 16;
         const unsigned int g_col_base =
             bx + ((threadIdx.x >> 5 & 3) << 6) + j * 16;
-
 #pragma unroll
         for (unsigned int r = 0; r < 8; ++r) {
           const unsigned int g_row = g_row_base + wave_half + r * 2;
