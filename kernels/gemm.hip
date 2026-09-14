@@ -47,6 +47,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
     rb[i] = *reinterpret_cast<const half8 *>(
         &B_f16[(b_k_base + (i << 4)) * n + ((blockIdx.x << 8) + b_n_col)]);
   }
+
 #pragma unroll
   for (unsigned int i = 0; i < 2; ++i) {
     // [0..=127] + 128 * i.
@@ -66,28 +67,26 @@ gemm_kernel(const unsigned short *__restrict__ A,
   half16 a_frag[4];
   half16 b_frag[4];
   half8 c_frag[4][4] = {};
-  for (unsigned int i = 32; i < k; i += 32) {
+  for (unsigned int kk = 32; kk < k; kk += 32) {
 #pragma unroll
     for (unsigned int j = 0; j < 2; ++j) {
       // 128 bit vectorized load.
       ra[j] = *reinterpret_cast<const half8 *>(
-          &A_f16[((blockIdx.y << 8) + (a_m_base + (j << 7))) * k + a_k_col +
-                 i]);
+          &A_f16[((blockIdx.y << 8) + (a_m_base + (j << 7))) * k + a_k_col + kk]);
     }
 #pragma unroll
     for (unsigned int j = 0; j < 2; ++j) {
       // 128 bit vectorized load.
       rb[j] = *reinterpret_cast<const half8 *>(
-          &B_f16[(b_k_base + (j << 4)) * n + ((blockIdx.x << 8) + b_n_col) +
-                 i * n]);
+          &B_f16[(b_k_base + (j << 4)) * n + ((blockIdx.x << 8) + b_n_col) + kk * n]);
     }
 #pragma unroll
-    for (unsigned int j = 0; j < 2; ++j) {
+    for (unsigned int chunk = 0; chunk < 2; ++chunk) {
 #pragma unroll
       for (unsigned int l = 0; l < 4; ++l) {
         const unsigned int a_r =
             (threadIdx.x >> 7 << 6) + (l << 4) + (threadIdx.x & 15);
-        const unsigned int c0 = j << 1;
+        const unsigned int c0 = chunk << 1;
         const unsigned int c1 = c0 + 1;
         const unsigned int swizzle_row = (a_r >> 1) & 3;
         *reinterpret_cast<half8 *>(&a_frag[l]) =
@@ -100,56 +99,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
         const unsigned int b_col = ((threadIdx.x >> 5 & 3) << 6) + (l << 4);
 #pragma unroll
         for (unsigned int o = 0; o < 16; ++o) {
-          const unsigned int b_r = (j << 4) + o;
-          const unsigned int b_c = b_col + (threadIdx.x & 15);
-          b_frag[l][o] =
-              B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
-        }
-
-#pragma unroll
-        for (unsigned int l = 0; l < 4; ++l) {
-#pragma unroll
-          for (unsigned int m = 0; m < 4; ++m) {
-            c_frag[l][m] = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(
-                a_frag[l], b_frag[m], c_frag[l][m]);
-          }
-        }
-      }
-      phase ^= 1;
-#pragma unroll
-      for (unsigned int j = 0; j < 2; ++j) {
-        const unsigned int a_m = a_m_base + (j << 7);
-        const unsigned int swizzled_k = (a_k_col >> 3) ^ ((a_m >> 1) & 3);
-        A_lds_t[phase][a_m * 4 + swizzled_k] = ra[j];
-      }
-#pragma unroll
-      for (unsigned int j = 0; j < 2; ++j) {
-        const unsigned int b_k = b_k_base + (j << 4);
-        const unsigned int swizzled_n = (b_n_col >> 3) ^ b_k;
-        B_lds_t[phase][b_k * 32 + swizzled_n] = rb[j];
-      }
-      __syncthreads();
-    }
-#pragma unroll
-    for (unsigned int j = 0; j < 2; ++j) {
-#pragma unroll
-      for (unsigned int l = 0; l < 4; ++l) {
-        const unsigned int a_r =
-            (threadIdx.x >> 7 << 6) + (l << 4) + (threadIdx.x & 15);
-        const unsigned int c0 = j << 1;
-        const unsigned int c1 = c0 + 1;
-        const unsigned int swizzle_row = (a_r >> 1) & 3;
-        *reinterpret_cast<half8 *>(&a_frag[l]) =
-            A_lds_t[phase][(a_r << 2) + (c0 ^ swizzle_row)];
-        *(reinterpret_cast<half8 *>(&a_frag[l]) + 1) =
-            A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
-      }
-#pragma unroll
-      for (unsigned int l = 0; l < 4; ++l) {
-        const unsigned int b_col = ((threadIdx.x >> 5 & 3) << 6) + (l << 4);
-#pragma unroll
-        for (unsigned int o = 0; o < 16; ++o) {
-          const unsigned int b_r = (j << 4) + o;
+          const unsigned int b_r = (chunk << 4) + o;
           const unsigned int b_c = b_col + (threadIdx.x & 15);
           b_frag[l][o] =
               B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
@@ -164,41 +114,91 @@ gemm_kernel(const unsigned short *__restrict__ A,
         }
       }
     }
+    phase ^= 1;
 #pragma unroll
-    for (unsigned int i = 0; i < 4; ++i) {
+    for (unsigned int j = 0; j < 2; ++j) {
+      const unsigned int a_m = a_m_base + (j << 7);
+      const unsigned int swizzled_k = (a_k_col >> 3) ^ ((a_m >> 1) & 3);
+      A_lds_t[phase][a_m * 4 + swizzled_k] = ra[j];
+    }
 #pragma unroll
-      for (unsigned int j = 0; j < 4; ++j) {
-        const unsigned int g_row_base =
-            (blockIdx.y << 8) + ((threadIdx.x >> 7) << 6) + i * 16;
-        const unsigned int g_col_base =
-            (blockIdx.x << 8) + ((threadIdx.x >> 5 & 3) << 6) + j * 16;
+    for (unsigned int j = 0; j < 2; ++j) {
+      const unsigned int b_k = b_k_base + (j << 4);
+      const unsigned int swizzled_n = (b_n_col >> 3) ^ b_k;
+      B_lds_t[phase][b_k * 32 + swizzled_n] = rb[j];
+    }
+    __syncthreads();
+  }
 #pragma unroll
-        for (unsigned int r = 0; r < 8; ++r) {
-          const unsigned int g_row = g_row_base + wave_half + r * 2;
-          const unsigned int g_col = g_col_base + (threadIdx.x & 15);
-          C_f16[g_row * n + g_col] = c_frag[i][j][r];
-        }
+  for (unsigned int chunk = 0; chunk < 2; ++chunk) {
+#pragma unroll
+    for (unsigned int l = 0; l < 4; ++l) {
+      const unsigned int a_r =
+          (threadIdx.x >> 7 << 6) + (l << 4) + (threadIdx.x & 15);
+      const unsigned int c0 = chunk << 1;
+      const unsigned int c1 = c0 + 1;
+      const unsigned int swizzle_row = (a_r >> 1) & 3;
+      *reinterpret_cast<half8 *>(&a_frag[l]) =
+          A_lds_t[phase][(a_r << 2) + (c0 ^ swizzle_row)];
+      *(reinterpret_cast<half8 *>(&a_frag[l]) + 1) =
+          A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
+    }
+#pragma unroll
+    for (unsigned int l = 0; l < 4; ++l) {
+      const unsigned int b_col = ((threadIdx.x >> 5 & 3) << 6) + (l << 4);
+#pragma unroll
+      for (unsigned int o = 0; o < 16; ++o) {
+        const unsigned int b_r = (chunk << 4) + o;
+        const unsigned int b_c = b_col + (threadIdx.x & 15);
+        b_frag[l][o] =
+            B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
+      }
+    }
+#pragma unroll
+    for (unsigned int l = 0; l < 4; ++l) {
+#pragma unroll
+      for (unsigned int m = 0; m < 4; ++m) {
+        c_frag[l][m] = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(
+            a_frag[l], b_frag[m], c_frag[l][m]);
       }
     }
   }
 
-  /*
-    @param A: pointer to input float16 array.
-    @param B: pointer to input float16 array.
-    @param C: pointer to output float16 array.
-    @param m: rows of A || rows of C.
-    @param n: cols of B || cols of C.
-    @param k: cols of A || rows of B.
-  */
-  extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
-                              unsigned short *C, const unsigned int m,
-                              const unsigned int n, const unsigned int k) {
-    /*
-      @param gridDim: 256x256 tiling.
-      @param blockDim: 16 wave 32.
-    */
-    hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
-                       C, n, k);
-    // kernel launch error.
-    return static_cast<int>(hipGetLastError());
+#pragma unroll
+  for (unsigned int i = 0; i < 4; ++i) {
+#pragma unroll
+    for (unsigned int j = 0; j < 4; ++j) {
+      const unsigned int g_row_base =
+          (blockIdx.y << 8) + ((threadIdx.x >> 7) << 6) + i * 16;
+      const unsigned int g_col_base =
+          (blockIdx.x << 8) + ((threadIdx.x >> 5 & 3) << 6) + j * 16;
+#pragma unroll
+      for (unsigned int r = 0; r < 8; ++r) {
+        const unsigned int g_row = g_row_base + wave_half + r * 2;
+        const unsigned int g_col = g_col_base + (threadIdx.x & 15);
+        C_f16[g_row * n + g_col] = c_frag[i][j][r];
+      }
+    }
   }
+}
+
+/*
+  @param A: pointer to input float16 array.
+  @param B: pointer to input float16 array.
+  @param C: pointer to output float16 array.
+  @param m: rows of A || rows of C.
+  @param n: cols of B || cols of C.
+  @param k: cols of A || rows of B.
+*/
+extern "C" int lufloat_gemm(const unsigned short *A, const unsigned short *B,
+                            unsigned short *C, const unsigned int m,
+                            const unsigned int n, const unsigned int k) {
+  /*
+    @param gridDim: 256x256 tiling.
+    @param blockDim: 16 wave 32.
+  */
+  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
+                     C, n, k);
+  // kernel launch error.
+  return static_cast<int>(hipGetLastError());
+}
