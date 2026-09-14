@@ -2,6 +2,12 @@
 #include <rocwmma/rocwmma.hpp>
 #include <rocwmma/rocwmma_transforms.hpp>
 
+using rocwmma::accumulator;
+using rocwmma::fragment;
+using rocwmma::matrix_a;
+using rocwmma::matrix_b;
+using rocwmma::fragment_scheduler::default_schedule;
+
 using DATA_LAYOUT_A = rocwmma::row_major;
 using DATA_LAYOUT_B = rocwmma::col_major;
 using DATA_LAYOUT_C = rocwmma::row_major;
@@ -9,6 +15,13 @@ using DATA_LAYOUT_C = rocwmma::row_major;
 constexpr auto ROCWMMA_M = 16u;
 constexpr auto ROCWMMA_N = 16u;
 constexpr auto ROCWMMA_K = 16u;
+
+using FragA = fragment<matrix_a, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, _Float16,
+                       DATA_LAYOUT_A, default_schedule>;
+using FragB = fragment<matrix_b, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, _Float16,
+                       DATA_LAYOUT_B, default_schedule>;
+using FragC = fragment<accumulator, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, float,
+                       DATA_LAYOUT_C, default_schedule>;
 
 /*
   @param A: pointer to input float16 array.
