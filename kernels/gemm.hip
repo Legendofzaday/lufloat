@@ -104,9 +104,9 @@ gemm_kernel(const unsigned short *__restrict__ A,
         const unsigned int b_col = ((threadIdx.x >> 5 & 3) << 6) + (l << 4);
 #pragma unroll
         for (unsigned int o = 0; o < 16; ++o) {
-          const unsigned int b_r = (i << 4) + o;
+          const unsigned int b_r = (j << 4) + o;
           const unsigned int b_c = b_col + (threadIdx.x & 15);
-          b_frag[j][l] =
+          b_frag[l][o] =
               B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
         }
       }
