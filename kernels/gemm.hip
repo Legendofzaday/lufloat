@@ -27,8 +27,6 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const unsigned int by = blockIdx.y << 8;
   // 0..=1.
   const unsigned int wave_half = threadIdx.x >> 4 & 1;
-  // 0..=3.
-  const unsigned int wave_n = threadIdx.x >> 5 & 3;
   // 0..=127.
   const unsigned int a_m_base = threadIdx.x >> 2;
   // 0 || 8 || 16 || 24.
