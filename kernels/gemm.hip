@@ -3,6 +3,7 @@
 #include <rocwmma/rocwmma_transforms.hpp>
 
 using rocwmma::accumulator;
+using rocwmma::fill_fragment;
 using rocwmma::fragment;
 using rocwmma::matrix_a;
 using rocwmma::matrix_b;
@@ -34,7 +35,19 @@ __global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const unsigned short *__restrict__ A,
             const unsigned short *__restrict__ B,
             unsigned short *__restrict__ C, const unsigned int n,
-            const unsigned int k) {}
+            const unsigned int k) {
+  const auto *const r_A = reinterpret_cast<const uint4 *>(A);
+  const auto *const r_B = reinterpret_cast<const uint4 *>(B);
+  auto *const rw_C = reinterpret_cast<uint4 *>(C);
+  FragC fragC[4][4];
+#pragma unroll
+  for (auto i = 0u; i < 4; ++i) {
+#pragma unroll
+    for (auto j = 0u; i < 4; ++j) {
+      fill_fragment(fragC[i][j], 0.0f);
+    }
+  }
+}
 
 /*
   @param A: pointer to input float16 array.
