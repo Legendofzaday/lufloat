@@ -107,7 +107,7 @@ gemm_kernel(const unsigned short *__restrict__ A,
           b_frag[l][o] =
               B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
         }
-      }
+      
 #pragma unroll
       for (unsigned int l = 0; l < 4; ++l) {
 #pragma unroll
@@ -131,6 +131,55 @@ gemm_kernel(const unsigned short *__restrict__ A,
       B_lds_t[phase][b_k * 32 + swizzled_n] = rb[j];
     }
     __syncthreads();
+  }
+#pragma unroll
+  for (unsigned int j = 0; j < 2; ++j) {
+#pragma unroll
+    for (unsigned int l = 0; l < 4; ++l) {
+      const unsigned int a_r =
+          (threadIdx.x >> 7 << 6) + (l << 4) + (threadIdx.x & 15);
+      const unsigned int c0 = j << 1;
+      const unsigned int c1 = c0 + 1;
+      const unsigned int swizzle_row = (a_r >> 1) & 3;
+      *reinterpret_cast<half8 *>(&a_frag[l]) =
+          A_lds_t[phase][(a_r << 2) + (c0 ^ swizzle_row)];
+      *(reinterpret_cast<half8 *>(&a_frag[l]) + 1) =
+          A_lds_t[phase][(a_r << 2) + (c1 ^ swizzle_row)];
+    }
+#pragma unroll
+    for (unsigned int l = 0; l < 4; ++l) {
+      const unsigned int b_col = ((threadIdx.x >> 5 & 3) << 6) + (l << 4);
+#pragma unroll
+      for (unsigned int o = 0; o < 16; ++o) {
+        const unsigned int b_r = (j << 4) + o;
+        const unsigned int b_c = b_col + (threadIdx.x & 15);
+        b_frag[l][o] =
+            B_lds_t[phase][(b_r << 5) + ((b_c >> 3) ^ (b_r & 31))][b_c & 7];
+      }
+    }
+#pragma unroll
+    for (unsigned int l = 0; l < 4; ++l) {
+#pragma unroll
+      for (unsigned int m = 0; m < 4; ++m) {
+        c_frag[l][m] = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(
+            a_frag[l], b_frag[m], c_frag[l][m]);
+      }
+    }
+  }
+#pragma unroll
+  for (unsigned int i = 0; i < 4; ++i) {
+#pragma unroll
+    for (unsigned int j = 0; j < 4; ++j) {
+      const unsigned int g_row_base = by + ((threadIdx.x >> 7) << 6) + i * 16;
+      const unsigned int g_col_base = bx + ((threadIdx.x >> 5 & 3) << 6) + j * 16;
+      
+#pragma unroll
+      for (unsigned int r = 0; r < 8; ++r) {
+        const unsigned int g_row = g_row_base + wave_half + r * 2;
+        const unsigned int g_col = g_col_base + (threadIdx.x & 15);
+        C_f16[g_row * n + g_col] = c_frag[i][j][r];
+      }
+    }
   }
 }
 
