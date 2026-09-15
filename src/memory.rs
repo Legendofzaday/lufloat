@@ -198,17 +198,58 @@ impl<'a> UnifiedBuffer<'a> {
     }
 }
 
-pub(crate) fn half2float(n: u16) -> f32 {
+pub fn half2float(n: u16) -> f32 {
     let sign = ((n as u32) & 0x8000) << 16;
     let exp = ((n as u32) & 0x7C00) >> 10;
     let mant = (n as u32) & 0x03FF;
     if exp == 0 {
-        f32::from_bits(sign)
+        let val = (mant as f32) * f32::from_bits(0x33800000);
+        if sign == 0 { val } else { -val }
     } else if exp == 0x1F {
         f32::from_bits(sign | 0x7F80_0000 | (mant << 13))
     } else {
         f32::from_bits(sign | ((exp + 112) << 23) | (mant << 13))
     }
+}
+
+pub fn float2half(val: f32) -> u16 {
+    let bits = val.to_bits();
+    let sign = ((bits >> 16) & 0x8000) as u16;
+    let exp = ((bits >> 23) & 0xFF) as i32 - 127;
+    let mant = bits & 0x007FFFFF;
+    if exp == 128 {
+        return if mant != 0 {
+            sign | 0x7E00
+        } else {
+            sign | 0x7C00
+        };
+    }
+    if exp > 15 {
+        return sign | 0x7C00;
+    }
+    if exp > -15 {
+        let mut m = mant + 0x0FFF + ((mant >> 13) & 1);
+        let mut e = (exp + 15) as u16;
+        if m >= 0x00800000 {
+            m = 0;
+            e += 1;
+        }
+        return sign | (e << 10) | ((m >> 13) as u16);
+    }
+    let implicit_m = mant | 0x00800000;
+    let total_shift = -1 - exp;
+    if total_shift > 24 {
+        return sign;
+    }
+    let sub_m = implicit_m >> total_shift;
+    let round_mask = (1 << total_shift) - 1;
+    let round_bits = implicit_m & round_mask;
+    let half_ulp = 1 << (total_shift - 1);
+    let mut m = sub_m;
+    if round_bits > half_ulp || (round_bits == half_ulp && (sub_m & 1) != 0) {
+        m += 1;
+    }
+    sign | (m as u16)
 }
 
 #[cfg(test)]

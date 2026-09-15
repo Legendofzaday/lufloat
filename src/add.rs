@@ -34,7 +34,7 @@ pub(crate) fn apply<'a>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::memory::{Arena, UnifiedBuffer};
+    use crate::memory::{Arena, UnifiedBuffer, float2half, half2float};
 
     #[test]
     fn exhaustive_lufloat_add() {
@@ -49,5 +49,28 @@ mod tests {
             input_other[i] = i as u16;
         }
         apply(&data, &other, &mut accumulated);
+        let input_data = data.slice();
+        let input_other = other.slice();
+        let output_data = accumulated.slice();
+        for i in 0..(1 << 16) {
+            let a_f32 = half2float(input_data[i]);
+            let b_f32 = half2float(input_other[i]);
+            let cpu_sum = a_f32 + b_f32;
+            let expected_u16 = float2half(cpu_sum);
+            let actual_u16 = output_data[i];
+            if cpu_sum.is_nan() {
+                assert!(
+                    (actual_u16 & 0x7FFF) > 0x7C00,
+                    "Expected NaN at index {}",
+                    i
+                );
+            } else {
+                assert_eq!(
+                    actual_u16, expected_u16,
+                    "Failed at idx {}. GPU: {:04X}, CPU: {:04X} ({} + {})",
+                    i, actual_u16, expected_u16, a_f32, b_f32
+                );
+            }
+        }
     }
 }
