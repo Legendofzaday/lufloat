@@ -62,8 +62,8 @@ gemm_kernel(const unsigned short *__restrict__ A,
       r_A + load_a_col_or_b_row +
       (block_offset_m + load_a_row_or_b_col) * k_strides;
   const auto *const b_offset =
-      r_B + load_a_row_or_b_col +
-      (block_offset_n + load_a_col_or_b_row) * k_strides;
+      r_A + load_a_col_or_b_row +
+      (block_offset_n + load_a_row_or_b_col) * k_strides;
   uint4 ra[2][2];
   uint4 rb[2][2];
 #pragma unroll
