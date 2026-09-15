@@ -58,6 +58,29 @@ gemm_kernel(const unsigned short *__restrict__ A,
   const auto block_offset_m = blockIdx.y << 8;
   const auto block_offset_n = blockIdx.x << 8;
   const auto k_strides = k >> 3;
+  const auto *const a_offset =
+      r_A + load_a_col_or_b_row +
+      (block_offset_m + load_a_row_or_b_col) * k_strides;
+  const auto *const b_offset =
+      r_B + load_a_row_or_b_col +
+      (block_offset_n + load_a_col_or_b_row) * k_strides;
+  uint4 ra[2][2];
+  uint4 rb[2][2];
+#pragma unroll
+  for (auto i = 0u; i < 2; ++i) {
+#pragma unroll
+    for (auto j = 0u; j < 2; ++j) {
+      ra[i][j] = a_offset[(i << 2) + j];
+    }
+  }
+#pragma unroll
+  for (auto i = 0u; i < 2; ++i) {
+#pragma unroll
+    for (auto j = 0u; j < 2; ++j) {
+      rb[i][j] = b_offset[(i << 2) + j];
+    }
+  }
+  auto phase = 0u;
 }
 
 /*
