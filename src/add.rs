@@ -49,12 +49,10 @@ mod tests {
             input_other[i] = i as u16;
         }
         apply(&data, &other, &mut accumulated);
-        let input_data = data.slice();
-        let input_other = other.slice();
         let output_data = accumulated.slice();
         for i in 0..(1 << 16) {
-            let a_f32 = half2float(input_data[i]);
-            let b_f32 = half2float(input_other[i]);
+            let a_f32 = half2float(i as u16);
+            let b_f32 = half2float(i as u16);
             let sum = a_f32 + b_f32;
             let expected = float2half(sum);
             let actual = output_data[i];
