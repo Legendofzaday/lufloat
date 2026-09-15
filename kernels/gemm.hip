@@ -66,24 +66,6 @@ gemm_kernel(const unsigned short *__restrict__ A,
       (block_offset_n + load_a_row_or_b_col) * k_strides;
   uint4 ra[2][2];
   uint4 rb[2][2];
-#pragma unroll
-  for (auto i = 0u; i < 2; ++i) {
-#pragma unroll
-    for (auto j = 0u; j < 2; ++j) {
-      ra[i][j] = a_offset[(i << 2) + j];
-    }
-  }
-#pragma unroll
-  for (auto i = 0u; i < 2; ++i) {
-#pragma unroll
-    for (auto j = 0u; j < 2; ++j) {
-      rb[i][j] = b_offset[(i << 2) + j];
-    }
-  }
-  Alds[0][load_a_row_or_b_col][load_a_col_or_b_row] = ra[0][0];
-  Alds[0][load_a_row_or_b_col][load_a_col_or_b_row + 1] = ra[0][1];
-  Blds[0][load_a_row_or_b_col][load_a_col_or_b_row] = rb[0][0];
-  Blds[0][load_a_row_or_b_col][load_a_col_or_b_row + 1] = rb[0][1];
   auto phase = 0u;
 }
 
