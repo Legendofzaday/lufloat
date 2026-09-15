@@ -31,7 +31,7 @@ mod sum;
 mod swiglu;
 mod swiglu_inplace;
 
-pub use memory::{Arena, UnifiedBuffer, float2half, half2float};
+pub use memory::{Arena, UnifiedBuffer};
 
 impl<'a> UnifiedBuffer<'a> {
     /// Converts elements into abs(element).

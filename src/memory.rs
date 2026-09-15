@@ -198,7 +198,7 @@ impl<'a> UnifiedBuffer<'a> {
     }
 }
 
-pub fn half2float(n: u16) -> f32 {
+pub(crate) fn half2float(n: u16) -> f32 {
     let sign = ((n as u32) & 0x8000) << 16;
     let exp = ((n as u32) & 0x7C00) >> 10;
     let mant = (n as u32) & 0x03FF;
@@ -212,7 +212,8 @@ pub fn half2float(n: u16) -> f32 {
     }
 }
 
-pub fn float2half(val: f32) -> u16 {
+#[allow(dead_code)]
+pub(crate) fn float2half(val: f32) -> u16 {
     let bits = val.to_bits();
     let sign = ((bits >> 16) & 0x8000) as u16;
     let exp = ((bits >> 23) & 0xFF) as i32 - 127;
