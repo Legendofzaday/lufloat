@@ -55,20 +55,16 @@ mod tests {
         for i in 0..(1 << 16) {
             let a_f32 = half2float(input_data[i]);
             let b_f32 = half2float(input_other[i]);
-            let cpu_sum = a_f32 + b_f32;
-            let expected_u16 = float2half(cpu_sum);
-            let actual_u16 = output_data[i];
-            if cpu_sum.is_nan() {
-                assert!(
-                    (actual_u16 & 0x7FFF) > 0x7C00,
-                    "Expected NaN at index {}",
-                    i
-                );
+            let sum = a_f32 + b_f32;
+            let expected = float2half(sum);
+            let actual = output_data[i];
+            if sum.is_nan() {
+                assert!((actual & 0x7FFF) > 0x7C00, "Expected NaN at index {}", i);
             } else {
                 assert_eq!(
-                    actual_u16, expected_u16,
+                    actual, expected,
                     "Failed at idx {}. GPU: {:04X}, CPU: {:04X} ({} + {})",
-                    i, actual_u16, expected_u16, a_f32, b_f32
+                    i, actual, expected, a_f32, b_f32
                 );
             }
         }
