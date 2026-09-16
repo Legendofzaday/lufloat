@@ -38,14 +38,7 @@ fn compile_lib(out_dir: &str) -> Vec<(Child, PathBuf)> {
                 .arg(&path)
                 .arg("-o")
                 .arg(&obj)
-                .args([
-                    "-O3",
-                    "-ffast-math",
-                    "-fPIC",
-                    "-fgpu-flush-denormals-to-zero",
-                    "-munsafe-fp-atomics",
-                    "--offload-arch=native",
-                ])
+                .args(["-O3", "-fPIC", "--offload-arch=native"])
                 .spawn()
                 .unwrap();
             (child, obj)
