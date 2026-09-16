@@ -45,13 +45,9 @@ mod tests {
             let expected = float2half(sum);
             let actual = output_data[i];
             if sum.is_nan() {
-                assert!((actual & 0x7FFF) > 0x7C00, "Expected NaN at index {}", i);
+                assert!((actual & 0x7FFF) > 0x7C00);
             } else {
-                assert_eq!(
-                    actual, expected,
-                    "Failed at idx {}. GPU: {:04X}, CPU: {:04X} ({} + {})",
-                    i, actual, expected, a_f32, b_f32
-                );
+                assert_eq!(actual, expected);
             }
         }
     }
