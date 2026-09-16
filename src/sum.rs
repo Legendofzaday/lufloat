@@ -51,6 +51,6 @@ mod tests {
         for i in 0..(1 << 16) {
             input_data[i] = i as u16;
         }
-        apply(&data);
+        assert!(f32::is_nan(apply(&data)));
     }
 }
