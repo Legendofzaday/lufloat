@@ -34,8 +34,7 @@ mod tests {
         apply(&mut buffer);
         let output_data = buffer.slice();
         for i in 0..(1 << 16) {
-            let val = i as u16;
-            assert_eq!(output_data[i], val & 0x7FFF, "Failed at {:016b}", val);
+            assert_eq!(output_data[i], (i as u16) & 0x7FFF);
         }
     }
 }
