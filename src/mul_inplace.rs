@@ -41,10 +41,10 @@ mod tests {
         for i in 0..(1 << 16) {
             let a_f32 = half2float(i as u16);
             let b_f32 = half2float(i as u16);
-            let sum = a_f32 * b_f32;
-            let expected = float2half(sum);
+            let res = a_f32 * b_f32;
+            let expected = float2half(res);
             let actual = output_data[i];
-            if sum.is_nan() {
+            if res.is_nan() {
                 assert!((actual & 0x7FFF) > 0x7C00);
             } else {
                 assert_eq!(actual, expected);
