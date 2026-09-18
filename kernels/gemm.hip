@@ -84,6 +84,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       fill_fragment(c_frag[i][j], 0.0f);
     }
   }
+  // col ^ row xor swizzle.
   const unsigned int swizzled_lane_lo = lane ^ wave;
   const unsigned int lds_base_lo = (wave << 5) + swizzled_lane_lo;
   const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
