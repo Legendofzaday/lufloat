@@ -97,6 +97,26 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   auto phase = 0u;
   __syncthreads();
   for (auto i = 0u; i < k; i += 32) {
+    const auto next = i + 32;
+    // start prefetch.
+    if (next < k) {
+      a_ptr += (m << 2);
+      b_ptr += (n << 2);
+      ra[0] = a_ptr[0];
+      ra[1] = a_ptr[m << 1];
+      rb[0] = b_ptr[0];
+      rb[1] = b_ptr[n << 1];
+    }
+    // finish prefetch.
+    if (next < k) {
+      const auto write_phase = phase ^ 1u;
+      Alds[write_phase][wave][swizzled_lane_lo] = ra[0];
+      Alds[write_phase][wave | 16u][swizzled_lane_hi] = ra[1];
+      Blds[write_phase][wave][swizzled_lane_lo] = rb[0];
+      Blds[write_phase][wave | 16u][swizzled_lane_hi] = rb[1];
+      phase = write_phase;
+      __syncthreads();
+    }
   }
   // vectorized downcast store.
 #pragma unroll
