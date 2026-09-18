@@ -1,3 +1,4 @@
+#include <hip/amd_detail/amd_hip_runtime.h>
 #include <hip/hip_runtime.h>
 #include <rocwmma/rocwmma.hpp>
 
@@ -45,9 +46,6 @@ __global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int m,
             const unsigned int n, const unsigned int k) {
-  // blockIdx * tile size.
-  const unsigned int block_m = blockIdx.y << 8;
-  const unsigned int block_n = blockIdx.x << 8;
   /*
     -------------------------------------------------------------
     | col 0..=63 | col 64..=127 | col 128..=191 | col 192..=255 |
@@ -58,20 +56,25 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
     | 64x64 | row 192..=255 | (3, 0) | (3, 1) | (3, 2) | (3, 3) |
     -------------------------------------------------------------
   */
-  const unsigned int wave_m = threadIdx.x >> 7;
-  const unsigned int wave_n = threadIdx.x >> 5 & 3;
   // 0..=15.
   const unsigned int wave = threadIdx.x >> 5;
   // 0..=31.
   const unsigned int lane = threadIdx.x & 31;
   // input float16 array pointers.
   const uint4 *a_ptr =
-      reinterpret_cast<const uint4 *>(A + wave * m + block_m) + lane;
+      reinterpret_cast<const uint4 *>(A + wave * m + (blockIdx.y << 8)) + lane;
   const uint4 *b_ptr =
-      reinterpret_cast<const uint4 *>(B + wave * n + block_n) + lane;
+      reinterpret_cast<const uint4 *>(B + wave * n + (blockIdx.x << 8)) + lane;
+  // col ^ row xor swizzle.
+  const unsigned int swizzled_lane_lo = lane ^ wave;
+  const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
   // 256x256x32 double buffering.
   __shared__ uint4 Alds[2][32][32];
   __shared__ uint4 Blds[2][32][32];
+  Alds[0][wave][swizzled_lane_lo] = a_ptr[0];
+  Alds[0][wave | 16u][swizzled_lane_hi] = a_ptr[m << 1];
+  Blds[0][wave][swizzled_lane_lo] = b_ptr[0];
+  Blds[0][wave | 16u][swizzled_lane_hi] = b_ptr[n << 1];
   // accumulator.
   FragC c_frag[4][4];
 #pragma unroll
@@ -81,15 +84,11 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       fill_fragment(c_frag[i][j], 0.0f);
     }
   }
-  // col ^ row xor swizzle.
-  const unsigned int swizzled_lane_lo = lane ^ wave;
-  const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
-  Alds[0][wave][swizzled_lane_lo] = a_ptr[0];
-  Alds[0][wave | 16u][swizzled_lane_hi] = a_ptr[m << 1];
-  Blds[0][wave][swizzled_lane_lo] = b_ptr[0];
-  Blds[0][wave | 16u][swizzled_lane_hi] = b_ptr[n << 1];
   // double buffering mode.
   unsigned int phase = 0u;
+  __syncthreads();
+  for (unsigned int i = 0u; i < k; i += 32) {
+  }
 }
 
 /*
