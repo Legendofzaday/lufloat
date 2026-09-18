@@ -103,14 +103,14 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   for (auto i = 0u; i < 4; ++i) {
     const auto row = (blockIdx.y << 8) + (threadIdx.x >> 7 << 6) + (i << 4);
 #pragma unroll
-    for (auto j = 0u; j < 4u; ++j) {
+    for (auto j = 0u; j < 4; ++j) {
       const auto col =
           (blockIdx.x << 8) + ((threadIdx.x >> 5 & 3) << 6) + (j << 4);
       _Float16 *const c_ptr = C + row * n + col;
       FragOut out_frag;
 #pragma unroll
-      for (auto e = 0u; e < 8u; ++e) {
-        out_frag.x[e] = static_cast<_Float16>(acc_frag[i][j].x[e]);
+      for (auto k = 0u; k < 8; ++k) {
+        out_frag.x[k] = static_cast<_Float16>(acc_frag[i][j].x[k]);
       }
       store_matrix_sync(c_ptr, out_frag, n);
     }
