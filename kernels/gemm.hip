@@ -98,6 +98,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   __syncthreads();
   for (auto i = 0u; i < k; i += 32) {
   }
+  // vectorized downcast store.
 #pragma unroll
   for (auto i = 0u; i < 4; ++i) {
     const auto row = (blockIdx.y << 8) + (threadIdx.x >> 1) + (i << 4);
