@@ -19,23 +19,26 @@ constexpr auto ROCWMMA_K = 16u;
 using DataTypeA = _Float16;
 using DataTypeB = _Float16;
 using DataTypeAcc = float;
+using DataTypeOut = _Float16;
 
 using DataLayoutA = col_major;
 using DataLayoutB = row_major;
 using DataLayoutAcc = row_major;
+using DataLayoutOut = row_major;
 
 using SchedulerA = default_schedule;
 using SchedulerB = default_schedule;
 using SchedulerAcc = default_schedule;
+using SchedulerOut = default_schedule;
 
-using FragA = fragment<matrix_a, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, _Float16,
-                       DataLayoutA, default_schedule>;
-using FragB = fragment<matrix_b, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, _Float16,
-                       DataLayoutB, default_schedule>;
-using FragAcc = fragment<accumulator, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, float,
-                         DataLayoutAcc, default_schedule>;
-using FragOut = fragment<accumulator, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, _Float16,
-                         DataLayoutAcc, default_schedule>;
+using FragA = fragment<matrix_a, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, DataTypeA,
+                       DataLayoutA, SchedulerA>;
+using FragB = fragment<matrix_b, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, DataTypeB,
+                       DataLayoutB, SchedulerB>;
+using FragAcc = fragment<accumulator, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K,
+                         DataTypeAcc, DataLayoutAcc, SchedulerAcc>;
+using FragOut = fragment<accumulator, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K,
+                         DataTypeOut, DataLayoutOut, SchedulerOut>;
 
 /*
   @param A: pointer to input float16 array.
