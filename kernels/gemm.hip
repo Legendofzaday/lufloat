@@ -75,6 +75,9 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   Alds[0][wave | 16u][swizzled_lane_hi] = a_ptr[m << 1];
   Blds[0][wave][swizzled_lane_lo] = b_ptr[0];
   Blds[0][wave | 16u][swizzled_lane_hi] = b_ptr[n << 1];
+  // prefetch registers.
+  uint4 ra[2];
+  uint4 rb[2];
   // accumulator.
   FragC c_frag[4][4];
 #pragma unroll
