@@ -46,8 +46,8 @@ __global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int m,
             const unsigned int n, const unsigned int k) {
-  const unsigned int block_m = blockIdx.x << 8;
-  const unsigned int block_n = blockIdx.y << 8;
+  const unsigned int block_m = blockIdx.y << 8;
+  const unsigned int block_n = blockIdx.x << 8;
   /*
     -------------------------------------------------------------
     | col 0..=63 | col 64..=127 | col 128..=191 | col 192..=255 |
