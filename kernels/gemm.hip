@@ -9,6 +9,7 @@ using rocwmma::fragment;
 using rocwmma::matrix_a;
 using rocwmma::matrix_b;
 using rocwmma::row_major;
+using rocwmma::store_matrix_sync;
 using rocwmma::fragment_scheduler::default_schedule;
 
 constexpr auto ROCWMMA_M = 16u;
@@ -107,7 +108,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       for (auto e = 0u; e < 8u; ++e) {
         out_frag.x[e] = static_cast<_Float16>(acc_frag[i][j].x[e]);
       }
-      rocwmma::store_matrix_sync(c_ptr, out_frag, n);
+      store_matrix_sync(c_ptr, out_frag, n);
     }
   }
 }
