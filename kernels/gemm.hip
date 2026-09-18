@@ -46,6 +46,7 @@ __global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int m,
             const unsigned int n, const unsigned int k) {
+  // blockIdx * tile size.
   const unsigned int block_m = blockIdx.y << 8;
   const unsigned int block_n = blockIdx.x << 8;
   /*
@@ -60,10 +61,14 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   */
   const unsigned int wave_m = threadIdx.x >> 7;
   const unsigned int wave_n = threadIdx.x >> 5 & 3;
-  const unsigned int vec_idx = threadIdx.x & 31;
-  const unsigned int k_idx = threadIdx.x >> 5;
+  // 0..=15.
+  const unsigned int wave = threadIdx.x >> 5;
+  // 0..=31.
+  const unsigned int lane = threadIdx.x & 31;
+  // 256x256x32 double buffering.
   __shared__ uint4 Alds[2][32][32];
   __shared__ uint4 Blds[2][32][32];
+  // accumulator.
   FragC c_frag[4][4];
 #pragma unroll
   for (unsigned int i = 0u; i < 4; ++i) {
@@ -72,6 +77,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       fill_fragment(c_frag[i][j], 0.0f);
     }
   }
+  // doube buffering mode.
   unsigned int phase = 0u;
 }
 
