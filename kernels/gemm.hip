@@ -84,12 +84,12 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       fill_fragment(c_frag[i][j], 0.0f);
     }
   }
-  // double buffering mode.
-  unsigned int phase = 0u;
   const unsigned int swizzled_lane_lo = lane ^ wave;
   const unsigned int lds_base_lo = (wave << 5) + swizzled_lane_lo;
   const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
   const unsigned int lds_base_hi = ((wave | 16u) << 5) + swizzled_lane_hi;
+  // double buffering mode.
+  unsigned int phase = 0u;
 }
 
 /*
