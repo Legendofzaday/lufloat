@@ -69,9 +69,6 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       reinterpret_cast<const uint4 *>(A + wave * m + block_m) + lane;
   const uint4 *b_ptr =
       reinterpret_cast<const uint4 *>(B + wave * n + block_n) + lane;
-  // col ^ row xor swizzle.
-  const unsigned int swizzled_lane_lo = lane ^ wave;
-  const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
   // 256x256x32 double buffering.
   __shared__ uint4 Alds[2][32][32];
   __shared__ uint4 Blds[2][32][32];
@@ -84,12 +81,15 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       fill_fragment(c_frag[i][j], 0.0f);
     }
   }
-  // double buffering mode.
-  unsigned int phase = 0u;
+  // col ^ row xor swizzle.
+  const unsigned int swizzled_lane_lo = lane ^ wave;
+  const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
   Alds[0][wave][swizzled_lane_lo] = a_ptr[0];
   Alds[0][wave | 16u][swizzled_lane_hi] = a_ptr[m << 1];
   Blds[0][wave][swizzled_lane_lo] = b_ptr[0];
   Blds[0][wave | 16u][swizzled_lane_hi] = b_ptr[n << 1];
+  // double buffering mode.
+  unsigned int phase = 0u;
 }
 
 /*
