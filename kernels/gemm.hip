@@ -64,6 +64,14 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   const unsigned int wave = threadIdx.x >> 5;
   // 0..=31.
   const unsigned int lane = threadIdx.x & 31;
+  // 16 element jump from low to high.
+  const unsigned int a_k_offset = m << 1;
+  // 16 element jump from low to high.
+  const unsigned int b_k_offset = n << 1;
+  // 32 element jump at end of tile.
+  const unsigned int a_k_step = m << 2;
+  // 32 element jump at end of tile.
+  const unsigned int b_k_step = n << 2;
   // 256x256x32 double buffering.
   __shared__ uint4 Alds[2][32][32];
   __shared__ uint4 Blds[2][32][32];
