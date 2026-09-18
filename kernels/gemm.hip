@@ -72,10 +72,6 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   // col ^ row xor swizzle.
   const unsigned int swizzled_lane_lo = lane ^ wave;
   const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
-  // 16 element jump from low to high.
-  const unsigned int a_k_offset = m << 1;
-  // 16 element jump from low to high.
-  const unsigned int b_k_offset = n << 1;
   // 256x256x32 double buffering.
   __shared__ uint4 Alds[2][32][32];
   __shared__ uint4 Blds[2][32][32];
@@ -91,9 +87,9 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   // double buffering mode.
   unsigned int phase = 0u;
   Alds[0][wave][swizzled_lane_lo] = a_ptr[0];
-  Alds[0][wave | 16u][swizzled_lane_hi] = a_ptr[a_k_offset];
+  Alds[0][wave | 16u][swizzled_lane_hi] = a_ptr[m << 1];
   Blds[0][wave][swizzled_lane_lo] = b_ptr[0];
-  Blds[0][wave | 16u][swizzled_lane_hi] = b_ptr[b_k_offset];
+  Blds[0][wave | 16u][swizzled_lane_hi] = b_ptr[n << 1];
 }
 
 /*
