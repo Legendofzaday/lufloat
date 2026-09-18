@@ -81,12 +81,12 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   uint4 ra[2];
   uint4 rb[2];
   // accumulator.
-  FragAcc c_frag[4][4];
+  FragAcc acc_frag[4][4];
 #pragma unroll
   for (auto i = 0u; i < 4; ++i) {
 #pragma unroll
     for (auto j = 0u; j < 4; ++j) {
-      fill_fragment(c_frag[i][j], 0.0f);
+      fill_fragment(acc_frag[i][j], 0.0f);
     }
   }
   // double buffering mode.
@@ -96,16 +96,16 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   }
 #pragma unroll
   for (auto i = 0u; i < 4; ++i) {
-    const auto c_row = (blockIdx.y << 8) + (threadIdx.x >> 1) + (i << 4);
+    const auto row = (blockIdx.y << 8) + (threadIdx.x >> 1) + (i << 4);
 #pragma unroll
     for (auto j = 0u; j < 4u; ++j) {
-      const auto c_col =
+      const auto col =
           (blockIdx.x << 8) + ((threadIdx.x >> 5 & 3) << 6) + (j << 4);
-      _Float16 *const c_ptr = C + c_row * n + c_col;
+      _Float16 *const c_ptr = C + row * n + col;
       FragOut out_frag;
 #pragma unroll
       for (auto e = 0u; e < 8u; ++e) {
-        out_frag.x[e] = static_cast<_Float16>(c_frag[i][j].x[e]);
+        out_frag.x[e] = static_cast<_Float16>(acc_frag[i][j].x[e]);
       }
       rocwmma::store_matrix_sync(c_ptr, out_frag, n);
     }
