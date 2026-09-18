@@ -64,6 +64,14 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   const unsigned int wave = threadIdx.x >> 5;
   // 0..=31.
   const unsigned int lane = threadIdx.x & 31;
+  // input float16 array pointers.
+  const uint4 *a_ptr =
+      reinterpret_cast<const uint4 *>(A + wave * m + block_m) + lane;
+  const uint4 *b_ptr =
+      reinterpret_cast<const uint4 *>(B + wave * n + block_n) + lane;
+  // col ^ row xor swizzle.
+  const unsigned int swizzled_lane_lo = lane ^ wave;
+  const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
   // 16 element jump from low to high.
   const unsigned int a_k_offset = m << 1;
   // 16 element jump from low to high.
@@ -84,14 +92,6 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       fill_fragment(c_frag[i][j], 0.0f);
     }
   }
-  // col ^ row xor swizzle.
-  const unsigned int swizzled_lane_lo = lane ^ wave;
-  const unsigned int swizzled_lane_hi = lane ^ (wave | 16u);
-  // input float16 array pointers.
-  const uint4 *a_ptr =
-      reinterpret_cast<const uint4 *>(A + wave * m + block_m) + lane;
-  const uint4 *b_ptr =
-      reinterpret_cast<const uint4 *>(B + wave * n + block_n) + lane;
   // double buffering mode.
   unsigned int phase = 0u;
   Alds[0][wave][swizzled_lane_lo] = a_ptr[0];
