@@ -77,7 +77,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       fill_fragment(c_frag[i][j], 0.0f);
     }
   }
-  // doube buffering mode.
+  // double buffering mode.
   unsigned int phase = 0u;
 }
 
