@@ -70,6 +70,36 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
     b_lds[b_row0][(b_col0 >> 3) ^ (b_row0 & 31)] = b_val0;
     b_lds[b_row1][(b_col1 >> 3) ^ (b_row1 & 31)] = b_val1;
     __syncthreads();
+#pragma unroll
+    for (auto j = 0; j < 2; ++j) {
+      const auto k_offset = j << 4;
+      half16 a_frag[4];
+#pragma unroll
+      for (auto l = 0; l < 4; ++l) {
+        const auto r = (wave_m << 6) + (l << 4) + (lane & 15);
+        const auto c_base = k_offset >> 3;
+        auto *const a_dst = reinterpret_cast<uint4 *>(&a_frag[l]);
+        a_dst[0] = a_lds_flat[((r << 2) + c_base + 0) ^ (r & 31)];
+        a_dst[1] = a_lds_flat[((r << 2) + c_base + 1) ^ (r & 31)];
+      }
+      half16 b_frag[4];
+#pragma unroll
+      for (auto e = 0; e < 4; ++e) {
+        const auto r = k_offset + (lane & 15);
+        const auto c_base = (wave_n << 3) + (e << 1);
+        auto *const b_dst = reinterpret_cast<uint4 *>(&b_frag[e]);
+        b_dst[0] = b_lds[r][(c_base + 0) ^ (r & 31)];
+        b_dst[1] = b_lds[r][(c_base + 1) ^ (r & 31)];
+      }
+#pragma unroll
+      for (auto l = 0; l < 4; ++l) {
+#pragma unroll
+        for (auto e = 0; e < 4; ++e) {
+          c_frag[l][e] = __builtin_amdgcn_wmma_f16_16x16x16_f16_w32(
+              a_frag[l], b_frag[e], c_frag[l][e], false);
+        }
+      }
+    }
   }
 }
 
@@ -90,6 +120,6 @@ extern "C" int lufloat_gemm(const _Float16 *A, const _Float16 *B, _Float16 *C,
   */
   hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
                      C, n, k);
-  // kernel launch error.
+
   return static_cast<int>(hipGetLastError());
 }
