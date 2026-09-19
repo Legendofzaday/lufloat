@@ -81,9 +81,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   // prefetch registers.
   uint4 ra[2];
   uint4 rb[2];
-  // input matrices.
   FragA a_frag[4];
-  FragB b_frag[4];
   // accumulator.
   FragAcc acc_frag[4][4];
 #pragma unroll
@@ -117,7 +115,8 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
         const auto m_elem = m_coord & 7u;
 #pragma unroll
         for (auto e = 0u; e < 8; ++e) {
-          const auto k_row = k_offset + e;
+          auto k_row = k_offset + e;
+          asm volatile("" : "+v"(k_row));
           const auto swizzled_vec = m_vec ^ k_row;
           a_frag[l].x[e] = reinterpret_cast<_Float16 *>(
               &Alds[phase][k_row][swizzled_vec])[m_elem];
@@ -128,16 +127,18 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
         const auto n_coord = ((wave & 3) << 6) + (l << 4) + (lane & 15);
         const auto n_vec = n_coord >> 3;
         const auto n_elem = n_coord & 7u;
+        FragB b_frag;
 #pragma unroll
         for (auto e = 0u; e < 8; ++e) {
-          const auto k_row = k_offset + e;
+          auto k_row = k_offset + e;
+          asm volatile("" : "+v"(k_row));
           const auto swizzled_vec = n_vec ^ k_row;
-          b_frag[l].x[e] = reinterpret_cast<_Float16 *>(
+          b_frag.x[e] = reinterpret_cast<_Float16 *>(
               &Blds[phase][k_row][swizzled_vec])[n_elem];
         }
 #pragma unroll
         for (auto e = 0u; e < 4u; ++e) {
-          mma_sync(acc_frag[e][l], a_frag[e], b_frag[l], acc_frag[e][l]);
+          mma_sync(acc_frag[e][l], a_frag[e], b_frag, acc_frag[e][l]);
         }
       }
     }
