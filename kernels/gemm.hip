@@ -84,6 +84,9 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   // prefetch registers.
   uint4 ra[2];
   uint4 rb[2];
+  // input matrices.
+  FragA a_frag[4];
+  FragB b_frag[4];
   // accumulator.
   FragAcc acc_frag[4][4];
 #pragma unroll
