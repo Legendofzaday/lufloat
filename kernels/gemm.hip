@@ -110,12 +110,15 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       rb[0] = b_ptr[0];
       rb[1] = b_ptr[n << 1];
     }
+    #pragma unroll
     for (auto j = 0u; j < 2; ++j) {
       const auto k_offset = (j << 4) + (lane >> 4 << 3);
+      #pragma unroll
       for (auto l = 0u; l < 4; ++l) {
         const auto m_coord = (wave >> 2 << 6) + (l << 4) + (lane & 15);
         const auto m_vec = m_coord >> 3;
         const auto m_elem = m_coord & 7u;
+        #pragma unroll
         for (auto e = 0u; e < 8; ++e) {
           const auto k_row = k_offset + e;
           const auto swizzled_vec = m_vec ^ k_row;
@@ -123,16 +126,19 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
               &Alds[phase][k_row][swizzled_vec])[m_elem];
         }
       }
+      #pragma unroll
       for (auto l = 0u; l < 4; ++l) {
         const auto n_coord = ((wave & 3) << 6) + (l << 4) + (lane & 15);
         const auto n_vec = n_coord >> 3;
         const auto n_elem = n_coord & 7u;
+        #pragma unroll
         for (auto e = 0u; e < 8; ++e) {
           const auto k_row = k_offset + e;
           const auto swizzled_vec = n_vec ^ k_row;
           b_frag[l].x[e] = reinterpret_cast<_Float16 *>(
               &Blds[phase][k_row][swizzled_vec])[n_elem];
         }
+        #pragma unroll
         for (auto e = 0u; e < 4u; ++e) {
           mma_sync(acc_frag[e][l], a_frag[e], b_frag[l], acc_frag[e][l]);
         }
