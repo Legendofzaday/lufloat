@@ -100,6 +100,19 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
         }
       }
     }
+    __syncthreads();
+  }
+#pragma unroll
+  for (auto l = 0; l < 4; ++l) {
+    const auto c_row = block_row + (wave_m << 6) + (l << 4) + (lane & 15);
+    _Float16 *const c_row_ptr = C + static_cast<unsigned long long>(c_row) * n;
+#pragma unroll
+    for (auto e = 0; e < 4; ++e) {
+      const auto c_col =
+          block_col + (wave_n << 6) + (e << 4) + ((lane >> 4) << 3);
+      auto *const c_dst = reinterpret_cast<uint4 *>(c_row_ptr + c_col);
+      *c_dst = *reinterpret_cast<const uint4 *>(&c_frag[l][e]);
+    }
   }
 }
 
