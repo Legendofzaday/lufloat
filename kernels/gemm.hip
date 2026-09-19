@@ -71,8 +71,8 @@ extern "C" int lufloat_gemm(const _Float16 *A, const _Float16 *B, _Float16 *C,
     @param gridDim: 256x256 tiling.
     @param blockDim: 16 wave 32.
   */
-  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(128, 4), 0, 0, A,
-                     B, C, m, n, k);
+  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
+                     C, m, n, k);
   // kernel launch error.
   return static_cast<int>(hipGetLastError());
 }
