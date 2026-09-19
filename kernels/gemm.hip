@@ -113,7 +113,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
     for (auto j = 0u; j < 2; ++j) {
       const auto k_offset = (j << 4) + (lane >> 4 << 3);
       for (auto l = 0u; l < 4; ++l) {
-        const auto m_coord = (wave >> 2 << 6) + (l << 4) + lane & 15;
+        const auto m_coord = (wave >> 2 << 6) + (l << 4) + (lane & 15);
         const auto m_vec = m_coord >> 3;
         const auto m_elem = m_coord & 7u;
         for (auto e = 0u; e < 8; ++e) {
@@ -124,7 +124,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
         }
       }
       for (auto l = 0u; l < 4; ++l) {
-        const auto n_coord = ((wave & 3) << 6) + (l << 4) + lane & 15;
+        const auto n_coord = ((wave & 3) << 6) + (l << 4) + (lane & 15);
         const auto n_vec = n_coord >> 3;
         const auto n_elem = n_coord & 7u;
         for (auto e = 0u; e < 8; ++e) {
