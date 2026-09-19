@@ -7,6 +7,7 @@ using rocwmma::fill_fragment;
 using rocwmma::fragment;
 using rocwmma::matrix_a;
 using rocwmma::matrix_b;
+using rocwmma::mma_sync;
 using rocwmma::row_major;
 using rocwmma::store_matrix_sync;
 using rocwmma::fragment_scheduler::default_schedule;
@@ -106,6 +107,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       rb[0] = b_ptr[0];
       rb[1] = b_ptr[n << 1];
     }
+
     // finish prefetch.
     if (next < k) {
       const auto write_phase = phase ^ 1u;
