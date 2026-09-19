@@ -7,6 +7,9 @@ using rocwmma::fragment;
 using rocwmma::matrix_a;
 using rocwmma::matrix_b;
 using rocwmma::row_major;
+using rocwmma::fragment_scheduler::coop_col_slice_2d;
+using rocwmma::fragment_scheduler::coop_row_major_2d;
+using rocwmma::fragment_scheduler::coop_row_slice_2d;
 using rocwmma::fragment_scheduler::default_schedule;
 
 constexpr auto ROCWMMA_M = 16u;
@@ -23,10 +26,13 @@ using DataLayoutB = row_major;
 using DataLayoutAcc = row_major;
 using DataLayoutOut = row_major;
 
-using SchedulerA = default_schedule;
-using SchedulerB = default_schedule;
+constexpr auto TBLOCK_X = 64u;
+constexpr auto TBLOCK_Y = 4u;
+
+using SchedulerA = coop_row_slice_2d<TBLOCK_X, TBLOCK_Y>;
+using SchedulerB = coop_col_slice_2d<TBLOCK_X, TBLOCK_Y>;
 using SchedulerAcc = default_schedule;
-using SchedulerOut = default_schedule;
+using SchedulerOut = coop_row_major_2d<TBLOCK_X, TBLOCK_Y>;
 
 using FragA = fragment<matrix_a, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K, DataTypeA,
                        DataLayoutA, SchedulerA>;
@@ -45,7 +51,7 @@ using FragOut = fragment<accumulator, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K,
   @param n: cols of B || cols of C.
   @param k: cols of A || rows of B.
 */
-__global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
+__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int m,
             const unsigned int n, const unsigned int k) {}
@@ -63,9 +69,9 @@ extern "C" int lufloat_gemm(const _Float16 *A, const _Float16 *B, _Float16 *C,
                             const unsigned int k) {
   /*
     @param gridDim: 256x256 tiling.
-    @param blockDim: 16 wave 32.
+    @param blockDim: 8 wave 32.
   */
-  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(512), 0, 0, A, B,
+  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(256), 0, 0, A, B,
                      C, m, n, k);
   // kernel launch error.
   return static_cast<int>(hipGetLastError());
