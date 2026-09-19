@@ -7,7 +7,6 @@ using rocwmma::fill_fragment;
 using rocwmma::fragment;
 using rocwmma::matrix_a;
 using rocwmma::matrix_b;
-using rocwmma::mma_sync;
 using rocwmma::row_major;
 using rocwmma::store_matrix_sync;
 using rocwmma::fragment_scheduler::default_schedule;
@@ -75,13 +74,12 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   __shared__ uint4 Alds[2][32][32];
   __shared__ uint4 Blds[2][32][32];
   Alds[0][wave][lane ^ wave] = a_ptr[0];
-  Alds[0][wave | 16u][lane ^ (wave | 16u)] = a_ptr[m << 1];
+  Alds[0][wave | 16][lane ^ (wave | 16)] = a_ptr[m << 1];
   Blds[0][wave][lane ^ wave] = b_ptr[0];
-  Blds[0][wave | 16u][lane ^ (wave | 16u)] = b_ptr[n << 1];
+  Blds[0][wave | 16][lane ^ (wave | 16)] = b_ptr[n << 1];
   // prefetch registers.
   uint4 ra[2];
   uint4 rb[2];
-  FragA a_frag[4];
   // accumulator.
   FragAcc acc_frag[4][4];
 #pragma unroll
@@ -105,50 +103,13 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       rb[0] = b_ptr[0];
       rb[1] = b_ptr[n << 1];
     }
-#pragma unroll
-    for (auto j = 0u; j < 2; ++j) {
-      const auto k_offset = (j << 4) + (lane >> 4 << 3);
-#pragma unroll
-      for (auto l = 0u; l < 4; ++l) {
-        const auto m_coord = (wave >> 2 << 6) + (l << 4) + (lane & 15);
-        const auto m_vec = m_coord >> 3;
-        const auto m_elem = m_coord & 7u;
-#pragma unroll
-        for (auto e = 0u; e < 8; ++e) {
-          auto k_row = k_offset + e;
-          asm volatile("" : "+v"(k_row));
-          const auto swizzled_vec = m_vec ^ k_row;
-          a_frag[l].x[e] = reinterpret_cast<_Float16 *>(
-              &Alds[phase][k_row][swizzled_vec])[m_elem];
-        }
-      }
-#pragma unroll
-      for (auto l = 0u; l < 4; ++l) {
-        const auto n_coord = ((wave & 3) << 6) + (l << 4) + (lane & 15);
-        const auto n_vec = n_coord >> 3;
-        const auto n_elem = n_coord & 7u;
-        FragB b_frag;
-#pragma unroll
-        for (auto e = 0u; e < 8; ++e) {
-          auto k_row = k_offset + e;
-          asm volatile("" : "+v"(k_row));
-          const auto swizzled_vec = n_vec ^ k_row;
-          b_frag.x[e] = reinterpret_cast<_Float16 *>(
-              &Blds[phase][k_row][swizzled_vec])[n_elem];
-        }
-#pragma unroll
-        for (auto e = 0u; e < 4u; ++e) {
-          mma_sync(acc_frag[e][l], a_frag[e], b_frag, acc_frag[e][l]);
-        }
-      }
-    }
     // finish prefetch.
     if (next < k) {
       const auto write_phase = phase ^ 1u;
       Alds[write_phase][wave][lane ^ wave] = ra[0];
-      Alds[write_phase][wave | 16u][lane ^ (wave | 16u)] = ra[1];
+      Alds[write_phase][wave | 16u][lane ^ (wave | 16)] = ra[1];
       Blds[write_phase][wave][lane ^ wave] = rb[0];
-      Blds[write_phase][wave | 16u][lane ^ (wave | 16u)] = rb[1];
+      Blds[write_phase][wave | 16u][lane ^ (wave | 16)] = rb[1];
       phase = write_phase;
       __syncthreads();
     }
