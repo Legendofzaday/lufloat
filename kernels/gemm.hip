@@ -26,7 +26,7 @@ using DataLayoutB = row_major;
 using DataLayoutAcc = row_major;
 using DataLayoutOut = row_major;
 
-constexpr auto TBLOCK_X = 64u;
+constexpr auto TBLOCK_X = 128u;
 constexpr auto TBLOCK_Y = 4u;
 
 using SchedulerA = coop_row_slice_2d<TBLOCK_X, TBLOCK_Y>;
@@ -51,7 +51,7 @@ using FragOut = fragment<accumulator, ROCWMMA_M, ROCWMMA_N, ROCWMMA_K,
   @param n: cols of B || cols of C.
   @param k: cols of A || rows of B.
 */
-__global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+__global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int m,
             const unsigned int n, const unsigned int k) {}
@@ -69,10 +69,10 @@ extern "C" int lufloat_gemm(const _Float16 *A, const _Float16 *B, _Float16 *C,
                             const unsigned int k) {
   /*
     @param gridDim: 256x256 tiling.
-    @param blockDim: 8 wave 32.
+    @param blockDim: 16 wave 32.
   */
-  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(256), 0, 0, A, B,
-                     C, m, n, k);
+  hipLaunchKernelGGL(gemm_kernel, dim3(n >> 8, m >> 8), dim3(128, 4), 0, 0, A,
+                     B, C, m, n, k);
   // kernel launch error.
   return static_cast<int>(hipGetLastError());
 }
