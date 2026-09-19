@@ -8,8 +8,8 @@
 */
 template <unsigned int BLOCK_THREADS, unsigned int ROWS_PER_BLOCK>
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
-softmax_inplace_kernel(unsigned short *__restrict__ data,
-                       const unsigned int cols, const unsigned int rows) {
+softmax_inplace_kernel(_Float16 *__restrict__ data, const unsigned int cols,
+                       const unsigned int rows) {
   const auto row = blockIdx.x * ROWS_PER_BLOCK + threadIdx.y;
   const auto active = (row < rows);
   // input float16 array.
@@ -130,8 +130,7 @@ softmax_inplace_kernel(unsigned short *__restrict__ data,
   @param cols: length of rows.
   @param rows: total number of rows.
 */
-extern "C" int lufloat_softmax_inplace(unsigned short *data,
-                                       const unsigned int cols,
+extern "C" int lufloat_softmax_inplace(_Float16 *data, const unsigned int cols,
                                        const unsigned int rows) {
   if (cols % 2048 == 0) {
     hipLaunchKernelGGL(HIP_KERNEL_NAME(softmax_inplace_kernel<256, 1>),

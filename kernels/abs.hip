@@ -5,8 +5,8 @@
   @param magnitude: same as lufloat_abs @param magnitude.
 */
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
-abs_kernel(const unsigned short *__restrict__ data,
-           unsigned short *__restrict__ magnitude) {
+abs_kernel(const _Float16 *__restrict__ data,
+           _Float16 *__restrict__ magnitude) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
@@ -27,9 +27,8 @@ abs_kernel(const unsigned short *__restrict__ data,
   @param size: length of input float16 array (must be a multiple of 2048).
   @param magnitude: pointer to output float16 array.
 */
-extern "C" int lufloat_abs(const unsigned short *data,
-                           const unsigned long long size,
-                           unsigned short *magnitude) {
+extern "C" int lufloat_abs(const _Float16 *data, const unsigned long long size,
+                           _Float16 *magnitude) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.

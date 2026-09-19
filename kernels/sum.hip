@@ -6,7 +6,7 @@
   @param reduced: pointer to output float16 array.
 */
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
-sum_kernel(const unsigned short *data, unsigned short *reduced) {
+sum_kernel(const _Float16 *data, _Float16 *reduced) {
   // global vector index.
   const unsigned long long idx =
       (static_cast<unsigned long long>(blockIdx.x) *
@@ -62,7 +62,7 @@ sum_kernel(const unsigned short *data, unsigned short *reduced) {
   @param reduced: pointer to output float16 array.
   @param size: length of input float16 array (must be a multiple of 2048).
 */
-extern "C" int lufloat_sum(const unsigned short *data, unsigned short *reduced,
+extern "C" int lufloat_sum(const _Float16 *data, _Float16 *reduced,
                            const unsigned long long size) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).

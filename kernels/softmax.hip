@@ -9,9 +9,9 @@
 */
 template <unsigned int BLOCK_THREADS, unsigned int ROWS_PER_BLOCK>
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
-softmax_kernel(const unsigned short *__restrict__ data,
-               unsigned short *__restrict__ probabilities,
-               const unsigned int cols, const unsigned int rows) {
+softmax_kernel(const _Float16 *__restrict__ data,
+               _Float16 *__restrict__ probabilities, const unsigned int cols,
+               const unsigned int rows) {
   const auto row = blockIdx.x * ROWS_PER_BLOCK + threadIdx.y;
   const auto active = (row < rows);
   const auto block_offset =
@@ -137,8 +137,7 @@ softmax_kernel(const unsigned short *__restrict__ data,
   @param cols: length of rows.
   @param rows: total number of rows.
 */
-extern "C" int lufloat_softmax(const unsigned short *data,
-                               unsigned short *probabilities,
+extern "C" int lufloat_softmax(const _Float16 *data, _Float16 *probabilities,
                                const unsigned int cols,
                                const unsigned int rows) {
   if (cols % 2048 == 0) {

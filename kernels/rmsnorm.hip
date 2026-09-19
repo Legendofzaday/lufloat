@@ -11,9 +11,9 @@
 */
 template <unsigned int BLOCK_THREADS, unsigned int ROWS_PER_BLOCK>
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
-rmsnorm_kernel(const unsigned short *__restrict__ data,
-               const unsigned short *__restrict__ weight,
-               unsigned short *__restrict__ normalized, const unsigned int cols,
+rmsnorm_kernel(const _Float16 *__restrict__ data,
+               const _Float16 *__restrict__ weight,
+               _Float16 *__restrict__ normalized, const unsigned int cols,
                const unsigned int rows, const float eps) {
   const auto row = blockIdx.x * ROWS_PER_BLOCK + threadIdx.y;
   const auto active = (row < rows);
@@ -112,11 +112,9 @@ rmsnorm_kernel(const unsigned short *__restrict__ data,
   @param rows: length of cols.
   @param eps: epsilon.
 */
-extern "C" int lufloat_rmsnorm(const unsigned short *data,
-                               const unsigned short *weight,
-                               unsigned short *normalized,
-                               const unsigned int cols, const unsigned int rows,
-                               const float eps) {
+extern "C" int lufloat_rmsnorm(const _Float16 *data, const _Float16 *weight,
+                               _Float16 *normalized, const unsigned int cols,
+                               const unsigned int rows, const float eps) {
   if (cols % 2048 == 0) {
     hipLaunchKernelGGL(HIP_KERNEL_NAME(rmsnorm_kernel<256, 1>), dim3(rows),
                        dim3(256), 0, 0, data, weight, normalized, cols, rows,

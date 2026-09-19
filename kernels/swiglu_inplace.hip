@@ -6,8 +6,8 @@
   @param gate: same as lufloat_swiglu_inplace @param gate.
 */
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
-swiglu_inplace_kernel(unsigned short *__restrict__ data,
-                      const unsigned short *__restrict__ gate) {
+swiglu_inplace_kernel(_Float16 *__restrict__ data,
+                      const _Float16 *__restrict__ gate) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
@@ -54,8 +54,7 @@ swiglu_inplace_kernel(unsigned short *__restrict__ data,
   @param gate: pointer to input float16 array.
   @param size: length of input float16 array (must be a multiple of 2048).
 */
-extern "C" int lufloat_swiglu_inplace(unsigned short *data,
-                                      const unsigned short *gate,
+extern "C" int lufloat_swiglu_inplace(_Float16 *data, const _Float16 *gate,
                                       const unsigned long long size) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).

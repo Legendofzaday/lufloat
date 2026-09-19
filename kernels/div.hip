@@ -7,9 +7,9 @@
   @param accumulated: same as lufloat_div @param accumulated.
 */
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
-div_kernel(const unsigned short *__restrict__ data,
-           const unsigned short *__restrict__ other,
-           unsigned short *__restrict__ accumulated) {
+div_kernel(const _Float16 *__restrict__ data,
+           const _Float16 *__restrict__ other,
+           _Float16 *__restrict__ accumulated) {
   // global vector index.
   const unsigned long long idx =
       ((unsigned long long)blockIdx.x * blockDim.x + threadIdx.x) * 8;
@@ -33,10 +33,9 @@ div_kernel(const unsigned short *__restrict__ data,
   @param size: length of input float16 array (must be a multiple of 2048).
   @param accumulated: pointer to output float16 array.
 */
-extern "C" int lufloat_div(const unsigned short *data,
-                           const unsigned short *other,
+extern "C" int lufloat_div(const _Float16 *data, const _Float16 *other,
                            const unsigned long long size,
-                           unsigned short *accumulated) {
+                           _Float16 *accumulated) {
   /*
     @param gridDim: size / (blockDim * sizeof(uint4)/sizeof(float16)).
     @param blockDim: wave32 * 8 wavefronts = 256 threads.
