@@ -40,7 +40,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   const auto *b_ptr =
       B + b_row * static_cast<unsigned long long>(n) + (block_col + b_col);
   const auto a_step = k << 5;
-  const auto b_step = n << 4;
+  const auto bc_step = n << 4;
   {
     const auto c = threadIdx.x & 7;
 #pragma unroll
@@ -56,13 +56,38 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
     for (auto i = 0; i < 4; ++i) {
       const auto r = b_row + (i << 4);
       b_lds[r][c ^ (r & 15)] =
-          *reinterpret_cast<const uint4 *>(b_ptr + i * b_step);
+          *reinterpret_cast<const uint4 *>(b_ptr + i * bc_step);
     }
   }
   __syncthreads();
   uint4 a_prefetch[4];
   uint4 b_prefetch[4];
   float8 c_frag[2][4] = {};
+  const auto c_r_base = block_row + (wave_m << 5) + (lane & 15);
+  const auto c_c_base = block_col + (wave_n << 6) + (lane >> 4 << 3);
+  _Float16 *const c_base =
+      C + static_cast<unsigned long long>(c_r_base) * n + c_c_base;
+#pragma unroll
+  for (auto e = 0; e < 2; ++e) {
+    _Float16 *const c_row_ptr = c_base + e * bc_step;
+#pragma unroll
+    for (auto l = 0; l < 4; ++l) {
+      uint4 out;
+      out.x = __builtin_bit_cast(
+          unsigned int,
+          __builtin_amdgcn_cvt_pkrtz(c_frag[e][l][0], c_frag[e][l][1]));
+      out.y = __builtin_bit_cast(
+          unsigned int,
+          __builtin_amdgcn_cvt_pkrtz(c_frag[e][l][2], c_frag[e][l][3]));
+      out.z = __builtin_bit_cast(
+          unsigned int,
+          __builtin_amdgcn_cvt_pkrtz(c_frag[e][l][4], c_frag[e][l][5]));
+      out.w = __builtin_bit_cast(
+          unsigned int,
+          __builtin_amdgcn_cvt_pkrtz(c_frag[e][l][6], c_frag[e][l][7]));
+      *reinterpret_cast<uint4 *>(c_row_ptr + (l << 4)) = out;
+    }
+  }
 }
 
 /*
