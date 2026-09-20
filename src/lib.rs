@@ -8,6 +8,7 @@ mod div;
 mod div_inplace;
 mod gelu;
 mod gelu_inplace;
+mod gemm;
 mod memory;
 mod mul;
 mod mul_inplace;

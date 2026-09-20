@@ -5,6 +5,7 @@ using half16 = _Float16 __attribute__((ext_vector_type(16)));
 using float8 = float __attribute__((ext_vector_type(8)));
 
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
+__attribute__((amdgpu_waves_per_eu(1, 1)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int n,
             const unsigned int k) {
