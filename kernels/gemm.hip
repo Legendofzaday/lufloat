@@ -12,7 +12,10 @@ using half16 = _Float16 __attribute__((ext_vector_type(16)));
 __global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int n,
-            const unsigned int k) {}
+            const unsigned int k) {
+  __shared__ uint4 a_lds[256][8];
+  __shared__ uint4 b_lds[64][32];
+}
 
 /*
   @param A: pointer to input float16 array.
