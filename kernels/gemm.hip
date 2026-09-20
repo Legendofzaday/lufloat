@@ -1,6 +1,6 @@
 #include <hip/hip_runtime.h>
-#include <sys/cdefs.h>
 
+using u32x4 = unsigned int __attribute__((ext_vector_type(4)));
 using half16 = _Float16 __attribute__((ext_vector_type(16)));
 using float8 = float __attribute__((ext_vector_type(8)));
 
@@ -63,6 +63,17 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   __syncthreads();
   uint4 a_prefetch[4];
   uint4 b_prefetch[4];
+  asm volatile(""
+               : "+v"(*reinterpret_cast<u32x4 *>(&a_prefetch[0])),
+                 "+v"(*reinterpret_cast<u32x4 *>(&a_prefetch[1])),
+                 "+v"(*reinterpret_cast<u32x4 *>(&a_prefetch[2])),
+                 "+v"(*reinterpret_cast<u32x4 *>(&a_prefetch[3])));
+
+  asm volatile(""
+               : "+v"(*reinterpret_cast<u32x4 *>(&b_prefetch[0])),
+                 "+v"(*reinterpret_cast<u32x4 *>(&b_prefetch[1])),
+                 "+v"(*reinterpret_cast<u32x4 *>(&b_prefetch[2])),
+                 "+v"(*reinterpret_cast<u32x4 *>(&b_prefetch[3])));
   float8 c_frag[2][4] = {};
   const auto b_step = static_cast<unsigned long long>(bc_step) << 2;
   for (auto i = 0; i < k; i += 64) {
