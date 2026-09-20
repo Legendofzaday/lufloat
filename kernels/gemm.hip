@@ -18,7 +18,6 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   __shared__ uint4 b_lds[64][32];
   const auto block_row = blockIdx.y << 8;
   const auto block_col = blockIdx.x << 8;
-  const auto wave = threadIdx.x >> 5;
   const auto lane = threadIdx.x & 31;
   const auto wave_m = threadIdx.x >> 7;
   const auto wave_n = threadIdx.x >> 5 & 3;
