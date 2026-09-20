@@ -46,6 +46,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       A + (block_row + a_row) * static_cast<unsigned long long>(k) + a_col;
   const auto *b_ptr =
       B + b_row * static_cast<unsigned long long>(n) + (block_col + b_col);
+  float8 c_frag[4][4] = {};
 }
 
 /*
