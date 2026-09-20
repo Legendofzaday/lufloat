@@ -60,6 +60,8 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
     }
   }
   __syncthreads();
+  uint4 a_prefetch[4];
+  uint4 b_prefetch[4];
   float8 c_frag[2][4] = {};
 }
 
