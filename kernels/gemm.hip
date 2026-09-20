@@ -1,3 +1,4 @@
+#include <hip/amd_detail/amd_hip_runtime.h>
 #include <hip/hip_runtime.h>
 
 using half16 = _Float16 __attribute__((ext_vector_type(16)));
@@ -35,6 +36,9 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   }
   const auto block_row = block_m << 8;
   const auto block_col = block_n << 7;
+  const auto wave_m = threadIdx.x >> 6;
+  const auto wave_n = threadIdx.x >> 5 & 1;
+  const auto lane = threadIdx.x & 31;
 }
 
 /*
