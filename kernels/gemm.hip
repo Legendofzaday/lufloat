@@ -41,7 +41,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   const auto b_c = threadIdx.x & 31;
   const auto b_col = b_c << 3;
   const auto *const a_ptr0 =
-      A + static_cast<unsigned long long>(block_row + a_r_base + 0) * k + a_col;
+      A + static_cast<unsigned long long>(block_row + a_r_base) * k + a_col;
   const auto *const a_ptr1 =
       A + static_cast<unsigned long long>(block_row + a_r_base + 64) * k +
       a_col;
@@ -51,9 +51,8 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   const auto *const a_ptr3 =
       A + static_cast<unsigned long long>(block_row + a_r_base + 192) * k +
       a_col;
-  const auto *const b_ptr0 = B +
-                             static_cast<unsigned long long>(b_r_base + 0) * n +
-                             (block_col + b_col);
+  const auto *const b_ptr0 =
+      B + static_cast<unsigned long long>(b_r_base) * n + (block_col + b_col);
   const auto *const b_ptr1 =
       B + static_cast<unsigned long long>(b_r_base + 16) * n +
       (block_col + b_col);
@@ -65,6 +64,54 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       (block_col + b_col);
   auto *const a_lds_flat = reinterpret_cast<uint4 *>(a_lds);
   float8 c_frag[4][4] = {};
+  for (unsigned int i = 0; i < k; i += 64) {
+    const auto k_stride_b = static_cast<unsigned long long>(i) * n;
+    a_lds_flat[(threadIdx.x) ^ (a_r_base & 7)] =
+        *reinterpret_cast<const uint4 *>(a_ptr0 + i);
+    a_lds_flat[(threadIdx.x + 512) ^ (a_r_base & 7)] =
+        *reinterpret_cast<const uint4 *>(a_ptr1 + i);
+    a_lds_flat[(threadIdx.x + 1024) ^ (a_r_base & 7)] =
+        *reinterpret_cast<const uint4 *>(a_ptr2 + i);
+    a_lds_flat[(threadIdx.x + 1536) ^ (a_r_base & 7)] =
+        *reinterpret_cast<const uint4 *>(a_ptr3 + i);
+    b_lds[b_r_base][b_c ^ ((b_r_base) & 31)] =
+        *reinterpret_cast<const uint4 *>(b_ptr0 + k_stride_b);
+    b_lds[b_r_base + 16][b_c ^ ((b_r_base + 16) & 31)] =
+        *reinterpret_cast<const uint4 *>(b_ptr1 + k_stride_b);
+    b_lds[b_r_base + 32][b_c ^ ((b_r_base + 32) & 31)] =
+        *reinterpret_cast<const uint4 *>(b_ptr2 + k_stride_b);
+    b_lds[b_r_base + 48][b_c ^ ((b_r_base + 48) & 31)] =
+        *reinterpret_cast<const uint4 *>(b_ptr3 + k_stride_b);
+    __syncthreads();
+#pragma unroll
+    for (auto j = 0; j < 4; ++j) {
+      const auto k_offset = j << 4;
+      half16 a_frag[4];
+#pragma unroll
+      for (auto l = 0; l < 4; ++l) {
+        const auto r = (wave_m << 6) + (l << 4) + (lane & 15);
+        const auto c_base = k_offset >> 3;
+        auto *const a_dst = reinterpret_cast<uint4 *>(&a_frag[l]);
+        a_dst[0] = a_lds_flat[((r << 3) + c_base) ^ (r & 7)];
+        a_dst[1] = a_lds_flat[((r << 3) + c_base + 1) ^ (r & 7)];
+      }
+#pragma unroll
+      for (auto l = 0; l < 4; ++l) {
+        half16 b_frag;
+        const auto r = k_offset + (lane & 15);
+        const auto c = (wave_n << 3) + (l << 1);
+        auto *const b_dst = reinterpret_cast<uint4 *>(&b_frag);
+        b_dst[0] = b_lds[r][(c) ^ (r & 31)];
+        b_dst[1] = b_lds[r][(c + 1) ^ (r & 31)];
+#pragma unroll
+        for (auto e = 0; e < 4; ++e) {
+          c_frag[e][l] = __builtin_amdgcn_wmma_f32_16x16x16_f16_w32(
+              a_frag[e], b_frag, c_frag[e][l]);
+        }
+      }
+    }
+    __syncthreads();
+  }
 }
 
 /*
