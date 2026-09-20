@@ -33,7 +33,7 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   const auto wave = threadIdx.x >> 5;
   const auto lane = threadIdx.x & 31;
   const auto wave_m = threadIdx.x >> 7;
-  const auto wave_n = threadIdx.x >> 5 & 31;
+  const auto wave_n = threadIdx.x >> 5 & 3;
   const auto a_r_base = threadIdx.x >> 3;
   const auto a_c = threadIdx.x & 7;
   const auto a_col = a_c << 3;
