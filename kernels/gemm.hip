@@ -1,4 +1,5 @@
 #include <hip/hip_runtime.h>
+#include <sys/cdefs.h>
 
 using half16 = _Float16 __attribute__((ext_vector_type(16)));
 using float8 = float __attribute__((ext_vector_type(8)));
@@ -76,6 +77,33 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       for (auto j = 0; j < 4; ++j) {
         b_prefetch[j] =
             *reinterpret_cast<const uint4 *>(b_ptr + b_step + j * bc_step);
+      }
+    }
+    half16 a_frag[2];
+    half16 b_frag;
+#pragma unroll
+    for (auto j = 0; j < 4; ++j) {
+      const auto k_offset = j << 4;
+      const auto c_base = j << 1;
+#pragma unroll
+      for (auto e = 0; e < 2; ++e) {
+        const auto r = (wave_m << 5) + (e << 4) + (lane & 15);
+        auto *const a_dst = reinterpret_cast<uint4 *>(&a_frag[e]);
+        a_dst[0] = a_lds[r][(c_base + 0) ^ (r & 7)];
+        a_dst[1] = a_lds[r][(c_base + 1) ^ (r & 7)];
+      }
+#pragma unroll
+      for (auto l = 0; l < 4; ++l) {
+        const auto r = k_offset + (lane & 15);
+        const auto c = (wave_n << 3) + (l << 1);
+        auto *const b_dst = reinterpret_cast<uint4 *>(&b_frag);
+        b_dst[0] = b_lds[r][(c + 0) ^ (r & 15)];
+        b_dst[1] = b_lds[r][(c + 1) ^ (r & 15)];
+#pragma unroll
+        for (auto e = 0; e < 2; ++e) {
+          c_frag[e][l] = __builtin_amdgcn_wmma_f32_16x16x16_f16_w32(
+              a_frag[e], b_frag, c_frag[e][l]);
+        }
       }
     }
     if (next < k) {
