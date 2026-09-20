@@ -63,6 +63,44 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   uint4 a_prefetch[4];
   uint4 b_prefetch[4];
   float8 c_frag[2][4] = {};
+  const auto b_step = static_cast<unsigned long long>(bc_step) << 2;
+  for (auto i = 0; i < k; i += 64) {
+    const auto next = i + 64;
+    if (next < k) {
+#pragma unroll
+      for (auto j = 0; j < 4; ++j) {
+        a_prefetch[j] =
+            *reinterpret_cast<const uint4 *>(a_ptr + 64 + j * a_step);
+      }
+#pragma unroll
+      for (auto j = 0; j < 4; ++j) {
+        b_prefetch[j] =
+            *reinterpret_cast<const uint4 *>(b_ptr + b_step + j * bc_step);
+      }
+    }
+    if (next < k) {
+      __syncthreads();
+      a_ptr += 64;
+      b_ptr += b_step;
+      {
+        const auto c = threadIdx.x & 7;
+#pragma unroll
+        for (auto j = 0; j < 4; ++j) {
+          const auto r = a_row + (j << 5);
+          a_lds[r][c ^ (r & 7)] = a_prefetch[j];
+        }
+      }
+      {
+        const auto c = threadIdx.x & 15;
+#pragma unroll
+        for (auto j = 0; j < 4; ++j) {
+          const auto r = b_row + (j << 4);
+          b_lds[r][c ^ (r & 15)] = b_prefetch[j];
+        }
+      }
+      __syncthreads();
+    }
+  }
   const auto c_r_base = block_row + (wave_m << 5) + (lane & 15);
   const auto c_c_base = block_col + (wave_n << 6) + (lane >> 4 << 3);
   _Float16 *const c_base =
