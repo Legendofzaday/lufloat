@@ -12,8 +12,8 @@ using float8 = float __attribute__((ext_vector_type(8)));
 */
 __global__ void __attribute__((amdgpu_flat_work_group_size(256, 256)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
-            _Float16 *__restrict__ C, const unsigned int n,
-            const unsigned int k) {
+            _Float16 *__restrict__ C, const unsigned long long n,
+            const unsigned long long k) {
   __shared__ uint4 a_lds[256][8];
   __shared__ uint4 b_lds[64][16];
   auto block_m = blockIdx.y;
@@ -46,8 +46,8 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   @param k: cols of A || rows of B.
 */
 extern "C" int lufloat_gemm(const _Float16 *A, const _Float16 *B, _Float16 *C,
-                            const unsigned int m, const unsigned int n,
-                            const unsigned int k) {
+                            const unsigned int m, const unsigned long long n,
+                            const unsigned long long k) {
   /*
     @param gridDim: 256x128 tiling.
     @param blockDim: 8 wave 32.
