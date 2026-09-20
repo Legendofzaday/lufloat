@@ -112,6 +112,30 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
     }
     __syncthreads();
   }
+  const auto c_row_offset = block_row + (wave_m << 6) + (lane & 15);
+  const auto c_col_offset = block_col + (wave_n << 6) + (lane >> 4 << 3);
+  uint4 out_vec;
+#pragma unroll
+  for (auto i = 0; i < 4; ++i) {
+    _Float16 *const c_row_ptr =
+        C + n * static_cast<unsigned long long>(c_row_offset + (i << 4));
+#pragma unroll
+    for (auto l = 0; l < 4; ++l) {
+      out_vec.x = __builtin_bit_cast(
+          unsigned int,
+          __builtin_amdgcn_cvt_pkrtz(c_frag[i][l][0], c_frag[i][l][1]));
+      out_vec.y = __builtin_bit_cast(
+          unsigned int,
+          __builtin_amdgcn_cvt_pkrtz(c_frag[i][l][2], c_frag[i][l][3]));
+      out_vec.z = __builtin_bit_cast(
+          unsigned int,
+          __builtin_amdgcn_cvt_pkrtz(c_frag[i][l][4], c_frag[i][l][5]));
+      out_vec.w = __builtin_bit_cast(
+          unsigned int,
+          __builtin_amdgcn_cvt_pkrtz(c_frag[i][l][6], c_frag[i][l][7]));
+      *reinterpret_cast<uint4 *>(c_row_ptr + c_col_offset + (l << 4)) = out_vec;
+    }
+  }
 }
 
 /*
