@@ -39,6 +39,27 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
       A + (block_row + a_row) * static_cast<unsigned long long>(k) + a_col;
   const auto *b_ptr =
       B + b_row * static_cast<unsigned long long>(n) + (block_col + b_col);
+  const auto a_step = k << 5;
+  const auto b_step = n << 4;
+  {
+    const auto c = threadIdx.x & 7;
+#pragma unroll
+    for (auto i = 0; i < 4; ++i) {
+      const auto r = a_row + (i << 5);
+      a_lds[r][c ^ (r & 7)] =
+          *reinterpret_cast<const uint4 *>(a_ptr + i * a_step);
+    }
+  }
+  {
+    const auto c = threadIdx.x & 15;
+#pragma unroll
+    for (auto i = 0; i < 4; ++i) {
+      const auto r = b_row + (i << 4);
+      b_lds[r][c ^ (r & 15)] =
+          *reinterpret_cast<const uint4 *>(b_ptr + i * b_step);
+    }
+  }
+  __syncthreads();
   float8 c_frag[2][4] = {};
 }
 
