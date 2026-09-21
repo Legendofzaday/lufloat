@@ -10,7 +10,6 @@ keywords = ["gpu", "math", "f16", "rocm", "hip"]
 categories = ["concurrency", "graphics", "hardware-support", "mathematics", "memory-management"]
 
 [profile.release]
-codegen-units = 1
 lto = true
 panic = "abort"
 strip = true
