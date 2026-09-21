@@ -20,8 +20,8 @@ pub(crate) fn apply(
     n: usize,
     k: usize,
 ) {
-    assert_eq!(m % 128, 0);
-    assert_eq!(n % 128, 0);
+    assert_eq!(m % 256, 0);
+    assert_eq!(n % 256, 0);
     assert_eq!(k % 64, 0);
     assert_eq!(a.len, m * k);
     assert_eq!(b.len, k * n);

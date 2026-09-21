@@ -249,8 +249,8 @@ impl<'a> UnifiedBuffer<'a> {
     ///
     /// # Panics
     ///
-    /// `m` is not multiple of `128`.
-    /// `n` is not multiple of `128`.
+    /// `m` is not multiple of `256`.
+    /// `n` is not multiple of `256`.
     /// `k` is not multiple of `64`.
     /// `a.len` is not equal to `m * k`.
     /// `b.len` is not equal to `k * n`.
