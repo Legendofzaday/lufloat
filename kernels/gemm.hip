@@ -13,20 +13,20 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
   __shared__ uint4 b_lds[64][16];
   auto block_m = blockIdx.y;
   auto block_n = blockIdx.x;
-  if ((gridDim.x & 3) == 0 && (gridDim.y & 3) == 0) {
+  if ((gridDim.x & 1) == 0 && (gridDim.y & 1) == 0) {
     const auto block_id = blockIdx.y * gridDim.x + blockIdx.x;
-    const auto s_outer = block_id >> 4;
-    const auto s_inner = block_id & 15;
-    const auto num_s_n = gridDim.x >> 2;
+    const auto s_outer = block_id >> 2;
+    const auto s_inner = block_id & 3;
+    const auto num_s_n = gridDim.x >> 1;
     const auto s_m = s_outer / num_s_n;
     auto s_n = s_outer % num_s_n;
     if (s_m & 1) {
       s_n = (num_s_n - 1) - s_n;
     }
-    const auto local_m = s_inner >> 2;
-    const auto local_n = (s_inner & 3) ^ ((local_m & 1) ? 3 : 0);
-    block_m = (s_m << 2) + local_m;
-    block_n = (s_n << 2) + local_n;
+    const auto local_m = s_inner >> 1;
+    const auto local_n = (s_inner & 1) ^ local_m;
+    block_m = (s_m << 1) + local_m;
+    block_n = (s_n << 1) + local_n;
   }
   const auto block_row = block_m << 7;
   const auto block_col = block_n << 7;
