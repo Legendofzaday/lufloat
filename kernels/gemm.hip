@@ -74,7 +74,6 @@ gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
                  "+v"(*reinterpret_cast<u32x4 *>(&b_prefetch[1])),
                  "+v"(*reinterpret_cast<u32x4 *>(&b_prefetch[2])),
                  "+v"(*reinterpret_cast<u32x4 *>(&b_prefetch[3])));
-
   float8 c_frag[4][4] = {};
   const auto b_step = static_cast<unsigned long long>(bc_step) << 2;
   for (auto i = 0; i < k; i += 64) {
