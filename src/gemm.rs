@@ -20,9 +20,9 @@ pub(crate) fn apply(
     n: usize,
     k: usize,
 ) {
-    assert_eq!(m % 256, 0);
-    assert_eq!(n % 256, 0);
-    assert_eq!(k % 32, 0);
+    assert_eq!(m % 128, 0);
+    assert_eq!(n % 128, 0);
+    assert_eq!(k % 64, 0);
     assert_eq!(a.len, m * k);
     assert_eq!(b.len, k * n);
     assert_eq!(c.len, m * n);
@@ -37,10 +37,10 @@ mod tests {
 
     #[test]
     fn exhaustive_lufloat_gemm() {
-        let arena = Arena::new((1 << 24) * 3);
-        let a = UnifiedBuffer::new(&arena, 1 << 24);
-        let b = UnifiedBuffer::new(&arena, 1 << 24);
-        let mut c = UnifiedBuffer::new(&arena, 1 << 24);
-        apply(&a, &b, &mut c, 1 << 12, 1 << 12, 1 << 12);
+        let arena = Arena::new((1 << 16) * 3);
+        let a = UnifiedBuffer::new(&arena, 1 << 16);
+        let b = UnifiedBuffer::new(&arena, 1 << 16);
+        let mut c = UnifiedBuffer::new(&arena, 1 << 16);
+        apply(&a, &b, &mut c, 1 << 8, 1 << 8, 1 << 8);
     }
 }

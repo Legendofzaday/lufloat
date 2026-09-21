@@ -245,6 +245,40 @@ impl<'a> UnifiedBuffer<'a> {
         gelu_inplace::apply(self);
     }
 
+    /// Performs matmul C = A @ B.
+    ///
+    /// # Panics
+    ///
+    /// `m` is not multiple of `128`.
+    /// `n` is not multiple of `128`.
+    /// `k` is not multiple of `64`.
+    /// `a.len` is not equal to `m * k`.
+    /// `b.len` is not equal to `k * n`.
+    /// `c.len` is not equal to `m * n`.
+    ///
+    /// # Examples
+    /// ```rust,ignore
+    /// # use lufloat::{Arena, UnifiedBuffer};
+    /// let arena = Arena::new(32768);
+    /// let mut buffer_a = UnifiedBuffer::new(&arena, 8192);
+    /// let mut buffer_b = UnifiedBuffer::new(&arena, 8192);
+    /// let mut buffer_c = UnifiedBuffer::new(&arena, 16384);
+    /// let input_a = buffer_a.slice_mut();
+    /// let input_b = buffer_b.slice_mut();
+    /// input_a[0] = 0b1_01111_0000000000;
+    /// input_a[1] = 0b0_00000_0000000000;
+    /// input_a[2] = 0b0_01111_0000000000;
+    /// input_b[0] = 0b1_01111_0000000000;
+    /// input_b[1] = 0b0_00000_0000000000;
+    /// input_b[2] = 0b0_01111_0000000000;
+    /// buffer_a.gemm(&buffer_b, &mut buffer_c, 128, 128, 64);
+    /// let output_data = buffer_c.slice();
+    /// println!("The first 3 elements are: {:?}", &output_data[..3]);
+    /// ```
+    pub fn gemm(&self, b: &Self, c: &mut Self, m: usize, n: usize, k: usize) {
+        gemm::apply(self, b, c, m, n, k);
+    }
+
     /// Converts elements into element * other.
     ///
     /// # Panics
