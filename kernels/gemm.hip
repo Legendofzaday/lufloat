@@ -4,6 +4,14 @@ using u32x4 = unsigned int __attribute__((ext_vector_type(4)));
 using half16 = _Float16 __attribute__((ext_vector_type(16)));
 using float8 = float __attribute__((ext_vector_type(8)));
 
+/*
+  @param A: pointer to input float16 array.
+  @param B: pointer to input float16 array.
+  @param C: pointer to output float16 array.
+  @param m: rows of A || rows of C.
+  @param n: cols of B || cols of C.
+  @param k: cols of A || rows of B.
+*/
 __global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int n,
