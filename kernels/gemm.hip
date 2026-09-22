@@ -13,6 +13,7 @@ using float8 = float __attribute__((ext_vector_type(8)));
   @param k: cols of A || rows of B.
 */
 __global__ void __attribute__((amdgpu_flat_work_group_size(512, 512)))
+__attribute__((__amdgpu_waves_per_eu__(1, 1)))
 gemm_kernel(const _Float16 *__restrict__ A, const _Float16 *__restrict__ B,
             _Float16 *__restrict__ C, const unsigned int n,
             const unsigned int k) {
